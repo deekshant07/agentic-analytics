@@ -1,0 +1,1806 @@
+{
+  "events": {
+    "table_name": "events",
+    "table_display_name": "User Events Log",
+    "table_description": "This table stores user interaction events within the Jupiter Money app, tracking user engagement and onboarding processes.",
+    "table_type": "event_log",
+    "columns": [
+      {
+        "raw_name": "event_id",
+        "display_name": "Event ID",
+        "description": "A unique identifier for each event recorded in the log.",
+        "is_pii": false,
+        "analysis_priority": "skip",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "user_id",
+        "display_name": "User ID",
+        "description": "A unique identifier for each user interacting with the app.",
+        "is_pii": true,
+        "analysis_priority": "high",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "session_id",
+        "display_name": "Session ID",
+        "description": "A unique identifier for each user session, tracking user activity within a single session.",
+        "is_pii": false,
+        "analysis_priority": "skip",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "event_name",
+        "display_name": "Event Name",
+        "description": "The name of the event that occurred, indicating the type of user interaction.",
+        "is_pii": false,
+        "analysis_priority": "high",
+        "value_meanings": {
+          "app_opened": "User opened the app",
+          "home_screen_viewed": "User viewed the home screen",
+          "transaction_reconciled": "User completed a transaction",
+          "notification_received": "User received a notification",
+          "app_install": "User installed the app",
+          "mobile_number_entered": "User entered their mobile number",
+          "sim_binding_initiated": "User initiated SIM binding",
+          "sim_binding_completed": "User completed SIM binding",
+          "otp_requested": "User requested an OTP",
+          "otp_verified": "User verified the OTP",
+          "name_entered": "User entered their name",
+          "dob_entered": "User entered their date of birth",
+          "email_entered": "User entered their email",
+          "pan_entered": "User entered their PAN",
+          "aadhaar_number_entered": "User entered their Aadhaar number",
+          "vkyc_initiated": "User initiated video KYC",
+          "vkyc_call_completed": "User completed the video KYC call"
+        }
+      },
+      {
+        "raw_name": "event_category",
+        "display_name": "Event Category",
+        "description": "The category of the event, indicating the broader context of the user interaction.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "engagement": "User engagement activities",
+          "onboarding": "User onboarding activities",
+          "payments": "User payment activities"
+        }
+      },
+      {
+        "raw_name": "timestamp",
+        "display_name": "Event Timestamp",
+        "description": "The exact date and time when the event occurred.",
+        "is_pii": false,
+        "analysis_priority": "high",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "date",
+        "display_name": "Event Date",
+        "description": "The date when the event occurred, formatted as YYYY-MM-DD.",
+        "is_pii": false,
+        "analysis_priority": "high",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "hour",
+        "display_name": "Event Hour",
+        "description": "The hour of the day when the event occurred, in 24-hour format.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "day_of_week",
+        "display_name": "Day of the Week",
+        "description": "The day of the week when the event occurred.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "platform",
+        "display_name": "Platform",
+        "description": "The platform on which the app was accessed (e.g., Android, iOS, Web).",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "android": "Android devices",
+          "ios": "iOS devices",
+          "web": "Web browser"
+        }
+      },
+      {
+        "raw_name": "app_version",
+        "display_name": "App Version",
+        "description": "The version of the app that the user is using.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "city",
+        "display_name": "City",
+        "description": "The city where the user is located.",
+        "is_pii": true,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "state",
+        "display_name": "State",
+        "description": "The state where the user is located.",
+        "is_pii": true,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "account_type",
+        "display_name": "Account Type",
+        "description": "The type of account the user has with Jupiter Money.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "basic": "Basic account",
+          "pro": "Pro account",
+          "salary": "Salary account",
+          "savings": "Savings account"
+        }
+      },
+      {
+        "raw_name": "age_bucket",
+        "display_name": "Age Bucket",
+        "description": "The age range of the user.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "18-22": "Aged 18 to 22",
+          "23-27": "Aged 23 to 27",
+          "28-32": "Aged 28 to 32",
+          "33-37": "Aged 33 to 37",
+          "38-45": "Aged 38 to 45",
+          "46+": "Aged 46 and above"
+        }
+      },
+      {
+        "raw_name": "income_bucket",
+        "display_name": "Income Bucket",
+        "description": "The income range of the user.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "10-20L": "Income between 10 to 20 Lakhs",
+          "20L+": "Income above 20 Lakhs",
+          "3-6L": "Income between 3 to 6 Lakhs",
+          "6-10L": "Income between 6 to 10 Lakhs",
+          "<3L": "Income below 3 Lakhs"
+        }
+      },
+      {
+        "raw_name": "occupation",
+        "display_name": "Occupation",
+        "description": "The occupation of the user.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "business_owner": "Business owner",
+          "freelancer": "Freelancer",
+          "salaried_govt": "Salaried government employee",
+          "salaried_private": "Salaried private employee",
+          "self_employed": "Self-employed",
+          "student": "Student"
+        }
+      },
+      {
+        "raw_name": "install_source",
+        "display_name": "Install Source",
+        "description": "The source from which the app was installed.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "referral_code_used",
+        "display_name": "Referral Code Used",
+        "description": "Indicates whether a referral code was used during installation.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "is_first_open",
+        "display_name": "Is First Open",
+        "description": "Indicates if this is the user's first time opening the app.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "time_since_last_open_hrs",
+        "display_name": "Time Since Last Open (Hours)",
+        "description": "The time in hours since the user last opened the app.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "notification_count",
+        "display_name": "Notification Count",
+        "description": "The number of notifications received by the user.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "pending_actions",
+        "display_name": "Pending Actions",
+        "description": "The number of actions pending for the user to complete.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      }
+    ],
+    "suggested_metrics": [
+      {
+        "name": "Average Time Since Last Open",
+        "description": "This metric measures the average time users take to return to the app after their last session, indicating user engagement and retention.",
+        "sql_hint": "AVG(time_since_last_open_hrs) WHERE event_name='app_opened'"
+      },
+      {
+        "name": "First Open Rate",
+        "description": "This metric indicates the percentage of users who are opening the app for the first time, which is crucial for understanding onboarding success.",
+        "sql_hint": "COUNT(DISTINCT user_id WHERE is_first_open=true) / NULLIF(COUNT(DISTINCT user_id WHERE event_name='app_install'),0)"
+      },
+      {
+        "name": "Referral Code Usage Rate",
+        "description": "This metric shows the percentage of new users who used a referral code during installation, reflecting the effectiveness of referral marketing.",
+        "sql_hint": "COUNT(DISTINCT user_id WHERE referral_code_used=true) / NULLIF(COUNT(DISTINCT user_id WHERE event_name='app_install'),0)"
+      },
+      {
+        "name": "App Open Rate",
+        "description": "This metric measures the frequency with which users open the app, indicating overall user engagement.",
+        "sql_hint": "COUNT(DISTINCT user_id WHERE event_name='app_opened') / NULLIF(COUNT(DISTINCT user_id WHERE event_name='app_install'),0)"
+      },
+      {
+        "name": "Transaction Completion Rate",
+        "description": "This metric indicates the percentage of initiated transactions that are successfully completed, which is vital for assessing the transaction process.",
+        "sql_hint": "COUNT(DISTINCT user_id WHERE event_name='transaction_reconciled') / NULLIF(COUNT(DISTINCT user_id WHERE event_name='transaction_initiated'),0)"
+      },
+      {
+        "name": "Average Notifications Received",
+        "description": "This metric measures the average number of notifications received by users, which can help assess the effectiveness of communication strategies.",
+        "sql_hint": "AVG(notification_count) WHERE event_name='notification_received'"
+      },
+      {
+        "name": "Pending Actions Rate",
+        "description": "This metric shows the average number of pending actions per user, indicating potential friction points in the user experience.",
+        "sql_hint": "AVG(pending_actions) WHERE event_name='home_screen_viewed'"
+      }
+    ],
+    "events": [
+      {
+        "raw_name": "aadhaar_number_entered",
+        "display_name": "Aadhaar Number Entered",
+        "description": "This event captures when a user inputs their Aadhaar number during the onboarding process.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "aadhaar_otp_requested",
+        "display_name": "Aadhaar OTP Requested",
+        "description": "This event indicates that the user has requested an OTP to verify their Aadhaar number.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "aadhaar_otp_verified",
+        "display_name": "Aadhaar OTP Verified",
+        "description": "This event signifies that the user has successfully verified their Aadhaar number using the OTP.",
+        "analysis_tags": [
+          "funnel",
+          "retention"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "otp_channel",
+            "display_name": "OTP Channel",
+            "description": "The channel through which the OTP was received.",
+            "value_meanings": {
+              "sms": "Received via SMS",
+              "uidai_sms": "Received via UIDAI SMS service",
+              "whatsapp": "Received via WhatsApp"
+            }
+          },
+          {
+            "raw_name": "attempt_number",
+            "display_name": "Attempt Number",
+            "description": "The number of attempts made to verify the OTP.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "aadhaar_masked",
+            "display_name": "Masked Aadhaar Number",
+            "description": "The masked version of the Aadhaar number entered by the user.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "uidai_fetch_status",
+            "display_name": "UIDAI Fetch Status",
+            "description": "The status of the UIDAI fetch operation during OTP verification.",
+            "value_meanings": {
+              "failed": "The fetch operation failed",
+              "partial": "The fetch operation was partially successful",
+              "success": "The fetch operation was successful"
+            }
+          },
+          {
+            "raw_name": "fields_prefilled",
+            "display_name": "Prefilled Fields",
+            "description": "Fields that were prefilled based on the Aadhaar information.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "app_install",
+        "display_name": "App Installed",
+        "description": "This event captures when the user installs the app on their device.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "install_source",
+            "display_name": "Install Source",
+            "description": "The source from which the app was installed.",
+            "value_meanings": {
+              "app_store_seo": "Installed via app store SEO",
+              "employer_salary": "Installed via employer salary program",
+              "facebook_ads": "Installed via Facebook ads",
+              "google_ads": "Installed via Google ads",
+              "influencer": "Installed via influencer promotion",
+              "organic_search": "Installed via organic search",
+              "referral_friend": "Installed via a friend's referral"
+            }
+          },
+          {
+            "raw_name": "device_model",
+            "display_name": "Device Model",
+            "description": "The model of the device on which the app was installed.",
+            "value_meanings": {
+              "Chrome 130/Mac": "Chrome browser on Mac",
+              "Chrome 130/Windows": "Chrome browser on Windows",
+              "Firefox 130/Windows": "Firefox browser on Windows",
+              "OnePlus 13": "OnePlus 13 smartphone",
+              "Poco X7 Pro": "Poco X7 Pro smartphone",
+              "Realme 13 Pro": "Realme 13 Pro smartphone",
+              "Redmi Note 14": "Redmi Note 14 smartphone",
+              "Safari 18/Mac": "Safari browser on Mac"
+            }
+          },
+          {
+            "raw_name": "os_version",
+            "display_name": "OS Version",
+            "description": "The version of the operating system on the device.",
+            "value_meanings": {
+              "Android 14": "Android version 14",
+              "Android 15": "Android version 15",
+              "iOS 17": "iOS version 17",
+              "iOS 18": "iOS version 18",
+              "web": "Web version"
+            }
+          },
+          {
+            "raw_name": "device_id",
+            "display_name": "Device ID",
+            "description": "The unique identifier for the device.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "referral_code_used",
+            "display_name": "Referral Code Used",
+            "description": "Indicates whether a referral code was used during installation.",
+            "value_meanings": {
+              "False": "No referral code used",
+              "True": "Referral code was used"
+            }
+          },
+          {
+            "raw_name": "country",
+            "display_name": "Country",
+            "description": "The country from which the app was installed.",
+            "value_meanings": {
+              "IN": "India"
+            }
+          },
+          {
+            "raw_name": "language",
+            "display_name": "Language",
+            "description": "The preferred language set by the user.",
+            "value_meanings": {
+              "en": "English",
+              "hi": "Hindi",
+              "kn": "Kannada",
+              "mr": "Marathi",
+              "ta": "Tamil",
+              "te": "Telugu"
+            }
+          },
+          {
+            "raw_name": "store",
+            "display_name": "Store",
+            "description": "The store from which the app was downloaded.",
+            "value_meanings": {
+              "app_store": "Apple App Store",
+              "play_store": "Google Play Store",
+              "web": "Web version"
+            }
+          }
+        ]
+      },
+      {
+        "raw_name": "app_opened",
+        "display_name": "App Opened",
+        "description": "This event captures when the user opens the app.",
+        "analysis_tags": [
+          "retention"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "is_first_open",
+            "display_name": "Is First Open",
+            "description": "Indicates whether this is the first time the app is being opened.",
+            "value_meanings": {
+              "False": "Not the first open",
+              "True": "This is the first open"
+            }
+          },
+          {
+            "raw_name": "open_source",
+            "display_name": "Open Source",
+            "description": "The source from which the app was opened.",
+            "value_meanings": {
+              "deeplink": "Opened via a deep link",
+              "direct": "Opened directly",
+              "push_notification": "Opened via a push notification",
+              "widget": "Opened via a widget"
+            }
+          },
+          {
+            "raw_name": "time_since_last_open_hrs",
+            "display_name": "Time Since Last Open (hrs)",
+            "description": "The time in hours since the app was last opened.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "bureau_pull_completed",
+        "display_name": "Bureau Pull Completed",
+        "description": "This event indicates that the bureau pull process has been completed successfully.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "bureau",
+            "display_name": "Bureau",
+            "description": "The credit bureau from which the data was pulled.",
+            "value_meanings": {
+              "CIBIL": "CIBIL credit bureau"
+            }
+          },
+          {
+            "raw_name": "pull_status",
+            "display_name": "Pull Status",
+            "description": "The status of the bureau pull operation.",
+            "value_meanings": {
+              "success": "The bureau pull was successful"
+            }
+          },
+          {
+            "raw_name": "cibil_score",
+            "display_name": "CIBIL Score",
+            "description": "The CIBIL score retrieved from the bureau.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "score_band",
+            "display_name": "Score Band",
+            "description": "The band in which the CIBIL score falls.",
+            "value_meanings": {
+              "600-649": "Score between 600 and 649",
+              "650-699": "Score between 650 and 699",
+              "700-749": "Score between 700 and 749",
+              "750+": "Score of 750 or above",
+              "<600": "Score below 600"
+            }
+          },
+          {
+            "raw_name": "is_new_to_credit",
+            "display_name": "Is New to Credit",
+            "description": "Indicates whether the user is new to credit.",
+            "value_meanings": {
+              "False": "Not new to credit",
+              "True": "New to credit"
+            }
+          },
+          {
+            "raw_name": "active_loan_count",
+            "display_name": "Active Loan Count",
+            "description": "The number of active loans associated with the user.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "credit_card_count",
+            "display_name": "Credit Card Count",
+            "description": "The number of credit cards associated with the user.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "pull_duration_ms",
+            "display_name": "Pull Duration (ms)",
+            "description": "The duration taken to complete the bureau pull in milliseconds.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "bureau_pull_initiated",
+        "display_name": "Bureau Pull Initiated",
+        "description": "This event indicates that the bureau pull process has been initiated.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "dob_entered",
+        "display_name": "Date of Birth Entered",
+        "description": "This event captures when the user inputs their date of birth during onboarding.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "email_entered",
+        "display_name": "Email Entered",
+        "description": "This event captures when the user inputs their email address during onboarding.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "home_screen_viewed",
+        "display_name": "Home Screen Viewed",
+        "description": "This event indicates that the user has viewed the home screen of the app.",
+        "analysis_tags": [
+          "engagement"
+        ],
+        "groups": {
+          "event_category": "engagement",
+          "account_type": "pro"
+        },
+        "properties": [
+          {
+            "raw_name": "balance_visible",
+            "display_name": "Balance Visible",
+            "description": "Indicates whether the user's balance is visible on the home screen.",
+            "value_meanings": {
+              "False": "Balance is not visible",
+              "True": "Balance is visible"
+            }
+          },
+          {
+            "raw_name": "notification_count",
+            "display_name": "Notification Count",
+            "description": "The number of notifications visible to the user.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "pending_actions",
+            "display_name": "Pending Actions",
+            "description": "The number of actions pending for the user.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "mobile_number_entered",
+        "display_name": "Mobile Number Entered",
+        "description": "This event captures when the user inputs their mobile number during onboarding.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "telecom_operator",
+            "display_name": "Telecom Operator",
+            "description": "The telecom operator associated with the mobile number.",
+            "value_meanings": {
+              "Airtel": "Airtel telecom operator",
+              "BSNL": "BSNL telecom operator",
+              "Jio": "Jio telecom operator",
+              "Vi": "Vi telecom operator"
+            }
+          },
+          {
+            "raw_name": "is_aadhaar_linked",
+            "display_name": "Is Aadhaar Linked",
+            "description": "Indicates whether the mobile number is linked to Aadhaar.",
+            "value_meanings": {
+              "False": "Not linked to Aadhaar",
+              "True": "Linked to Aadhaar"
+            }
+          },
+          {
+            "raw_name": "entered_via",
+            "display_name": "Entered Via",
+            "description": "The method used to enter the mobile number.",
+            "value_meanings": {
+              "autofill": "Entered via autofill",
+              "keyboard": "Entered via keyboard",
+              "paste": "Entered via paste"
+            }
+          }
+        ]
+      },
+      {
+        "raw_name": "mpin_set",
+        "display_name": "MPIN Set",
+        "description": "This event captures when the user sets their MPIN for the app.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "properties": [
+          {
+            "raw_name": "mpin_length",
+            "display_name": "MPIN Length",
+            "description": "The length of the MPIN set by the user.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "biometric_enabled",
+            "display_name": "Biometric Enabled",
+            "description": "Indicates whether biometric authentication is enabled for the MPIN.",
+            "value_meanings": {
+              "False": "Biometric authentication is not enabled",
+              "True": "Biometric authentication is enabled"
+            }
+          },
+          {
+            "raw_name": "set_duration_sec",
+            "display_name": "Set Duration (sec)",
+            "description": "The duration taken to set the MPIN in seconds.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "name_entered",
+        "display_name": "Name Entered",
+        "description": "This event captures when the user inputs their name during onboarding.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "notification_received",
+        "display_name": "Notification Received",
+        "description": "This event indicates that the user has received a notification from the app.",
+        "analysis_tags": [
+          "engagement"
+        ],
+        "groups": {
+          "event_category": "engagement",
+          "account_type": "salary"
+        },
+        "properties": [
+          {
+            "raw_name": "notification_type",
+            "display_name": "Notification Type",
+            "description": "The type of notification received by the user.",
+            "value_meanings": {
+              "bill_due": "Notification for a due bill",
+              "jewels_earned": "Notification for jewels earned",
+              "kyc_nudge": "Notification for KYC completion",
+              "low_balance": "Notification for low balance",
+              "offer": "Notification for an offer",
+              "payment_success": "Notification for a successful payment",
+              "salary_credited": "Notification for salary credited"
+            }
+          },
+          {
+            "raw_name": "campaign_id",
+            "display_name": "Campaign ID",
+            "description": "The ID of the campaign associated with the notification.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "is_tapped",
+            "display_name": "Is Tapped",
+            "description": "Indicates whether the notification was tapped by the user.",
+            "value_meanings": {
+              "False": "Notification was not tapped",
+              "True": "Notification was tapped"
+            }
+          }
+        ]
+      },
+      {
+        "raw_name": "onboarding_completed",
+        "display_name": "Onboarding Completed",
+        "description": "This event signifies that the user has completed the onboarding process.",
+        "analysis_tags": [
+          "funnel",
+          "retention"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "properties": [
+          {
+            "raw_name": "total_duration_min",
+            "display_name": "Total Duration (min)",
+            "description": "The total time taken to complete the onboarding process in minutes.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "steps_completed",
+            "display_name": "Steps Completed",
+            "description": "The number of steps completed during onboarding.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "virtual_debit_card_issued",
+            "display_name": "Virtual Debit Card Issued",
+            "description": "Indicates whether a virtual debit card was issued upon completion.",
+            "value_meanings": {
+              "True": "Virtual debit card was issued"
+            }
+          },
+          {
+            "raw_name": "account_number_assigned",
+            "display_name": "Account Number Assigned",
+            "description": "Indicates whether an account number was assigned upon completion.",
+            "value_meanings": {
+              "True": "Account number was assigned"
+            }
+          },
+          {
+            "raw_name": "ifsc_code",
+            "display_name": "IFSC Code",
+            "description": "The IFSC code associated with the user's account.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "welcome_bonus_credited",
+            "display_name": "Welcome Bonus Credited",
+            "description": "Indicates whether a welcome bonus was credited upon completion.",
+            "value_meanings": {
+              "False": "Welcome bonus was not credited",
+              "True": "Welcome bonus was credited"
+            }
+          }
+        ]
+      },
+      {
+        "raw_name": "otp_requested",
+        "display_name": "OTP Requested",
+        "description": "This event indicates that the user has requested an OTP for verification.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "otp_verified",
+        "display_name": "OTP Verified",
+        "description": "This event signifies that the user has successfully verified the OTP.",
+        "analysis_tags": [
+          "funnel",
+          "retention"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "otp_channel",
+            "display_name": "OTP Channel",
+            "description": "The channel through which the OTP was received.",
+            "value_meanings": {
+              "sms": "Received via SMS",
+              "uidai_sms": "Received via UIDAI SMS service",
+              "whatsapp": "Received via WhatsApp"
+            }
+          },
+          {
+            "raw_name": "attempt_number",
+            "display_name": "Attempt Number",
+            "description": "The number of attempts made to verify the OTP.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "time_to_verify_sec",
+            "display_name": "Time to Verify (sec)",
+            "description": "The time taken to verify the OTP in seconds.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "auto_read_sms",
+            "display_name": "Auto Read SMS",
+            "description": "Indicates whether the OTP was automatically read from an SMS.",
+            "value_meanings": {
+              "False": "OTP was not auto-read",
+              "True": "OTP was auto-read"
+            }
+          }
+        ]
+      },
+      {
+        "raw_name": "pan_entered",
+        "display_name": "PAN Entered",
+        "description": "This event captures when the user inputs their PAN during onboarding.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "pan_validation_completed",
+        "display_name": "PAN Validation Completed",
+        "description": "This event indicates that the PAN validation process has been completed successfully.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "pan_type",
+            "display_name": "PAN Type",
+            "description": "The type of PAN submitted by the user.",
+            "value_meanings": {
+              "individual": "Individual PAN"
+            }
+          },
+          {
+            "raw_name": "nsdl_status",
+            "display_name": "NSDL Status",
+            "description": "The status of the PAN validation with NSDL.",
+            "value_meanings": {
+              "valid": "The PAN is valid"
+            }
+          },
+          {
+            "raw_name": "name_match_score",
+            "display_name": "Name Match Score",
+            "description": "The score indicating how well the name matches with the PAN records.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "pan_linked_to_aadhaar",
+            "display_name": "PAN Linked to Aadhaar",
+            "description": "Indicates whether the PAN is linked to Aadhaar.",
+            "value_meanings": {
+              "False": "Not linked to Aadhaar",
+              "True": "Linked to Aadhaar"
+            }
+          },
+          {
+            "raw_name": "validation_duration_ms",
+            "display_name": "Validation Duration (ms)",
+            "description": "The duration taken to validate the PAN in milliseconds.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "pan_validation_initiated",
+        "display_name": "PAN Validation Initiated",
+        "description": "This event indicates that the PAN validation process has been initiated.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "sim_binding_completed",
+        "display_name": "SIM Binding Completed",
+        "description": "This event indicates that the SIM binding process has been completed successfully.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "sim_slot",
+            "display_name": "SIM Slot",
+            "description": "The SIM slot used for binding.",
+            "value_meanings": {
+              "SIM1": "First SIM slot",
+              "SIM2": "Second SIM slot"
+            }
+          },
+          {
+            "raw_name": "binding_method",
+            "display_name": "Binding Method",
+            "description": "The method used for SIM binding.",
+            "value_meanings": {
+              "npci_vmn": "Binding via NPCI VMN"
+            }
+          },
+          {
+            "raw_name": "sim_state",
+            "display_name": "SIM State",
+            "description": "The current state of the SIM after binding.",
+            "value_meanings": {
+              "active": "SIM is active"
+            }
+          },
+          {
+            "raw_name": "binding_status",
+            "display_name": "Binding Status",
+            "description": "The status of the SIM binding operation.",
+            "value_meanings": {
+              "failed": "Binding failed",
+              "success": "Binding successful"
+            }
+          },
+          {
+            "raw_name": "duration_ms",
+            "display_name": "Duration (ms)",
+            "description": "The duration taken to complete the SIM binding in milliseconds.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "sim_binding_initiated",
+        "display_name": "SIM Binding Initiated",
+        "description": "This event indicates that the SIM binding process has been initiated.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "sim_slot",
+            "display_name": "SIM Slot",
+            "description": "The SIM slot used for binding.",
+            "value_meanings": {
+              "SIM1": "First SIM slot",
+              "SIM2": "Second SIM slot"
+            }
+          },
+          {
+            "raw_name": "binding_method",
+            "display_name": "Binding Method",
+            "description": "The method used for SIM binding.",
+            "value_meanings": {
+              "npci_vmn": "Binding via NPCI VMN"
+            }
+          },
+          {
+            "raw_name": "sim_state",
+            "display_name": "SIM State",
+            "description": "The current state of the SIM during binding.",
+            "value_meanings": {
+              "active": "SIM is active"
+            }
+          },
+          {
+            "raw_name": "binding_status",
+            "display_name": "Binding Status",
+            "description": "The status of the SIM binding operation.",
+            "value_meanings": {
+              "failed": "Binding failed",
+              "success": "Binding successful"
+            }
+          },
+          {
+            "raw_name": "failure_reason",
+            "display_name": "Failure Reason",
+            "description": "The reason for the failure of the SIM binding operation, if applicable.",
+            "value_meanings": {
+              "aadhaar_mismatch": "Aadhaar mismatch",
+              "agent_disconnect": "Agent disconnected",
+              "bank_maintenance_window": "Bank maintenance window",
+              "beneficiary_bank_unavailable": "Beneficiary bank unavailable",
+              "blurry_document": "Document was blurry",
+              "collect_pending_timeout": "Collection pending timeout",
+              "face_mismatch": "Face mismatch",
+              "insufficient_funds": "Insufficient funds"
+            }
+          }
+        ]
+      },
+      {
+        "raw_name": "transaction_reconciled",
+        "display_name": "Transaction Reconciled",
+        "description": "This event indicates that a transaction has been reconciled successfully.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "payments",
+          "account_type": "savings"
+        },
+        "properties": [
+          {
+            "raw_name": "failure_reason",
+            "display_name": "Failure Reason",
+            "description": "The reason for the failure of the transaction, if applicable.",
+            "value_meanings": {
+              "aadhaar_mismatch": "Aadhaar mismatch",
+              "agent_disconnect": "Agent disconnected",
+              "bank_maintenance_window": "Bank maintenance window",
+              "beneficiary_bank_unavailable": "Beneficiary bank unavailable",
+              "blurry_document": "Document was blurry",
+              "collect_pending_timeout": "Collection pending timeout",
+              "face_mismatch": "Face mismatch",
+              "insufficient_funds": "Insufficient funds"
+            }
+          },
+          {
+            "raw_name": "transaction_id",
+            "display_name": "Transaction ID",
+            "description": "The unique identifier for the transaction.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "utr",
+            "display_name": "UTR",
+            "description": "The Unique Transaction Reference number for the transaction.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "transaction_channel",
+            "display_name": "Transaction Channel",
+            "description": "The channel through which the transaction was made.",
+            "value_meanings": {
+              "IMPS": "Immediate Payment Service",
+              "NACH": "National Automated Clearing House",
+              "NEFT": "National Electronic Funds Transfer",
+              "RTGS": "Real Time Gross Settlement",
+              "UPI": "Unified Payments Interface",
+              "debit_card": "Debit Card"
+            }
+          },
+          {
+            "raw_name": "payment_instrument",
+            "display_name": "Payment Instrument",
+            "description": "The instrument used for the payment.",
+            "value_meanings": {
+              "account_number": "Payment made using account number",
+              "card": "Payment made using card",
+              "mandate": "Payment made using mandate",
+              "vpa": "Payment made using VPA"
+            }
+          },
+          {
+            "raw_name": "transaction_type",
+            "display_name": "Transaction Type",
+            "description": "The type of transaction (credit or debit).",
+            "value_meanings": {
+              "CREDIT": "Credit transaction",
+              "DEBIT": "Debit transaction"
+            }
+          },
+          {
+            "raw_name": "amount",
+            "display_name": "Amount",
+            "description": "The amount involved in the transaction.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "currency",
+            "display_name": "Currency",
+            "description": "The currency used for the transaction.",
+            "value_meanings": {
+              "INR": "Indian Rupee"
+            }
+          },
+          {
+            "raw_name": "amount_band",
+            "display_name": "Amount Band",
+            "description": "The band in which the transaction amount falls.",
+            "value_meanings": {
+              "5L+": "Amount greater than 5 Lakhs",
+              "<500": "Amount less than 500",
+              "<50K": "Amount less than 50,000",
+              "<5K": "Amount less than 5,000",
+              "<5L": "Amount less than 5 Lakhs"
+            }
+          },
+          {
+            "raw_name": "source_bank",
+            "display_name": "Source Bank",
+            "description": "The bank from which the transaction originated.",
+            "value_meanings": {
+              "Axis Bank": "Axis Bank",
+              "Bank of Baroda": "Bank of Baroda",
+              "Canara Bank": "Canara Bank",
+              "Federal Bank": "Federal Bank",
+              "HDFC Bank": "HDFC Bank",
+              "ICICI Bank": "ICICI Bank",
+              "IDFC First": "IDFC First Bank",
+              "IndusInd Bank": "IndusInd Bank"
+            }
+          },
+          {
+            "raw_name": "source_account_type",
+            "display_name": "Source Account Type",
+            "description": "The type of account from which the transaction was made.",
+            "value_meanings": {
+              "pro": "Professional account",
+              "salary": "Salary account",
+              "savings": "Savings account"
+            }
+          },
+          {
+            "raw_name": "source_vpa",
+            "display_name": "Source VPA",
+            "description": "The VPA from which the transaction was made.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "beneficiary_bank",
+            "display_name": "Beneficiary Bank",
+            "description": "The bank of the beneficiary in the transaction.",
+            "value_meanings": {
+              "Axis Bank": "Axis Bank",
+              "Bank of Baroda": "Bank of Baroda",
+              "Canara Bank": "Canara Bank",
+              "Federal Bank": "Federal Bank",
+              "HDFC Bank": "HDFC Bank",
+              "ICICI Bank": "ICICI Bank",
+              "IDFC First": "IDFC First Bank",
+              "IndusInd Bank": "IndusInd Bank"
+            }
+          },
+          {
+            "raw_name": "beneficiary_vpa",
+            "display_name": "Beneficiary VPA",
+            "description": "The VPA of the beneficiary in the transaction.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "merchant_name",
+            "display_name": "Merchant Name",
+            "description": "The name of the merchant involved in the transaction.",
+            "value_meanings": {
+              "1mg": "1mg",
+              "Air India": "Air India",
+              "Airtel": "Airtel",
+              "Ajio": "Ajio",
+              "Amazon": "Amazon",
+              "Apollo Pharmacy": "Apollo Pharmacy",
+              "BESCOM": "BESCOM",
+              "BPCL Petrol": "BPCL Petrol"
+            }
+          },
+          {
+            "raw_name": "merchant_category",
+            "display_name": "Merchant Category",
+            "description": "The category of the merchant involved in the transaction.",
+            "value_meanings": {
+              "education": "Education",
+              "emi_repayment": "EMI Repayment",
+              "entertainment_ott": "Entertainment (OTT)",
+              "food_dining": "Food and Dining",
+              "groceries": "Groceries",
+              "health_medical": "Health and Medical",
+              "insurance_premium": "Insurance Premium",
+              "investment_transfer": "Investment Transfer"
+            }
+          },
+          {
+            "raw_name": "merchant_category_code",
+            "display_name": "Merchant Category Code",
+            "description": "The category code of the merchant involved in the transaction.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "transaction_status",
+            "display_name": "Transaction Status",
+            "description": "The status of the transaction.",
+            "value_meanings": {
+              "FAILED": "Transaction failed",
+              "SUCCESS": "Transaction successful"
+            }
+          },
+          {
+            "raw_name": "settlement_status",
+            "display_name": "Settlement Status",
+            "description": "The status of the transaction settlement.",
+            "value_meanings": {
+              "FAILED": "Settlement failed",
+              "PENDING_SETTLEMENT": "Settlement pending",
+              "SETTLED": "Settlement completed"
+            }
+          },
+          {
+            "raw_name": "settlement_type",
+            "display_name": "Settlement Type",
+            "description": "The type of settlement for the transaction.",
+            "value_meanings": {
+              "batch_nach": "Batch NACH settlement",
+              "batch_neft": "Batch NEFT settlement",
+              "real_time": "Real-time settlement"
+            }
+          },
+          {
+            "raw_name": "value_date",
+            "display_name": "Value Date",
+            "description": "The date on which the transaction value is effective.",
+            "value_meanings": {
+              "2026-01-01": "Value date of January 1, 2026",
+              "2026-01-02": "Value date of January 2, 2026",
+              "2026-01-03": "Value date of January 3, 2026",
+              "2026-01-04": "Value date of January 4, 2026",
+              "2026-01-05": "Value date of January 5, 2026",
+              "2026-01-06": "Value date of January 6, 2026",
+              "2026-01-07": "Value date of January 7, 2026",
+              "2026-01-08": "Value date of January 8, 2026"
+            }
+          },
+          {
+            "raw_name": "network_latency_ms",
+            "display_name": "Network Latency (ms)",
+            "description": "The network latency experienced during the transaction in milliseconds.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "npci_error_code",
+            "display_name": "NPCI Error Code",
+            "description": "The error code returned by NPCI in case of a failure.",
+            "value_meanings": {
+              "BT": "Error code BT",
+              "M2": "Error code M2",
+              "U16": "Error code U16",
+              "U30": "Error code U30",
+              "U43": "Error code U43",
+              "XB": "Error code XB",
+              "YG": "Error code YG",
+              "Z6": "Error code Z6"
+            }
+          },
+          {
+            "raw_name": "failure_bank_side",
+            "display_name": "Failure Bank Side",
+            "description": "Indicates which side of the transaction failed.",
+            "value_meanings": {
+              "beneficiary": "Failure on the beneficiary side",
+              "npci_infra": "Failure on NPCI infrastructure",
+              "payer": "Failure on the payer side",
+              "psp": "Failure on the payment service provider side"
+            }
+          },
+          {
+            "raw_name": "is_retriable",
+            "display_name": "Is Retriable",
+            "description": "Indicates whether the transaction can be retried.",
+            "value_meanings": {
+              "False": "Transaction cannot be retried",
+              "True": "Transaction can be retried"
+            }
+          },
+          {
+            "raw_name": "jewels_earned",
+            "display_name": "Jewels Earned",
+            "description": "The number of jewels earned from the transaction.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "is_first_transaction",
+            "display_name": "Is First Transaction",
+            "description": "Indicates whether this is the user's first transaction.",
+            "value_meanings": {
+              "False": "Not the first transaction",
+              "True": "This is the first transaction"
+            }
+          },
+          {
+            "raw_name": "cumulative_jewels",
+            "display_name": "Cumulative Jewels",
+            "description": "The total number of jewels accumulated by the user.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "vkyc_call_completed",
+        "display_name": "vKYC Call Completed",
+        "description": "This event indicates that the vKYC call has been completed successfully.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "properties": [
+          {
+            "raw_name": "call_duration_sec",
+            "display_name": "Call Duration (sec)",
+            "description": "The duration of the vKYC call in seconds.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "agent_language",
+            "display_name": "Agent Language",
+            "description": "The language spoken by the agent during the vKYC call.",
+            "value_meanings": {
+              "english": "English",
+              "hindi": "Hindi",
+              "regional": "Regional language"
+            }
+          },
+          {
+            "raw_name": "liveness_score",
+            "display_name": "Liveness Score",
+            "description": "The score indicating the liveness of the user during the vKYC call.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "reviewer_type",
+            "display_name": "Reviewer Type",
+            "description": "The type of reviewer who conducted the vKYC call.",
+            "value_meanings": {
+              "agent": "Human agent",
+              "ai_assisted": "AI-assisted review"
+            }
+          },
+          {
+            "raw_name": "approval_time_min",
+            "display_name": "Approval Time (min)",
+            "description": "The time taken for approval during the vKYC call in minutes.",
+            "value_meanings": {}
+          }
+        ]
+      },
+      {
+        "raw_name": "vkyc_call_started",
+        "display_name": "vKYC Call Started",
+        "description": "This event indicates that the vKYC call has been initiated.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "properties": []
+      },
+      {
+        "raw_name": "vkyc_failed",
+        "display_name": "vKYC Failed",
+        "description": "This event indicates that the vKYC call has failed.",
+        "analysis_tags": [
+          "funnel",
+          "rca"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "properties": [
+          {
+            "raw_name": "failure_reason",
+            "display_name": "Failure Reason",
+            "description": "The reason for the failure of the vKYC call.",
+            "value_meanings": {
+              "aadhaar_mismatch": "Aadhaar mismatch",
+              "agent_disconnect": "Agent disconnected",
+              "bank_maintenance_window": "Bank maintenance window",
+              "beneficiary_bank_unavailable": "Beneficiary bank unavailable",
+              "blurry_document": "Document was blurry",
+              "collect_pending_timeout": "Collection pending timeout",
+              "face_mismatch": "Face mismatch",
+              "insufficient_funds": "Insufficient funds"
+            }
+          },
+          {
+            "raw_name": "attempt_number",
+            "display_name": "Attempt Number",
+            "description": "The number of attempts made for the vKYC call.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "can_reschedule",
+            "display_name": "Can Reschedule",
+            "description": "Indicates whether the vKYC call can be rescheduled.",
+            "value_meanings": {
+              "True": "Call can be rescheduled"
+            }
+          }
+        ]
+      },
+      {
+        "raw_name": "vkyc_initiated",
+        "display_name": "vKYC Initiated",
+        "description": "This event indicates that the vKYC process has been initiated.",
+        "analysis_tags": [
+          "funnel"
+        ],
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "properties": [
+          {
+            "raw_name": "attempt_number",
+            "display_name": "Attempt Number",
+            "description": "The number of attempts made for the vKYC process.",
+            "value_meanings": {}
+          },
+          {
+            "raw_name": "vkyc_provider",
+            "display_name": "vKYC Provider",
+            "description": "The provider facilitating the vKYC process.",
+            "value_meanings": {
+              "federal_bank_vcip": "Federal Bank VCIP"
+            }
+          },
+          {
+            "raw_name": "slot_time_band",
+            "display_name": "Slot Time Band",
+            "description": "The time band for the vKYC slot.",
+            "value_meanings": {
+              "afternoon_12_3": "Afternoon slot from 12 PM to 3 PM",
+              "evening_5_7": "Evening slot from 5 PM to 7 PM",
+              "morning_9_11": "Morning slot from 9 AM to 11 AM"
+            }
+          },
+          {
+            "raw_name": "queue_wait_min",
+            "display_name": "Queue Wait (min)",
+            "description": "The time the user has to wait in the queue for the vKYC call in minutes.",
+            "value_meanings": {}
+          }
+        ]
+      }
+    ]
+  },
+  "users": {
+    "table_name": "users",
+    "table_display_name": "User Information",
+    "table_description": "This table stores information about users of the Jupiter Money neobank, including demographics, account details, and engagement metrics.",
+    "table_type": "dimension",
+    "columns": [
+      {
+        "raw_name": "user_id",
+        "display_name": "User ID",
+        "description": "A unique identifier for each user. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "skip",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "signup_date",
+        "display_name": "Signup Date",
+        "description": "The date and time when the user signed up for the service. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "high",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "platform",
+        "display_name": "Platform",
+        "description": "The platform through which the user accessed the service, such as Android, iOS, or web. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "android": "User accessed via Android app",
+          "ios": "User accessed via iOS app",
+          "web": "User accessed via web browser"
+        }
+      },
+      {
+        "raw_name": "app_version",
+        "display_name": "App Version",
+        "description": "The version of the app used by the user. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "city",
+        "display_name": "City",
+        "description": "The city where the user is located. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "state",
+        "display_name": "State",
+        "description": "The state where the user is located. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "age_bucket",
+        "display_name": "Age Bucket",
+        "description": "The age range of the user, categorized into buckets. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "18-22": "Users aged between 18 and 22",
+          "23-27": "Users aged between 23 and 27",
+          "28-32": "Users aged between 28 and 32",
+          "33-37": "Users aged between 33 and 37",
+          "38-45": "Users aged between 38 and 45",
+          "46+": "Users aged 46 and above"
+        }
+      },
+      {
+        "raw_name": "income_bucket",
+        "display_name": "Income Bucket",
+        "description": "The income range of the user, categorized into buckets. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "10-20L": "Users with an income between 10 to 20 Lakhs",
+          "20L+": "Users with an income above 20 Lakhs",
+          "3-6L": "Users with an income between 3 to 6 Lakhs",
+          "6-10L": "Users with an income between 6 to 10 Lakhs",
+          "<3L": "Users with an income below 3 Lakhs"
+        }
+      },
+      {
+        "raw_name": "occupation",
+        "display_name": "Occupation",
+        "description": "The occupation of the user. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "business_owner": "User is a business owner",
+          "freelancer": "User is a freelancer",
+          "salaried_govt": "User is employed in a government job",
+          "salaried_private": "User is employed in a private job",
+          "self_employed": "User is self-employed",
+          "student": "User is a student"
+        }
+      },
+      {
+        "raw_name": "acquisition_cohort",
+        "display_name": "Acquisition Cohort",
+        "description": "The marketing channel through which the user was acquired. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "app_store_seo": "Acquired through app store search engine optimization",
+          "employer_salary": "Acquired through employer salary programs",
+          "facebook_ads": "Acquired through Facebook advertisements",
+          "google_ads": "Acquired through Google advertisements",
+          "influencer": "Acquired through influencer marketing",
+          "organic_search": "Acquired through organic search",
+          "referral_friend": "Acquired through friend referrals"
+        }
+      },
+      {
+        "raw_name": "kyc_completed",
+        "display_name": "KYC Completed",
+        "description": "Indicates whether the user has completed the Know Your Customer (KYC) process. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "high",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "account_type",
+        "display_name": "Account Type",
+        "description": "The type of account the user holds with the neobank. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {
+          "basic": "Basic account type",
+          "pro": "Pro account type",
+          "salary": "Salary account type",
+          "savings": "Savings account type"
+        }
+      },
+      {
+        "raw_name": "primary_bank",
+        "display_name": "Primary Bank",
+        "description": "The primary bank associated with the user's account. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "sessions_per_week",
+        "display_name": "Sessions Per Week",
+        "description": "The number of sessions the user engages in per week. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "medium",
+        "value_meanings": {}
+      },
+      {
+        "raw_name": "avg_txn_amount",
+        "display_name": "Average Transaction Amount",
+        "description": "The average amount of transactions made by the user. This column is never null.",
+        "is_pii": false,
+        "analysis_priority": "high",
+        "value_meanings": {}
+      }
+    ],
+    "suggested_metrics": [
+      {
+        "name": "Average Transaction Amount Per User",
+        "description": "This metric measures the average transaction amount for each user, providing insights into user spending behavior.",
+        "sql_hint": "SELECT AVG(avg_txn_amount) FROM users"
+      },
+      {
+        "name": "KYC Completion Rate",
+        "description": "This metric indicates the percentage of users who have completed the KYC process, which is crucial for regulatory compliance.",
+        "sql_hint": "SELECT COUNT(*) / NULLIF(COUNT(user_id), 0) FROM users WHERE kyc_completed = true"
+      },
+      {
+        "name": "Sessions Per User",
+        "description": "This metric measures the average number of sessions per user, indicating user engagement with the platform.",
+        "sql_hint": "SELECT AVG(sessions_per_week) FROM users"
+      },
+      {
+        "name": "User Distribution by Age Bucket",
+        "description": "This metric shows the distribution of users across different age buckets, helping to understand the demographic profile.",
+        "sql_hint": "SELECT age_bucket, COUNT(*) FROM users GROUP BY age_bucket"
+      },
+      {
+        "name": "User Distribution by Income Bucket",
+        "description": "This metric shows the distribution of users across different income buckets, providing insights into the economic demographics of users.",
+        "sql_hint": "SELECT income_bucket, COUNT(*) FROM users GROUP BY income_bucket"
+      }
+    ],
+    "events": []
+  },
+  "__business_context__": {
+    "industry": "fintech neobank",
+    "company": "Jupiter Money",
+    "custom_events": [
+      {
+        "name": "activated_user",
+        "sql": "event_name IN ('onboarding_completed') AND kyc_completed = 'True'",
+        "description": "Users who have completed the onboarding process and verified their identity."
+      },
+      {
+        "name": "active_user",
+        "sql": "event_name IN ('app_opened')",
+        "description": "Users who have opened the app at least once within the specified time window."
+      },
+      {
+        "name": "paying_user",
+        "sql": "event_name IN ('transaction_reconciled') AND transaction_status = 'SUCCESS'",
+        "description": "Users who have successfully completed a transaction."
+      },
+      {
+        "name": "churned_user",
+        "sql": "event_name IN ('app_opened') AND date < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)",
+        "description": "Users who have not opened the app in the last 30 days."
+      },
+      {
+        "name": "referral_user",
+        "sql": "event_name IN ('app_install') AND referral_code_used = 'True'",
+        "description": "Users who installed the app using a referral code."
+      }
+    ],
+    "exclusions": {
+      "always_filter": [
+        "user_id NOT LIKE 'test_%'"
+      ],
+      "glossary": [
+        {
+          "term": "DAU",
+          "description": "Number of unique users who opened the app on a given day.",
+          "sql": "COUNT(DISTINCT user_id) WHERE event_name = 'app_opened' GROUP BY DATE(timestamp)"
+        },
+        {
+          "term": "MAU",
+          "description": "Number of unique users who opened the app in the last 30 days.",
+          "sql": "COUNT(DISTINCT user_id) WHERE event_name = 'app_opened' AND date >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)"
+        },
+        {
+          "term": "Conversion Rate",
+          "description": "Percentage of users who completed the onboarding process out of those who installed the app.",
+          "sql": "(COUNT(DISTINCT user_id) WHERE event_name = 'onboarding_completed') / (COUNT(DISTINCT user_id) WHERE event_name = 'app_install') * 100"
+        },
+        {
+          "term": "LTV",
+          "description": "Estimated revenue generated from a user over their lifetime.",
+          "sql": "SUM(amount) WHERE event_name = 'transaction_reconciled' AND transaction_status = 'SUCCESS' GROUP BY user_id"
+        },
+        {
+          "term": "Churn Rate",
+          "description": "Percentage of users who have not engaged with the app in the last 30 days.",
+          "sql": "(COUNT(DISTINCT user_id) WHERE event_name = 'app_opened' AND date < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)) / (COUNT(DISTINCT user_id) WHERE event_name = 'app_install') * 100"
+        }
+      ],
+      "conventions": [
+        "Default time window: last 7 days unless user specifies otherwise.",
+        "Currency is in INR.",
+        "Date grouping is done by day."
+      ]
+    }
+  }
+}

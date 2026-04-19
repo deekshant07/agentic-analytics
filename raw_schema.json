@@ -1,0 +1,2857 @@
+{
+  "events": {
+    "name": "events",
+    "row_count": 893010,
+    "columns": [
+      {
+        "name": "event_id",
+        "type": "VARCHAR",
+        "cardinality": 893010,
+        "null_pct": 0.0,
+        "sample_values": []
+      },
+      {
+        "name": "user_id",
+        "type": "VARCHAR",
+        "cardinality": 15000,
+        "null_pct": 0.0,
+        "sample_values": []
+      },
+      {
+        "name": "session_id",
+        "type": "VARCHAR",
+        "cardinality": 115669,
+        "null_pct": 0.0,
+        "sample_values": []
+      },
+      {
+        "name": "event_name",
+        "type": "VARCHAR",
+        "cardinality": 27,
+        "null_pct": 0.0,
+        "sample_values": [
+          "aadhaar_number_entered",
+          "aadhaar_otp_requested",
+          "aadhaar_otp_verified",
+          "app_install",
+          "app_opened",
+          "bureau_pull_completed",
+          "bureau_pull_initiated",
+          "dob_entered",
+          "email_entered",
+          "home_screen_viewed",
+          "mobile_number_entered",
+          "mpin_set",
+          "name_entered",
+          "notification_received",
+          "onboarding_completed",
+          "otp_requested",
+          "otp_verified",
+          "pan_entered",
+          "pan_validation_completed",
+          "pan_validation_initiated",
+          "sim_binding_completed",
+          "sim_binding_initiated",
+          "transaction_reconciled",
+          "vkyc_call_completed",
+          "vkyc_call_started",
+          "vkyc_failed",
+          "vkyc_initiated"
+        ]
+      },
+      {
+        "name": "event_category",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 0.0,
+        "sample_values": [
+          "engagement",
+          "onboarding",
+          "payments"
+        ]
+      },
+      {
+        "name": "timestamp",
+        "type": "TIMESTAMP_NS",
+        "cardinality": 828893,
+        "null_pct": 0.0,
+        "sample_values": []
+      },
+      {
+        "name": "date",
+        "type": "VARCHAR",
+        "cardinality": 84,
+        "null_pct": 0.0,
+        "sample_values": [
+          "2026-01-01",
+          "2026-01-02",
+          "2026-01-03",
+          "2026-01-04",
+          "2026-01-05",
+          "2026-01-06",
+          "2026-01-07",
+          "2026-01-08",
+          "2026-01-09",
+          "2026-01-10",
+          "2026-01-11",
+          "2026-01-12",
+          "2026-01-13",
+          "2026-01-14",
+          "2026-01-15",
+          "2026-01-16",
+          "2026-01-17",
+          "2026-01-18",
+          "2026-01-19",
+          "2026-01-20",
+          "2026-01-21",
+          "2026-01-22",
+          "2026-01-23",
+          "2026-01-24",
+          "2026-01-25",
+          "2026-01-26",
+          "2026-01-27",
+          "2026-01-28",
+          "2026-01-29",
+          "2026-01-30",
+          "2026-01-31",
+          "2026-02-01",
+          "2026-02-02",
+          "2026-02-03",
+          "2026-02-04",
+          "2026-02-05",
+          "2026-02-06",
+          "2026-02-07",
+          "2026-02-08",
+          "2026-02-09",
+          "2026-02-10",
+          "2026-02-11",
+          "2026-02-12",
+          "2026-02-13",
+          "2026-02-14",
+          "2026-02-15",
+          "2026-02-16",
+          "2026-02-17",
+          "2026-02-18",
+          "2026-02-19",
+          "2026-02-20",
+          "2026-02-21",
+          "2026-02-22",
+          "2026-02-23",
+          "2026-02-24",
+          "2026-02-25",
+          "2026-02-26",
+          "2026-02-27",
+          "2026-02-28",
+          "2026-03-01",
+          "2026-03-02",
+          "2026-03-03",
+          "2026-03-04",
+          "2026-03-05",
+          "2026-03-06",
+          "2026-03-07",
+          "2026-03-08",
+          "2026-03-09",
+          "2026-03-10",
+          "2026-03-11",
+          "2026-03-12",
+          "2026-03-13",
+          "2026-03-14",
+          "2026-03-15",
+          "2026-03-16",
+          "2026-03-17",
+          "2026-03-18",
+          "2026-03-19",
+          "2026-03-20",
+          "2026-03-21",
+          "2026-03-22",
+          "2026-03-23",
+          "2026-03-24",
+          "2026-03-25"
+        ]
+      },
+      {
+        "name": "hour",
+        "type": "BIGINT",
+        "cardinality": 24,
+        "null_pct": 0.0,
+        "sample_values": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23"
+        ]
+      },
+      {
+        "name": "day_of_week",
+        "type": "VARCHAR",
+        "cardinality": 7,
+        "null_pct": 0.0,
+        "sample_values": [
+          "Friday",
+          "Monday",
+          "Saturday",
+          "Sunday",
+          "Thursday",
+          "Tuesday",
+          "Wednesday"
+        ]
+      },
+      {
+        "name": "week_num",
+        "type": "BIGINT",
+        "cardinality": 13,
+        "null_pct": 0.0,
+        "sample_values": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13"
+        ]
+      },
+      {
+        "name": "month",
+        "type": "BIGINT",
+        "cardinality": 3,
+        "null_pct": 0.0,
+        "sample_values": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      {
+        "name": "month_name",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 0.0,
+        "sample_values": [
+          "February",
+          "January",
+          "March"
+        ]
+      },
+      {
+        "name": "platform",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 0.0,
+        "sample_values": [
+          "android",
+          "ios",
+          "web"
+        ]
+      },
+      {
+        "name": "app_version",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 0.0,
+        "sample_values": [
+          "4.3.0",
+          "4.3.1",
+          "4.4.0",
+          "4.4.1"
+        ]
+      },
+      {
+        "name": "city",
+        "type": "VARCHAR",
+        "cardinality": 12,
+        "null_pct": 0.0,
+        "sample_values": [
+          "Ahmedabad",
+          "Bangalore",
+          "Chennai",
+          "Delhi",
+          "Hyderabad",
+          "Indore",
+          "Jaipur",
+          "Kochi",
+          "Kolkata",
+          "Mumbai",
+          "Pune",
+          "Surat"
+        ]
+      },
+      {
+        "name": "state",
+        "type": "VARCHAR",
+        "cardinality": 10,
+        "null_pct": 0.0,
+        "sample_values": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Kerala",
+          "Madhya Pradesh",
+          "Maharashtra",
+          "Rajasthan",
+          "Tamil Nadu",
+          "Telangana",
+          "West Bengal"
+        ]
+      },
+      {
+        "name": "account_type",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 0.0,
+        "sample_values": [
+          "basic",
+          "pro",
+          "salary",
+          "savings"
+        ]
+      },
+      {
+        "name": "age_bucket",
+        "type": "VARCHAR",
+        "cardinality": 6,
+        "null_pct": 0.0,
+        "sample_values": [
+          "18-22",
+          "23-27",
+          "28-32",
+          "33-37",
+          "38-45",
+          "46+"
+        ]
+      },
+      {
+        "name": "income_bucket",
+        "type": "VARCHAR",
+        "cardinality": 5,
+        "null_pct": 0.0,
+        "sample_values": [
+          "10-20L",
+          "20L+",
+          "3-6L",
+          "6-10L",
+          "<3L"
+        ]
+      },
+      {
+        "name": "occupation",
+        "type": "VARCHAR",
+        "cardinality": 6,
+        "null_pct": 0.0,
+        "sample_values": [
+          "business_owner",
+          "freelancer",
+          "salaried_govt",
+          "salaried_private",
+          "self_employed",
+          "student"
+        ]
+      },
+      {
+        "name": "acquisition_cohort",
+        "type": "VARCHAR",
+        "cardinality": 7,
+        "null_pct": 0.0,
+        "sample_values": [
+          "app_store_seo",
+          "employer_salary",
+          "facebook_ads",
+          "google_ads",
+          "influencer",
+          "organic_search",
+          "referral_friend"
+        ]
+      },
+      {
+        "name": "install_source",
+        "type": "VARCHAR",
+        "cardinality": 7,
+        "null_pct": 98.3,
+        "sample_values": [
+          "app_store_seo",
+          "employer_salary",
+          "facebook_ads",
+          "google_ads",
+          "influencer",
+          "organic_search",
+          "referral_friend"
+        ]
+      },
+      {
+        "name": "device_model",
+        "type": "VARCHAR",
+        "cardinality": 15,
+        "null_pct": 98.3,
+        "sample_values": [
+          "Chrome 130/Mac",
+          "Chrome 130/Windows",
+          "Firefox 130/Windows",
+          "OnePlus 13",
+          "Poco X7 Pro",
+          "Realme 13 Pro",
+          "Redmi Note 14",
+          "Safari 18/Mac",
+          "Samsung Galaxy S25",
+          "Vivo V40",
+          "iPhone 14",
+          "iPhone 15",
+          "iPhone 15 Pro Max",
+          "iPhone 16",
+          "iPhone 16 Pro"
+        ]
+      },
+      {
+        "name": "os_version",
+        "type": "VARCHAR",
+        "cardinality": 5,
+        "null_pct": 98.3,
+        "sample_values": [
+          "Android 14",
+          "Android 15",
+          "iOS 17",
+          "iOS 18",
+          "web"
+        ]
+      },
+      {
+        "name": "device_id",
+        "type": "VARCHAR",
+        "cardinality": 15000,
+        "null_pct": 98.3,
+        "sample_values": []
+      },
+      {
+        "name": "referral_code_used",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 98.3,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "country",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 98.3,
+        "sample_values": [
+          "IN"
+        ]
+      },
+      {
+        "name": "language",
+        "type": "VARCHAR",
+        "cardinality": 6,
+        "null_pct": 98.3,
+        "sample_values": [
+          "en",
+          "hi",
+          "kn",
+          "mr",
+          "ta",
+          "te"
+        ]
+      },
+      {
+        "name": "store",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 98.3,
+        "sample_values": [
+          "app_store",
+          "play_store",
+          "web"
+        ]
+      },
+      {
+        "name": "is_first_open",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 75.7,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "open_source",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 75.7,
+        "sample_values": [
+          "deeplink",
+          "direct",
+          "push_notification",
+          "widget"
+        ]
+      },
+      {
+        "name": "time_since_last_open_hrs",
+        "type": "DOUBLE",
+        "cardinality": 1372,
+        "null_pct": 75.7,
+        "sample_values": []
+      },
+      {
+        "name": "telecom_operator",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 98.6,
+        "sample_values": [
+          "Airtel",
+          "BSNL",
+          "Jio",
+          "Vi"
+        ]
+      },
+      {
+        "name": "is_aadhaar_linked",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 98.6,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "entered_via",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 98.6,
+        "sample_values": [
+          "autofill",
+          "keyboard",
+          "paste"
+        ]
+      },
+      {
+        "name": "sim_slot",
+        "type": "VARCHAR",
+        "cardinality": 2,
+        "null_pct": 97.2,
+        "sample_values": [
+          "SIM1",
+          "SIM2"
+        ]
+      },
+      {
+        "name": "binding_method",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 97.2,
+        "sample_values": [
+          "npci_vmn"
+        ]
+      },
+      {
+        "name": "sim_state",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 97.2,
+        "sample_values": [
+          "active"
+        ]
+      },
+      {
+        "name": "binding_status",
+        "type": "VARCHAR",
+        "cardinality": 2,
+        "null_pct": 97.2,
+        "sample_values": [
+          "failed",
+          "success"
+        ]
+      },
+      {
+        "name": "duration_ms",
+        "type": "DOUBLE",
+        "cardinality": 2589,
+        "null_pct": 98.6,
+        "sample_values": []
+      },
+      {
+        "name": "failure_reason",
+        "type": "VARCHAR",
+        "cardinality": 19,
+        "null_pct": 97.0,
+        "sample_values": [
+          "aadhaar_mismatch",
+          "agent_disconnect",
+          "bank_maintenance_window",
+          "beneficiary_bank_unavailable",
+          "blurry_document",
+          "collect_pending_timeout",
+          "face_mismatch",
+          "insufficient_funds",
+          "location_restricted",
+          "network_timeout",
+          "payer_account_blocked",
+          "payer_bank_unavailable",
+          "poor_connectivity",
+          "psp_timeout",
+          "sim_inactive",
+          "sim_swap_detected",
+          "system_error",
+          "transaction_not_permitted",
+          "upi_daily_limit_exceeded"
+        ]
+      },
+      {
+        "name": "otp_channel",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 97.7,
+        "sample_values": [
+          "sms",
+          "uidai_sms",
+          "whatsapp"
+        ]
+      },
+      {
+        "name": "attempt_number",
+        "type": "DOUBLE",
+        "cardinality": 3,
+        "null_pct": 96.6,
+        "sample_values": []
+      },
+      {
+        "name": "time_to_verify_sec",
+        "type": "DOUBLE",
+        "cardinality": 148,
+        "null_pct": 98.7,
+        "sample_values": []
+      },
+      {
+        "name": "auto_read_sms",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 98.7,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "pan_type",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 98.9,
+        "sample_values": [
+          "individual"
+        ]
+      },
+      {
+        "name": "nsdl_status",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 98.9,
+        "sample_values": [
+          "valid"
+        ]
+      },
+      {
+        "name": "name_match_score",
+        "type": "DOUBLE",
+        "cardinality": 201,
+        "null_pct": 98.9,
+        "sample_values": []
+      },
+      {
+        "name": "pan_linked_to_aadhaar",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 98.9,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "validation_duration_ms",
+        "type": "DOUBLE",
+        "cardinality": 1490,
+        "null_pct": 98.9,
+        "sample_values": []
+      },
+      {
+        "name": "aadhaar_masked",
+        "type": "VARCHAR",
+        "cardinality": 5641,
+        "null_pct": 99.0,
+        "sample_values": []
+      },
+      {
+        "name": "uidai_fetch_status",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 99.0,
+        "sample_values": [
+          "failed",
+          "partial",
+          "success"
+        ]
+      },
+      {
+        "name": "fields_prefilled",
+        "type": "VARCHAR[]",
+        "cardinality": 1,
+        "null_pct": 99.0,
+        "sample_values": []
+      },
+      {
+        "name": "bureau",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 99.0,
+        "sample_values": [
+          "CIBIL"
+        ]
+      },
+      {
+        "name": "pull_status",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 99.0,
+        "sample_values": [
+          "success"
+        ]
+      },
+      {
+        "name": "cibil_score",
+        "type": "DOUBLE",
+        "cardinality": 460,
+        "null_pct": 99.0,
+        "sample_values": []
+      },
+      {
+        "name": "score_band",
+        "type": "VARCHAR",
+        "cardinality": 5,
+        "null_pct": 99.0,
+        "sample_values": [
+          "600-649",
+          "650-699",
+          "700-749",
+          "750+",
+          "<600"
+        ]
+      },
+      {
+        "name": "is_new_to_credit",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 99.0,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "active_loan_count",
+        "type": "DOUBLE",
+        "cardinality": 4,
+        "null_pct": 99.0,
+        "sample_values": []
+      },
+      {
+        "name": "credit_card_count",
+        "type": "DOUBLE",
+        "cardinality": 4,
+        "null_pct": 99.0,
+        "sample_values": []
+      },
+      {
+        "name": "pull_duration_ms",
+        "type": "DOUBLE",
+        "cardinality": 2510,
+        "null_pct": 99.0,
+        "sample_values": []
+      },
+      {
+        "name": "vkyc_provider",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 99.1,
+        "sample_values": [
+          "federal_bank_vcip"
+        ]
+      },
+      {
+        "name": "slot_time_band",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 99.1,
+        "sample_values": [
+          "afternoon_12_3",
+          "evening_5_7",
+          "morning_9_11"
+        ]
+      },
+      {
+        "name": "queue_wait_min",
+        "type": "DOUBLE",
+        "cardinality": 63,
+        "null_pct": 99.1,
+        "sample_values": []
+      },
+      {
+        "name": "call_duration_sec",
+        "type": "DOUBLE",
+        "cardinality": 545,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "agent_language",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 99.3,
+        "sample_values": [
+          "english",
+          "hindi",
+          "regional"
+        ]
+      },
+      {
+        "name": "liveness_score",
+        "type": "DOUBLE",
+        "cardinality": 271,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "reviewer_type",
+        "type": "VARCHAR",
+        "cardinality": 2,
+        "null_pct": 99.3,
+        "sample_values": [
+          "agent",
+          "ai_assisted"
+        ]
+      },
+      {
+        "name": "approval_time_min",
+        "type": "DOUBLE",
+        "cardinality": 248,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "mpin_length",
+        "type": "DOUBLE",
+        "cardinality": 2,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "biometric_enabled",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 99.3,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "set_duration_sec",
+        "type": "DOUBLE",
+        "cardinality": 134,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "total_duration_min",
+        "type": "DOUBLE",
+        "cardinality": 868,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "steps_completed",
+        "type": "DOUBLE",
+        "cardinality": 1,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "virtual_debit_card_issued",
+        "type": "BOOLEAN",
+        "cardinality": 1,
+        "null_pct": 99.3,
+        "sample_values": [
+          "True"
+        ]
+      },
+      {
+        "name": "account_number_assigned",
+        "type": "BOOLEAN",
+        "cardinality": 1,
+        "null_pct": 99.3,
+        "sample_values": [
+          "True"
+        ]
+      },
+      {
+        "name": "ifsc_code",
+        "type": "VARCHAR",
+        "cardinality": 5824,
+        "null_pct": 99.3,
+        "sample_values": []
+      },
+      {
+        "name": "welcome_bonus_credited",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 99.3,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "transaction_id",
+        "type": "VARCHAR",
+        "cardinality": 183520,
+        "null_pct": 79.4,
+        "sample_values": []
+      },
+      {
+        "name": "utr",
+        "type": "VARCHAR",
+        "cardinality": 170809,
+        "null_pct": 80.9,
+        "sample_values": []
+      },
+      {
+        "name": "transaction_channel",
+        "type": "VARCHAR",
+        "cardinality": 6,
+        "null_pct": 79.4,
+        "sample_values": [
+          "IMPS",
+          "NACH",
+          "NEFT",
+          "RTGS",
+          "UPI",
+          "debit_card"
+        ]
+      },
+      {
+        "name": "payment_instrument",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 79.4,
+        "sample_values": [
+          "account_number",
+          "card",
+          "mandate",
+          "vpa"
+        ]
+      },
+      {
+        "name": "transaction_type",
+        "type": "VARCHAR",
+        "cardinality": 2,
+        "null_pct": 79.4,
+        "sample_values": [
+          "CREDIT",
+          "DEBIT"
+        ]
+      },
+      {
+        "name": "amount",
+        "type": "DOUBLE",
+        "cardinality": 154414,
+        "null_pct": 79.4,
+        "sample_values": []
+      },
+      {
+        "name": "currency",
+        "type": "VARCHAR",
+        "cardinality": 1,
+        "null_pct": 79.4,
+        "sample_values": [
+          "INR"
+        ]
+      },
+      {
+        "name": "amount_band",
+        "type": "VARCHAR",
+        "cardinality": 5,
+        "null_pct": 79.4,
+        "sample_values": [
+          "5L+",
+          "<500",
+          "<50K",
+          "<5K",
+          "<5L"
+        ]
+      },
+      {
+        "name": "source_bank",
+        "type": "VARCHAR",
+        "cardinality": 12,
+        "null_pct": 79.4,
+        "sample_values": [
+          "Axis Bank",
+          "Bank of Baroda",
+          "Canara Bank",
+          "Federal Bank",
+          "HDFC Bank",
+          "ICICI Bank",
+          "IDFC First",
+          "IndusInd Bank",
+          "Kotak Mahindra",
+          "Punjab National Bank",
+          "SBI",
+          "Yes Bank"
+        ]
+      },
+      {
+        "name": "source_account_type",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 79.4,
+        "sample_values": [
+          "pro",
+          "salary",
+          "savings"
+        ]
+      },
+      {
+        "name": "source_vpa",
+        "type": "VARCHAR",
+        "cardinality": 74377,
+        "null_pct": 88.3,
+        "sample_values": []
+      },
+      {
+        "name": "beneficiary_bank",
+        "type": "VARCHAR",
+        "cardinality": 12,
+        "null_pct": 79.4,
+        "sample_values": [
+          "Axis Bank",
+          "Bank of Baroda",
+          "Canara Bank",
+          "Federal Bank",
+          "HDFC Bank",
+          "ICICI Bank",
+          "IDFC First",
+          "IndusInd Bank",
+          "Kotak Mahindra",
+          "Punjab National Bank",
+          "SBI",
+          "Yes Bank"
+        ]
+      },
+      {
+        "name": "beneficiary_vpa",
+        "type": "VARCHAR",
+        "cardinality": 74694,
+        "null_pct": 88.3,
+        "sample_values": []
+      },
+      {
+        "name": "merchant_name",
+        "type": "VARCHAR",
+        "cardinality": 76,
+        "null_pct": 79.4,
+        "sample_values": [
+          "1mg",
+          "Air India",
+          "Airtel",
+          "Ajio",
+          "Amazon",
+          "Apollo Pharmacy",
+          "BESCOM",
+          "BPCL Petrol",
+          "BYJU's",
+          "Bajaj Finance",
+          "BigBasket",
+          "Blinkit",
+          "BookMyShow",
+          "Cafe Coffee Day",
+          "Cleartrip",
+          "Coursera",
+          "D-Mart",
+          "Digit",
+          "Dominos",
+          "EatSure",
+          "Employer Payroll",
+          "Family Transfer",
+          "Flipkart",
+          "Friend Transfer",
+          "Goibibo",
+          "Groww",
+          "HDFC EMI",
+          "HDFC Life",
+          "HR Direct",
+          "Hathway",
+          "Hotstar",
+          "Housing.com",
+          "ICICI EMI",
+          "ICICI Prudential",
+          "IOCL Petrol",
+          "IRCTC",
+          "IndiGo",
+          "Jio Fiber",
+          "LIC",
+          "Landlord Transfer",
+          "MF Central",
+          "MSEB",
+          "MakeMyTrip",
+          "McDonald's",
+          "Meesho",
+          "More Supermarket",
+          "Muthoot Finance",
+          "Myntra",
+          "NSE Clearing",
+          "Netflix",
+          "Netmeds",
+          "NoBroker",
+          "Nykaa",
+          "OYO Hotels",
+          "Ola",
+          "POS Terminal",
+          "Personal Payment",
+          "PharmEasy",
+          "Policybazaar",
+          "Practo",
+          "Prime Video",
+          "QR Payment",
+          "Rapido",
+          "Salary Transfer",
+          "Spotify",
+          "Swiggy",
+          "Tata Power",
+          "Testbook",
+          "Uber",
+          "Udemy",
+          "Unacademy",
+          "Unknown Merchant",
+          "Zee5",
+          "Zepto",
+          "Zerodha",
+          "Zomato"
+        ]
+      },
+      {
+        "name": "merchant_category",
+        "type": "VARCHAR",
+        "cardinality": 16,
+        "null_pct": 79.4,
+        "sample_values": [
+          "education",
+          "emi_repayment",
+          "entertainment_ott",
+          "food_dining",
+          "groceries",
+          "health_medical",
+          "insurance_premium",
+          "investment_transfer",
+          "other",
+          "peer_transfer",
+          "rent",
+          "salary_credit",
+          "shopping_online",
+          "transport_fuel",
+          "travel_hotels",
+          "utilities_bills"
+        ]
+      },
+      {
+        "name": "merchant_category_code",
+        "type": "VARCHAR",
+        "cardinality": 9000,
+        "null_pct": 79.4,
+        "sample_values": []
+      },
+      {
+        "name": "transaction_status",
+        "type": "VARCHAR",
+        "cardinality": 2,
+        "null_pct": 79.4,
+        "sample_values": [
+          "FAILED",
+          "SUCCESS"
+        ]
+      },
+      {
+        "name": "settlement_status",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 79.4,
+        "sample_values": [
+          "FAILED",
+          "PENDING_SETTLEMENT",
+          "SETTLED"
+        ]
+      },
+      {
+        "name": "settlement_type",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 79.4,
+        "sample_values": [
+          "batch_nach",
+          "batch_neft",
+          "real_time"
+        ]
+      },
+      {
+        "name": "value_date",
+        "type": "VARCHAR",
+        "cardinality": 85,
+        "null_pct": 79.4,
+        "sample_values": [
+          "2026-01-01",
+          "2026-01-02",
+          "2026-01-03",
+          "2026-01-04",
+          "2026-01-05",
+          "2026-01-06",
+          "2026-01-07",
+          "2026-01-08",
+          "2026-01-09",
+          "2026-01-10",
+          "2026-01-11",
+          "2026-01-12",
+          "2026-01-13",
+          "2026-01-14",
+          "2026-01-15",
+          "2026-01-16",
+          "2026-01-17",
+          "2026-01-18",
+          "2026-01-19",
+          "2026-01-20",
+          "2026-01-21",
+          "2026-01-22",
+          "2026-01-23",
+          "2026-01-24",
+          "2026-01-25",
+          "2026-01-26",
+          "2026-01-27",
+          "2026-01-28",
+          "2026-01-29",
+          "2026-01-30",
+          "2026-01-31",
+          "2026-02-01",
+          "2026-02-02",
+          "2026-02-03",
+          "2026-02-04",
+          "2026-02-05",
+          "2026-02-06",
+          "2026-02-07",
+          "2026-02-08",
+          "2026-02-09",
+          "2026-02-10",
+          "2026-02-11",
+          "2026-02-12",
+          "2026-02-13",
+          "2026-02-14",
+          "2026-02-15",
+          "2026-02-16",
+          "2026-02-17",
+          "2026-02-18",
+          "2026-02-19",
+          "2026-02-20",
+          "2026-02-21",
+          "2026-02-22",
+          "2026-02-23",
+          "2026-02-24",
+          "2026-02-25",
+          "2026-02-26",
+          "2026-02-27",
+          "2026-02-28",
+          "2026-03-01",
+          "2026-03-02",
+          "2026-03-03",
+          "2026-03-04",
+          "2026-03-05",
+          "2026-03-06",
+          "2026-03-07",
+          "2026-03-08",
+          "2026-03-09",
+          "2026-03-10",
+          "2026-03-11",
+          "2026-03-12",
+          "2026-03-13",
+          "2026-03-14",
+          "2026-03-15",
+          "2026-03-16",
+          "2026-03-17",
+          "2026-03-18",
+          "2026-03-19",
+          "2026-03-20",
+          "2026-03-21",
+          "2026-03-22",
+          "2026-03-23",
+          "2026-03-24",
+          "2026-03-25",
+          "2026-03-26"
+        ]
+      },
+      {
+        "name": "network_latency_ms",
+        "type": "DOUBLE",
+        "cardinality": 22100,
+        "null_pct": 79.4,
+        "sample_values": []
+      },
+      {
+        "name": "npci_error_code",
+        "type": "VARCHAR",
+        "cardinality": 10,
+        "null_pct": 98.6,
+        "sample_values": [
+          "BT",
+          "M2",
+          "U16",
+          "U30",
+          "U43",
+          "XB",
+          "YG",
+          "Z6",
+          "ZA",
+          "ZS"
+        ]
+      },
+      {
+        "name": "failure_bank_side",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 98.7,
+        "sample_values": [
+          "beneficiary",
+          "npci_infra",
+          "payer",
+          "psp"
+        ]
+      },
+      {
+        "name": "is_retriable",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 98.6,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "jewels_earned",
+        "type": "DOUBLE",
+        "cardinality": 1113,
+        "null_pct": 79.4,
+        "sample_values": []
+      },
+      {
+        "name": "is_first_transaction",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 79.4,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "balance_visible",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 77.3,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "notification_count",
+        "type": "DOUBLE",
+        "cardinality": 5,
+        "null_pct": 77.3,
+        "sample_values": []
+      },
+      {
+        "name": "pending_actions",
+        "type": "DOUBLE",
+        "cardinality": 3,
+        "null_pct": 77.3,
+        "sample_values": []
+      },
+      {
+        "name": "notification_type",
+        "type": "VARCHAR",
+        "cardinality": 7,
+        "null_pct": 92.0,
+        "sample_values": [
+          "bill_due",
+          "jewels_earned",
+          "kyc_nudge",
+          "low_balance",
+          "offer",
+          "payment_success",
+          "salary_credited"
+        ]
+      },
+      {
+        "name": "campaign_id",
+        "type": "VARCHAR",
+        "cardinality": 900,
+        "null_pct": 92.0,
+        "sample_values": []
+      },
+      {
+        "name": "is_tapped",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 92.0,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "cumulative_jewels",
+        "type": "DOUBLE",
+        "cardinality": 3354,
+        "null_pct": 79.9,
+        "sample_values": []
+      },
+      {
+        "name": "can_reschedule",
+        "type": "BOOLEAN",
+        "cardinality": 1,
+        "null_pct": 99.8,
+        "sample_values": [
+          "True"
+        ]
+      }
+    ],
+    "sample_rows": [
+      {
+        "event_id": "E00000000",
+        "user_id": "JUP013D40716",
+        "session_id": "SES_JUP013_0001",
+        "event_name": "app_install",
+        "event_category": "onboarding",
+        "timestamp": "2026-01-01 06:07:57",
+        "date": "2026-01-01",
+        "hour": 6,
+        "day_of_week": "Thursday",
+        "week_num": 1,
+        "month": 1,
+        "month_name": "January",
+        "platform": "android",
+        "app_version": "4.3.1",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "account_type": "basic",
+        "age_bucket": "33-37",
+        "income_bucket": "10-20L",
+        "occupation": "student",
+        "acquisition_cohort": "referral_friend",
+        "install_source": "referral_friend",
+        "device_model": "Redmi Note 14",
+        "os_version": "Android 15",
+        "device_id": "DEV_9F5073996119",
+        "referral_code_used": true,
+        "country": "IN",
+        "language": "hi",
+        "store": "play_store",
+        "is_first_open": null,
+        "open_source": null,
+        "time_since_last_open_hrs": null,
+        "telecom_operator": null,
+        "is_aadhaar_linked": null,
+        "entered_via": null,
+        "sim_slot": null,
+        "binding_method": null,
+        "sim_state": null,
+        "binding_status": null,
+        "duration_ms": null,
+        "failure_reason": null,
+        "otp_channel": null,
+        "attempt_number": null,
+        "time_to_verify_sec": null,
+        "auto_read_sms": null,
+        "pan_type": null,
+        "nsdl_status": null,
+        "name_match_score": null,
+        "pan_linked_to_aadhaar": null,
+        "validation_duration_ms": null,
+        "aadhaar_masked": null,
+        "uidai_fetch_status": null,
+        "fields_prefilled": null,
+        "bureau": null,
+        "pull_status": null,
+        "cibil_score": null,
+        "score_band": null,
+        "is_new_to_credit": null,
+        "active_loan_count": null,
+        "credit_card_count": null,
+        "pull_duration_ms": null,
+        "vkyc_provider": null,
+        "slot_time_band": null,
+        "queue_wait_min": null,
+        "call_duration_sec": null,
+        "agent_language": null,
+        "liveness_score": null,
+        "reviewer_type": null,
+        "approval_time_min": null,
+        "mpin_length": null,
+        "biometric_enabled": null,
+        "set_duration_sec": null,
+        "total_duration_min": null,
+        "steps_completed": null,
+        "virtual_debit_card_issued": null,
+        "account_number_assigned": null,
+        "ifsc_code": null,
+        "welcome_bonus_credited": null,
+        "transaction_id": null,
+        "utr": null,
+        "transaction_channel": null,
+        "payment_instrument": null,
+        "transaction_type": null,
+        "amount": null,
+        "currency": null,
+        "amount_band": null,
+        "source_bank": null,
+        "source_account_type": null,
+        "source_vpa": null,
+        "beneficiary_bank": null,
+        "beneficiary_vpa": null,
+        "merchant_name": null,
+        "merchant_category": null,
+        "merchant_category_code": null,
+        "transaction_status": null,
+        "settlement_status": null,
+        "settlement_type": null,
+        "value_date": null,
+        "network_latency_ms": null,
+        "npci_error_code": null,
+        "failure_bank_side": null,
+        "is_retriable": null,
+        "jewels_earned": null,
+        "is_first_transaction": null,
+        "balance_visible": null,
+        "notification_count": null,
+        "pending_actions": null,
+        "notification_type": null,
+        "campaign_id": null,
+        "is_tapped": null,
+        "cumulative_jewels": null,
+        "can_reschedule": null
+      },
+      {
+        "event_id": "E00000001",
+        "user_id": "JUPEAFD9B203",
+        "session_id": "SES_JUPEAF_0001",
+        "event_name": "app_install",
+        "event_category": "onboarding",
+        "timestamp": "2026-01-01 06:09:08",
+        "date": "2026-01-01",
+        "hour": 6,
+        "day_of_week": "Thursday",
+        "week_num": 1,
+        "month": 1,
+        "month_name": "January",
+        "platform": "android",
+        "app_version": "4.4.0",
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "account_type": "basic",
+        "age_bucket": "28-32",
+        "income_bucket": "<3L",
+        "occupation": "salaried_private",
+        "acquisition_cohort": "organic_search",
+        "install_source": "organic_search",
+        "device_model": "Vivo V40",
+        "os_version": "Android 14",
+        "device_id": "DEV_E4CD4F817FB1",
+        "referral_code_used": false,
+        "country": "IN",
+        "language": "en",
+        "store": "play_store",
+        "is_first_open": null,
+        "open_source": null,
+        "time_since_last_open_hrs": null,
+        "telecom_operator": null,
+        "is_aadhaar_linked": null,
+        "entered_via": null,
+        "sim_slot": null,
+        "binding_method": null,
+        "sim_state": null,
+        "binding_status": null,
+        "duration_ms": null,
+        "failure_reason": null,
+        "otp_channel": null,
+        "attempt_number": null,
+        "time_to_verify_sec": null,
+        "auto_read_sms": null,
+        "pan_type": null,
+        "nsdl_status": null,
+        "name_match_score": null,
+        "pan_linked_to_aadhaar": null,
+        "validation_duration_ms": null,
+        "aadhaar_masked": null,
+        "uidai_fetch_status": null,
+        "fields_prefilled": null,
+        "bureau": null,
+        "pull_status": null,
+        "cibil_score": null,
+        "score_band": null,
+        "is_new_to_credit": null,
+        "active_loan_count": null,
+        "credit_card_count": null,
+        "pull_duration_ms": null,
+        "vkyc_provider": null,
+        "slot_time_band": null,
+        "queue_wait_min": null,
+        "call_duration_sec": null,
+        "agent_language": null,
+        "liveness_score": null,
+        "reviewer_type": null,
+        "approval_time_min": null,
+        "mpin_length": null,
+        "biometric_enabled": null,
+        "set_duration_sec": null,
+        "total_duration_min": null,
+        "steps_completed": null,
+        "virtual_debit_card_issued": null,
+        "account_number_assigned": null,
+        "ifsc_code": null,
+        "welcome_bonus_credited": null,
+        "transaction_id": null,
+        "utr": null,
+        "transaction_channel": null,
+        "payment_instrument": null,
+        "transaction_type": null,
+        "amount": null,
+        "currency": null,
+        "amount_band": null,
+        "source_bank": null,
+        "source_account_type": null,
+        "source_vpa": null,
+        "beneficiary_bank": null,
+        "beneficiary_vpa": null,
+        "merchant_name": null,
+        "merchant_category": null,
+        "merchant_category_code": null,
+        "transaction_status": null,
+        "settlement_status": null,
+        "settlement_type": null,
+        "value_date": null,
+        "network_latency_ms": null,
+        "npci_error_code": null,
+        "failure_bank_side": null,
+        "is_retriable": null,
+        "jewels_earned": null,
+        "is_first_transaction": null,
+        "balance_visible": null,
+        "notification_count": null,
+        "pending_actions": null,
+        "notification_type": null,
+        "campaign_id": null,
+        "is_tapped": null,
+        "cumulative_jewels": null,
+        "can_reschedule": null
+      },
+      {
+        "event_id": "E00000002",
+        "user_id": "JUP013D40716",
+        "session_id": "SES_JUP013_0001",
+        "event_name": "app_opened",
+        "event_category": "onboarding",
+        "timestamp": "2026-01-01 06:09:34",
+        "date": "2026-01-01",
+        "hour": 6,
+        "day_of_week": "Thursday",
+        "week_num": 1,
+        "month": 1,
+        "month_name": "January",
+        "platform": "android",
+        "app_version": "4.3.1",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "account_type": "basic",
+        "age_bucket": "33-37",
+        "income_bucket": "10-20L",
+        "occupation": "student",
+        "acquisition_cohort": "referral_friend",
+        "install_source": null,
+        "device_model": null,
+        "os_version": null,
+        "device_id": null,
+        "referral_code_used": null,
+        "country": null,
+        "language": null,
+        "store": null,
+        "is_first_open": true,
+        "open_source": "direct",
+        "time_since_last_open_hrs": 0.0,
+        "telecom_operator": null,
+        "is_aadhaar_linked": null,
+        "entered_via": null,
+        "sim_slot": null,
+        "binding_method": null,
+        "sim_state": null,
+        "binding_status": null,
+        "duration_ms": null,
+        "failure_reason": null,
+        "otp_channel": null,
+        "attempt_number": null,
+        "time_to_verify_sec": null,
+        "auto_read_sms": null,
+        "pan_type": null,
+        "nsdl_status": null,
+        "name_match_score": null,
+        "pan_linked_to_aadhaar": null,
+        "validation_duration_ms": null,
+        "aadhaar_masked": null,
+        "uidai_fetch_status": null,
+        "fields_prefilled": null,
+        "bureau": null,
+        "pull_status": null,
+        "cibil_score": null,
+        "score_band": null,
+        "is_new_to_credit": null,
+        "active_loan_count": null,
+        "credit_card_count": null,
+        "pull_duration_ms": null,
+        "vkyc_provider": null,
+        "slot_time_band": null,
+        "queue_wait_min": null,
+        "call_duration_sec": null,
+        "agent_language": null,
+        "liveness_score": null,
+        "reviewer_type": null,
+        "approval_time_min": null,
+        "mpin_length": null,
+        "biometric_enabled": null,
+        "set_duration_sec": null,
+        "total_duration_min": null,
+        "steps_completed": null,
+        "virtual_debit_card_issued": null,
+        "account_number_assigned": null,
+        "ifsc_code": null,
+        "welcome_bonus_credited": null,
+        "transaction_id": null,
+        "utr": null,
+        "transaction_channel": null,
+        "payment_instrument": null,
+        "transaction_type": null,
+        "amount": null,
+        "currency": null,
+        "amount_band": null,
+        "source_bank": null,
+        "source_account_type": null,
+        "source_vpa": null,
+        "beneficiary_bank": null,
+        "beneficiary_vpa": null,
+        "merchant_name": null,
+        "merchant_category": null,
+        "merchant_category_code": null,
+        "transaction_status": null,
+        "settlement_status": null,
+        "settlement_type": null,
+        "value_date": null,
+        "network_latency_ms": null,
+        "npci_error_code": null,
+        "failure_bank_side": null,
+        "is_retriable": null,
+        "jewels_earned": null,
+        "is_first_transaction": null,
+        "balance_visible": null,
+        "notification_count": null,
+        "pending_actions": null,
+        "notification_type": null,
+        "campaign_id": null,
+        "is_tapped": null,
+        "cumulative_jewels": null,
+        "can_reschedule": null
+      },
+      {
+        "event_id": "E00000003",
+        "user_id": "JUPEAFD9B203",
+        "session_id": "SES_JUPEAF_0001",
+        "event_name": "app_opened",
+        "event_category": "onboarding",
+        "timestamp": "2026-01-01 06:10:09",
+        "date": "2026-01-01",
+        "hour": 6,
+        "day_of_week": "Thursday",
+        "week_num": 1,
+        "month": 1,
+        "month_name": "January",
+        "platform": "android",
+        "app_version": "4.4.0",
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "account_type": "basic",
+        "age_bucket": "28-32",
+        "income_bucket": "<3L",
+        "occupation": "salaried_private",
+        "acquisition_cohort": "organic_search",
+        "install_source": null,
+        "device_model": null,
+        "os_version": null,
+        "device_id": null,
+        "referral_code_used": null,
+        "country": null,
+        "language": null,
+        "store": null,
+        "is_first_open": true,
+        "open_source": "push_notification",
+        "time_since_last_open_hrs": 0.0,
+        "telecom_operator": null,
+        "is_aadhaar_linked": null,
+        "entered_via": null,
+        "sim_slot": null,
+        "binding_method": null,
+        "sim_state": null,
+        "binding_status": null,
+        "duration_ms": null,
+        "failure_reason": null,
+        "otp_channel": null,
+        "attempt_number": null,
+        "time_to_verify_sec": null,
+        "auto_read_sms": null,
+        "pan_type": null,
+        "nsdl_status": null,
+        "name_match_score": null,
+        "pan_linked_to_aadhaar": null,
+        "validation_duration_ms": null,
+        "aadhaar_masked": null,
+        "uidai_fetch_status": null,
+        "fields_prefilled": null,
+        "bureau": null,
+        "pull_status": null,
+        "cibil_score": null,
+        "score_band": null,
+        "is_new_to_credit": null,
+        "active_loan_count": null,
+        "credit_card_count": null,
+        "pull_duration_ms": null,
+        "vkyc_provider": null,
+        "slot_time_band": null,
+        "queue_wait_min": null,
+        "call_duration_sec": null,
+        "agent_language": null,
+        "liveness_score": null,
+        "reviewer_type": null,
+        "approval_time_min": null,
+        "mpin_length": null,
+        "biometric_enabled": null,
+        "set_duration_sec": null,
+        "total_duration_min": null,
+        "steps_completed": null,
+        "virtual_debit_card_issued": null,
+        "account_number_assigned": null,
+        "ifsc_code": null,
+        "welcome_bonus_credited": null,
+        "transaction_id": null,
+        "utr": null,
+        "transaction_channel": null,
+        "payment_instrument": null,
+        "transaction_type": null,
+        "amount": null,
+        "currency": null,
+        "amount_band": null,
+        "source_bank": null,
+        "source_account_type": null,
+        "source_vpa": null,
+        "beneficiary_bank": null,
+        "beneficiary_vpa": null,
+        "merchant_name": null,
+        "merchant_category": null,
+        "merchant_category_code": null,
+        "transaction_status": null,
+        "settlement_status": null,
+        "settlement_type": null,
+        "value_date": null,
+        "network_latency_ms": null,
+        "npci_error_code": null,
+        "failure_bank_side": null,
+        "is_retriable": null,
+        "jewels_earned": null,
+        "is_first_transaction": null,
+        "balance_visible": null,
+        "notification_count": null,
+        "pending_actions": null,
+        "notification_type": null,
+        "campaign_id": null,
+        "is_tapped": null,
+        "cumulative_jewels": null,
+        "can_reschedule": null
+      },
+      {
+        "event_id": "E00000004",
+        "user_id": "JUPEAFD9B203",
+        "session_id": "SES_JUPEAF_0001",
+        "event_name": "mobile_number_entered",
+        "event_category": "onboarding",
+        "timestamp": "2026-01-01 06:10:46",
+        "date": "2026-01-01",
+        "hour": 6,
+        "day_of_week": "Thursday",
+        "week_num": 1,
+        "month": 1,
+        "month_name": "January",
+        "platform": "android",
+        "app_version": "4.4.0",
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "account_type": "basic",
+        "age_bucket": "28-32",
+        "income_bucket": "<3L",
+        "occupation": "salaried_private",
+        "acquisition_cohort": "organic_search",
+        "install_source": null,
+        "device_model": null,
+        "os_version": null,
+        "device_id": null,
+        "referral_code_used": null,
+        "country": null,
+        "language": null,
+        "store": null,
+        "is_first_open": null,
+        "open_source": null,
+        "time_since_last_open_hrs": null,
+        "telecom_operator": "BSNL",
+        "is_aadhaar_linked": true,
+        "entered_via": "keyboard",
+        "sim_slot": null,
+        "binding_method": null,
+        "sim_state": null,
+        "binding_status": null,
+        "duration_ms": null,
+        "failure_reason": null,
+        "otp_channel": null,
+        "attempt_number": null,
+        "time_to_verify_sec": null,
+        "auto_read_sms": null,
+        "pan_type": null,
+        "nsdl_status": null,
+        "name_match_score": null,
+        "pan_linked_to_aadhaar": null,
+        "validation_duration_ms": null,
+        "aadhaar_masked": null,
+        "uidai_fetch_status": null,
+        "fields_prefilled": null,
+        "bureau": null,
+        "pull_status": null,
+        "cibil_score": null,
+        "score_band": null,
+        "is_new_to_credit": null,
+        "active_loan_count": null,
+        "credit_card_count": null,
+        "pull_duration_ms": null,
+        "vkyc_provider": null,
+        "slot_time_band": null,
+        "queue_wait_min": null,
+        "call_duration_sec": null,
+        "agent_language": null,
+        "liveness_score": null,
+        "reviewer_type": null,
+        "approval_time_min": null,
+        "mpin_length": null,
+        "biometric_enabled": null,
+        "set_duration_sec": null,
+        "total_duration_min": null,
+        "steps_completed": null,
+        "virtual_debit_card_issued": null,
+        "account_number_assigned": null,
+        "ifsc_code": null,
+        "welcome_bonus_credited": null,
+        "transaction_id": null,
+        "utr": null,
+        "transaction_channel": null,
+        "payment_instrument": null,
+        "transaction_type": null,
+        "amount": null,
+        "currency": null,
+        "amount_band": null,
+        "source_bank": null,
+        "source_account_type": null,
+        "source_vpa": null,
+        "beneficiary_bank": null,
+        "beneficiary_vpa": null,
+        "merchant_name": null,
+        "merchant_category": null,
+        "merchant_category_code": null,
+        "transaction_status": null,
+        "settlement_status": null,
+        "settlement_type": null,
+        "value_date": null,
+        "network_latency_ms": null,
+        "npci_error_code": null,
+        "failure_bank_side": null,
+        "is_retriable": null,
+        "jewels_earned": null,
+        "is_first_transaction": null,
+        "balance_visible": null,
+        "notification_count": null,
+        "pending_actions": null,
+        "notification_type": null,
+        "campaign_id": null,
+        "is_tapped": null,
+        "cumulative_jewels": null,
+        "can_reschedule": null
+      }
+    ],
+    "is_event_table": true,
+    "event_name_col": "event_name",
+    "event_names": [
+      "aadhaar_number_entered",
+      "aadhaar_otp_requested",
+      "aadhaar_otp_verified",
+      "app_install",
+      "app_opened",
+      "bureau_pull_completed",
+      "bureau_pull_initiated",
+      "dob_entered",
+      "email_entered",
+      "home_screen_viewed",
+      "mobile_number_entered",
+      "mpin_set",
+      "name_entered",
+      "notification_received",
+      "onboarding_completed",
+      "otp_requested",
+      "otp_verified",
+      "pan_entered",
+      "pan_validation_completed",
+      "pan_validation_initiated",
+      "sim_binding_completed",
+      "sim_binding_initiated",
+      "transaction_reconciled",
+      "vkyc_call_completed",
+      "vkyc_call_started",
+      "vkyc_failed",
+      "vkyc_initiated"
+    ],
+    "event_properties": {
+      "aadhaar_number_entered": [],
+      "aadhaar_otp_requested": [],
+      "aadhaar_otp_verified": [
+        "otp_channel",
+        "attempt_number",
+        "aadhaar_masked",
+        "uidai_fetch_status",
+        "fields_prefilled"
+      ],
+      "app_install": [
+        "install_source",
+        "device_model",
+        "os_version",
+        "device_id",
+        "referral_code_used",
+        "country",
+        "language",
+        "store"
+      ],
+      "app_opened": [
+        "is_first_open",
+        "open_source",
+        "time_since_last_open_hrs"
+      ],
+      "bureau_pull_completed": [
+        "bureau",
+        "pull_status",
+        "cibil_score",
+        "score_band",
+        "is_new_to_credit",
+        "active_loan_count",
+        "credit_card_count",
+        "pull_duration_ms"
+      ],
+      "bureau_pull_initiated": [],
+      "dob_entered": [],
+      "email_entered": [],
+      "home_screen_viewed": [
+        "balance_visible",
+        "notification_count",
+        "pending_actions"
+      ],
+      "mobile_number_entered": [
+        "telecom_operator",
+        "is_aadhaar_linked",
+        "entered_via"
+      ],
+      "mpin_set": [
+        "mpin_length",
+        "biometric_enabled",
+        "set_duration_sec"
+      ],
+      "name_entered": [],
+      "notification_received": [
+        "notification_type",
+        "campaign_id",
+        "is_tapped"
+      ],
+      "onboarding_completed": [
+        "total_duration_min",
+        "steps_completed",
+        "virtual_debit_card_issued",
+        "account_number_assigned",
+        "ifsc_code",
+        "welcome_bonus_credited"
+      ],
+      "otp_requested": [],
+      "otp_verified": [
+        "otp_channel",
+        "attempt_number",
+        "time_to_verify_sec",
+        "auto_read_sms"
+      ],
+      "pan_entered": [],
+      "pan_validation_completed": [
+        "pan_type",
+        "nsdl_status",
+        "name_match_score",
+        "pan_linked_to_aadhaar",
+        "validation_duration_ms"
+      ],
+      "pan_validation_initiated": [],
+      "sim_binding_completed": [
+        "sim_slot",
+        "binding_method",
+        "sim_state",
+        "binding_status",
+        "duration_ms"
+      ],
+      "sim_binding_initiated": [
+        "sim_slot",
+        "binding_method",
+        "sim_state",
+        "binding_status",
+        "failure_reason"
+      ],
+      "transaction_reconciled": [
+        "failure_reason",
+        "transaction_id",
+        "utr",
+        "transaction_channel",
+        "payment_instrument",
+        "transaction_type",
+        "amount",
+        "currency",
+        "amount_band",
+        "source_bank",
+        "source_account_type",
+        "source_vpa",
+        "beneficiary_bank",
+        "beneficiary_vpa",
+        "merchant_name",
+        "merchant_category",
+        "merchant_category_code",
+        "transaction_status",
+        "settlement_status",
+        "settlement_type",
+        "value_date",
+        "network_latency_ms",
+        "npci_error_code",
+        "failure_bank_side",
+        "is_retriable",
+        "jewels_earned",
+        "is_first_transaction",
+        "cumulative_jewels"
+      ],
+      "vkyc_call_completed": [
+        "call_duration_sec",
+        "agent_language",
+        "liveness_score",
+        "reviewer_type",
+        "approval_time_min"
+      ],
+      "vkyc_call_started": [],
+      "vkyc_failed": [
+        "failure_reason",
+        "attempt_number",
+        "can_reschedule"
+      ],
+      "vkyc_initiated": [
+        "attempt_number",
+        "vkyc_provider",
+        "slot_time_band",
+        "queue_wait_min"
+      ]
+    },
+    "event_groups": {
+      "aadhaar_number_entered": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "aadhaar_otp_requested": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "aadhaar_otp_verified": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "app_install": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "app_opened": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "bureau_pull_completed": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "bureau_pull_initiated": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "dob_entered": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "email_entered": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "home_screen_viewed": {
+        "event_category": "engagement",
+        "account_type": "pro"
+      },
+      "mobile_number_entered": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "mpin_set": {
+        "event_category": "onboarding",
+        "account_type": "pro"
+      },
+      "name_entered": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "notification_received": {
+        "event_category": "engagement",
+        "account_type": "salary"
+      },
+      "onboarding_completed": {
+        "event_category": "onboarding",
+        "account_type": "pro"
+      },
+      "otp_requested": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "otp_verified": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "pan_entered": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "pan_validation_completed": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "pan_validation_initiated": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "sim_binding_completed": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "sim_binding_initiated": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "transaction_reconciled": {
+        "event_category": "payments",
+        "account_type": "savings"
+      },
+      "vkyc_call_completed": {
+        "event_category": "onboarding",
+        "account_type": "pro"
+      },
+      "vkyc_call_started": {
+        "event_category": "onboarding",
+        "account_type": "pro"
+      },
+      "vkyc_failed": {
+        "event_category": "onboarding",
+        "account_type": "basic"
+      },
+      "vkyc_initiated": {
+        "event_category": "onboarding",
+        "account_type": "pro"
+      }
+    },
+    "event_counts": {
+      "app_opened": 217388,
+      "home_screen_viewed": 203030,
+      "transaction_reconciled": 183520,
+      "notification_received": 71232,
+      "app_install": 15000,
+      "mobile_number_entered": 12699,
+      "sim_binding_initiated": 12511,
+      "sim_binding_completed": 12194,
+      "otp_requested": 12070,
+      "otp_verified": 11170,
+      "name_entered": 10972,
+      "dob_entered": 10696,
+      "email_entered": 10532,
+      "pan_entered": 10247,
+      "pan_validation_initiated": 10199,
+      "pan_validation_completed": 9854,
+      "aadhaar_number_entered": 9467,
+      "aadhaar_otp_requested": 9379,
+      "aadhaar_otp_verified": 8972,
+      "bureau_pull_initiated": 8928,
+      "bureau_pull_completed": 8787,
+      "vkyc_initiated": 8120,
+      "vkyc_call_started": 6498,
+      "vkyc_call_completed": 5932,
+      "mpin_set": 5825,
+      "onboarding_completed": 5825,
+      "vkyc_failed": 1963
+    },
+    "date_range": {
+      "min": "2026-01-01",
+      "max": "2026-03-25",
+      "days": null
+    },
+    "unique_users": 15000,
+    "product_signals": {
+      "feature_adoption": {
+        "app_opened": {
+          "users": 14779,
+          "adoption_pct": 98.5
+        },
+        "home_screen_viewed": {
+          "users": 10100,
+          "adoption_pct": 67.3
+        },
+        "transaction_reconciled": {
+          "users": 10146,
+          "adoption_pct": 67.6
+        },
+        "notification_received": {
+          "users": 9511,
+          "adoption_pct": 63.4
+        },
+        "app_install": {
+          "users": 15000,
+          "adoption_pct": 100.0
+        },
+        "mobile_number_entered": {
+          "users": 12699,
+          "adoption_pct": 84.7
+        },
+        "sim_binding_initiated": {
+          "users": 12511,
+          "adoption_pct": 83.4
+        },
+        "sim_binding_completed": {
+          "users": 12194,
+          "adoption_pct": 81.3
+        },
+        "otp_requested": {
+          "users": 12070,
+          "adoption_pct": 80.5
+        },
+        "otp_verified": {
+          "users": 11170,
+          "adoption_pct": 74.5
+        },
+        "name_entered": {
+          "users": 10972,
+          "adoption_pct": 73.1
+        },
+        "dob_entered": {
+          "users": 10696,
+          "adoption_pct": 71.3
+        },
+        "email_entered": {
+          "users": 10532,
+          "adoption_pct": 70.2
+        },
+        "pan_entered": {
+          "users": 10247,
+          "adoption_pct": 68.3
+        },
+        "pan_validation_initiated": {
+          "users": 10199,
+          "adoption_pct": 68.0
+        },
+        "pan_validation_completed": {
+          "users": 9854,
+          "adoption_pct": 65.7
+        },
+        "aadhaar_number_entered": {
+          "users": 9467,
+          "adoption_pct": 63.1
+        },
+        "aadhaar_otp_requested": {
+          "users": 9379,
+          "adoption_pct": 62.5
+        },
+        "aadhaar_otp_verified": {
+          "users": 8972,
+          "adoption_pct": 59.8
+        },
+        "bureau_pull_initiated": {
+          "users": 8928,
+          "adoption_pct": 59.5
+        },
+        "bureau_pull_completed": {
+          "users": 8787,
+          "adoption_pct": 58.6
+        },
+        "vkyc_initiated": {
+          "users": 7439,
+          "adoption_pct": 49.6
+        },
+        "vkyc_call_started": {
+          "users": 6371,
+          "adoption_pct": 42.5
+        },
+        "vkyc_call_completed": {
+          "users": 5932,
+          "adoption_pct": 39.5
+        },
+        "mpin_set": {
+          "users": 5825,
+          "adoption_pct": 38.8
+        },
+        "onboarding_completed": {
+          "users": 5825,
+          "adoption_pct": 38.8
+        },
+        "vkyc_failed": {
+          "users": 1963,
+          "adoption_pct": 13.1
+        }
+      },
+      "auto_funnels": [
+        {
+          "from": "sim_binding_initiated",
+          "to": "sim_binding_completed",
+          "outcome": "completed",
+          "users_entered": 12511,
+          "users_converted": 12194,
+          "conversion_pct": 97.5
+        },
+        {
+          "from": "otp_requested",
+          "to": "otp_verified",
+          "outcome": "verified",
+          "users_entered": 12070,
+          "users_converted": 11170,
+          "conversion_pct": 92.5
+        },
+        {
+          "from": "otp_requested",
+          "to": "aadhaar_otp_verified",
+          "outcome": "verified",
+          "users_entered": 12070,
+          "users_converted": 8972,
+          "conversion_pct": 74.3
+        },
+        {
+          "from": "pan_validation_initiated",
+          "to": "pan_validation_completed",
+          "outcome": "completed",
+          "users_entered": 10199,
+          "users_converted": 9854,
+          "conversion_pct": 96.6
+        },
+        {
+          "from": "aadhaar_otp_requested",
+          "to": "otp_verified",
+          "outcome": "verified",
+          "users_entered": 9379,
+          "users_converted": 9379,
+          "conversion_pct": 100.0
+        },
+        {
+          "from": "aadhaar_otp_requested",
+          "to": "aadhaar_otp_verified",
+          "outcome": "verified",
+          "users_entered": 9379,
+          "users_converted": 8972,
+          "conversion_pct": 95.7
+        },
+        {
+          "from": "bureau_pull_initiated",
+          "to": "bureau_pull_completed",
+          "outcome": "completed",
+          "users_entered": 8928,
+          "users_converted": 8787,
+          "conversion_pct": 98.4
+        },
+        {
+          "from": "vkyc_initiated",
+          "to": "vkyc_call_completed",
+          "outcome": "completed",
+          "users_entered": 7439,
+          "users_converted": 5932,
+          "conversion_pct": 79.7
+        },
+        {
+          "from": "vkyc_initiated",
+          "to": "vkyc_failed",
+          "outcome": "failed",
+          "users_entered": 7439,
+          "users_converted": 1963,
+          "conversion_pct": 26.4
+        },
+        {
+          "from": "vkyc_call_started",
+          "to": "vkyc_call_completed",
+          "outcome": "completed",
+          "users_entered": 6371,
+          "users_converted": 5932,
+          "conversion_pct": 93.1
+        },
+        {
+          "from": "vkyc_call_started",
+          "to": "vkyc_failed",
+          "outcome": "failed",
+          "users_entered": 6371,
+          "users_converted": 895,
+          "conversion_pct": 14.0
+        }
+      ]
+    }
+  },
+  "users": {
+    "name": "users",
+    "row_count": 15000,
+    "columns": [
+      {
+        "name": "user_id",
+        "type": "VARCHAR",
+        "cardinality": 15000,
+        "null_pct": 0.0,
+        "sample_values": []
+      },
+      {
+        "name": "signup_date",
+        "type": "TIMESTAMP",
+        "cardinality": 13691,
+        "null_pct": 0.0,
+        "sample_values": []
+      },
+      {
+        "name": "platform",
+        "type": "VARCHAR",
+        "cardinality": 3,
+        "null_pct": 0.0,
+        "sample_values": [
+          "android",
+          "ios",
+          "web"
+        ]
+      },
+      {
+        "name": "app_version",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 0.0,
+        "sample_values": [
+          "4.3.0",
+          "4.3.1",
+          "4.4.0",
+          "4.4.1"
+        ]
+      },
+      {
+        "name": "city",
+        "type": "VARCHAR",
+        "cardinality": 12,
+        "null_pct": 0.0,
+        "sample_values": [
+          "Ahmedabad",
+          "Bangalore",
+          "Chennai",
+          "Delhi",
+          "Hyderabad",
+          "Indore",
+          "Jaipur",
+          "Kochi",
+          "Kolkata",
+          "Mumbai",
+          "Pune",
+          "Surat"
+        ]
+      },
+      {
+        "name": "state",
+        "type": "VARCHAR",
+        "cardinality": 10,
+        "null_pct": 0.0,
+        "sample_values": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Kerala",
+          "Madhya Pradesh",
+          "Maharashtra",
+          "Rajasthan",
+          "Tamil Nadu",
+          "Telangana",
+          "West Bengal"
+        ]
+      },
+      {
+        "name": "age_bucket",
+        "type": "VARCHAR",
+        "cardinality": 6,
+        "null_pct": 0.0,
+        "sample_values": [
+          "18-22",
+          "23-27",
+          "28-32",
+          "33-37",
+          "38-45",
+          "46+"
+        ]
+      },
+      {
+        "name": "income_bucket",
+        "type": "VARCHAR",
+        "cardinality": 5,
+        "null_pct": 0.0,
+        "sample_values": [
+          "10-20L",
+          "20L+",
+          "3-6L",
+          "6-10L",
+          "<3L"
+        ]
+      },
+      {
+        "name": "occupation",
+        "type": "VARCHAR",
+        "cardinality": 6,
+        "null_pct": 0.0,
+        "sample_values": [
+          "business_owner",
+          "freelancer",
+          "salaried_govt",
+          "salaried_private",
+          "self_employed",
+          "student"
+        ]
+      },
+      {
+        "name": "acquisition_cohort",
+        "type": "VARCHAR",
+        "cardinality": 7,
+        "null_pct": 0.0,
+        "sample_values": [
+          "app_store_seo",
+          "employer_salary",
+          "facebook_ads",
+          "google_ads",
+          "influencer",
+          "organic_search",
+          "referral_friend"
+        ]
+      },
+      {
+        "name": "kyc_completed",
+        "type": "BOOLEAN",
+        "cardinality": 2,
+        "null_pct": 0.0,
+        "sample_values": [
+          "False",
+          "True"
+        ]
+      },
+      {
+        "name": "account_type",
+        "type": "VARCHAR",
+        "cardinality": 4,
+        "null_pct": 0.0,
+        "sample_values": [
+          "basic",
+          "pro",
+          "salary",
+          "savings"
+        ]
+      },
+      {
+        "name": "primary_bank",
+        "type": "VARCHAR",
+        "cardinality": 12,
+        "null_pct": 0.0,
+        "sample_values": [
+          "Axis Bank",
+          "Bank of Baroda",
+          "Canara Bank",
+          "Federal Bank",
+          "HDFC Bank",
+          "ICICI Bank",
+          "IDFC First",
+          "IndusInd Bank",
+          "Kotak Mahindra",
+          "Punjab National Bank",
+          "SBI",
+          "Yes Bank"
+        ]
+      },
+      {
+        "name": "sessions_per_week",
+        "type": "BIGINT",
+        "cardinality": 8,
+        "null_pct": 0.0,
+        "sample_values": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7"
+        ]
+      },
+      {
+        "name": "avg_txn_amount",
+        "type": "BIGINT",
+        "cardinality": 4549,
+        "null_pct": 0.0,
+        "sample_values": []
+      }
+    ],
+    "sample_rows": [
+      {
+        "user_id": "JUPCFCD20849",
+        "signup_date": "2026-03-06 06:28:00",
+        "platform": "android",
+        "app_version": "4.4.0",
+        "city": "Chennai",
+        "state": "Tamil Nadu",
+        "age_bucket": "23-27",
+        "income_bucket": "10-20L",
+        "occupation": "salaried_private",
+        "acquisition_cohort": "influencer",
+        "kyc_completed": true,
+        "account_type": "savings",
+        "primary_bank": "Axis Bank",
+        "sessions_per_week": 2,
+        "avg_txn_amount": 654
+      },
+      {
+        "user_id": "JUPC4CA4238A",
+        "signup_date": "2026-02-28 07:35:00",
+        "platform": "android",
+        "app_version": "4.3.0",
+        "city": "Kolkata",
+        "state": "West Bengal",
+        "age_bucket": "38-45",
+        "income_bucket": "6-10L",
+        "occupation": "salaried_private",
+        "acquisition_cohort": "organic_search",
+        "kyc_completed": true,
+        "account_type": "salary",
+        "primary_bank": "SBI",
+        "sessions_per_week": 4,
+        "avg_txn_amount": 809
+      },
+      {
+        "user_id": "JUPC81E728D9",
+        "signup_date": "2026-01-19 11:28:00",
+        "platform": "web",
+        "app_version": "4.3.0",
+        "city": "Delhi",
+        "state": "Delhi",
+        "age_bucket": "23-27",
+        "income_bucket": "10-20L",
+        "occupation": "salaried_private",
+        "acquisition_cohort": "app_store_seo",
+        "kyc_completed": true,
+        "account_type": "savings",
+        "primary_bank": "Axis Bank",
+        "sessions_per_week": 3,
+        "avg_txn_amount": 1373
+      },
+      {
+        "user_id": "JUPECCBC87E4",
+        "signup_date": "2026-03-09 09:43:00",
+        "platform": "android",
+        "app_version": "4.4.1",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "age_bucket": "46+",
+        "income_bucket": "10-20L",
+        "occupation": "student",
+        "acquisition_cohort": "employer_salary",
+        "kyc_completed": true,
+        "account_type": "savings",
+        "primary_bank": "IndusInd Bank",
+        "sessions_per_week": 3,
+        "avg_txn_amount": 1874
+      },
+      {
+        "user_id": "JUPA87FF679A",
+        "signup_date": "2026-02-07 06:24:00",
+        "platform": "android",
+        "app_version": "4.3.1",
+        "city": "Delhi",
+        "state": "Delhi",
+        "age_bucket": "23-27",
+        "income_bucket": "3-6L",
+        "occupation": "salaried_govt",
+        "acquisition_cohort": "facebook_ads",
+        "kyc_completed": false,
+        "account_type": "basic",
+        "primary_bank": "SBI",
+        "sessions_per_week": 0,
+        "avg_txn_amount": 8527
+      }
+    ],
+    "is_event_table": false,
+    "event_name_col": "",
+    "event_names": [],
+    "event_properties": {},
+    "event_groups": {},
+    "event_counts": {},
+    "date_range": {},
+    "unique_users": 0,
+    "product_signals": {}
+  }
+}
