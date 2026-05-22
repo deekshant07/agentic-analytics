@@ -343,9 +343,13 @@ def _compile_pct_users_metric_monthly(
     Correct: cohort users by the month they completed the denominator event, then
     left-join to the numerator event.
 
-    Window semantics (via qo.retention_window_days):
-      0 / None → lifetime: any time after the cohort event
-      N > 0    → restricted: conversion within N days of the cohort event
+    Window semantics (via qo.activation_window_days):
+      None → default 30-day window
+      0    → lifetime: any time after the cohort event
+      N > 0 → restricted: conversion within N days of the cohort event
+
+    Breakdown: when qo.breakdown is set, adds that dimension column from denom events
+      (MAX per user) so each time bucket is further split by the dimension.
 
     Required builder_definition fields: primary_event (numerator), secondary_event (denom).
     """
@@ -389,6 +393,13 @@ def _compile_pct_users_metric_monthly(
     denom_label   = re.sub(r"[^a-z0-9_]", "_", secondary.lower())
     numer_label   = re.sub(r"[^a-z0-9_]", "_", primary.lower())
 
+    # Breakdown: capture dimension from denom events (MAX per user = user-level property).
+    breakdown_raw = getattr(qo, "breakdown", None) or ""
+    safe_bkd = re.sub(r"[^a-z0-9_]", "", breakdown_raw.lower()) if breakdown_raw else ""
+    bkd_denom_col  = f", MAX({safe_bkd}) AS {safe_bkd}" if safe_bkd else ""
+    bkd_select_col = f"  d.{safe_bkd},\n" if safe_bkd else ""
+    bkd_group_n    = ", 2" if safe_bkd else ""
+
     # activation_window_days=None → default 30-day window.
     # 0 → explicit lifetime (no upper bound, but still after the anchor event).
     # retention_window_days is NOT used here — it's for retention queries.
@@ -396,7 +407,7 @@ def _compile_pct_users_metric_monthly(
     win = int(win_raw) if win_raw is not None else 30
     if win > 0:
         # Time-windowed: conversion must happen within N days of the anchor event.
-        denom_select = f"user_id, MIN(timestamp) AS first_ts, DATE_TRUNC('{g}', MIN(timestamp))::DATE AS cohort_{g}"
+        denom_select = f"user_id, MIN(timestamp) AS first_ts, DATE_TRUNC('{g}', MIN(timestamp))::DATE AS cohort_{g}{bkd_denom_col}"
         numer_cte = (
             f"numer_cohort AS (\n"
             f"  SELECT DISTINCT d.user_id\n"
@@ -411,7 +422,7 @@ def _compile_pct_users_metric_monthly(
         # Lifetime: conversion at any time AFTER the anchor event (no upper bound).
         # Still joins denom_cohort so we enforce temporal ordering — users who did
         # the numerator event before onboarding must not be counted.
-        denom_select = f"user_id, MIN(timestamp) AS first_ts, DATE_TRUNC('{g}', MIN(timestamp))::DATE AS cohort_{g}"
+        denom_select = f"user_id, MIN(timestamp) AS first_ts, DATE_TRUNC('{g}', MIN(timestamp))::DATE AS cohort_{g}{bkd_denom_col}"
         numer_cte = (
             f"numer_cohort AS (\n"
             f"  SELECT DISTINCT d.user_id\n"
@@ -432,13 +443,13 @@ def _compile_pct_users_metric_monthly(
 {numer_cte}
 SELECT
   d.cohort_{g}                                                                       AS {g},
-  COUNT(DISTINCT d.user_id)                                                          AS {denom_label}_users,
+{bkd_select_col}  COUNT(DISTINCT d.user_id)                                                          AS {denom_label}_users,
   COUNT(DISTINCT n.user_id)                                                          AS {numer_label}_users{win_suffix},
   ROUND(COUNT(DISTINCT n.user_id) * 100.0 / NULLIF(COUNT(DISTINCT d.user_id), 0), 1) AS {safe_label}{win_suffix}
 FROM denom_cohort d
 LEFT JOIN numer_cohort n ON d.user_id = n.user_id
-GROUP BY 1
-ORDER BY 1"""
+GROUP BY 1{bkd_group_n}
+ORDER BY 1{bkd_group_n}"""
 
 
 def _compile_pct_users_metric_scalar(
@@ -447,10 +458,9 @@ def _compile_pct_users_metric_scalar(
     """
     Cohort-correct scalar (single-row) activation rate for '% of users' metrics.
 
-    Unlike the monthly trend variant, this returns one row: denominator count,
-    numerator count, and the rate — all respecting qo.filters on the numerator
-    (e.g. transaction_channel=UPI) while keeping the denominator unfiltered so
-    the base remains "all users who onboarded", not "UPI-onboarded users".
+    Single-window path: one row with denom count, numer count, and rate.
+    Multi-window path: when catalog has default_windows and no explicit activation_window_days,
+      generates one rate column per window (e.g. 7d, 14d, 30d) in a single scan.
     """
     bd = metric.get("builder_definition") or {}
     primary   = str(bd.get("primary_event")   or "").strip()
@@ -485,8 +495,54 @@ def _compile_pct_users_metric_scalar(
     denom_label   = re.sub(r"[^a-z0-9_]", "_", secondary.lower())
     numer_label   = re.sub(r"[^a-z0-9_]", "_", primary.lower())
 
+    # Breakdown: capture dimension from denom events (MAX per user = user-level property).
+    breakdown_raw = getattr(qo, "breakdown", None) or ""
+    safe_bkd = re.sub(r"[^a-z0-9_]", "", breakdown_raw.lower()) if breakdown_raw else ""
+    bkd_denom_col  = f", MAX({safe_bkd}) AS {safe_bkd}" if safe_bkd else ""
+    bkd_select_col = f"  d.{safe_bkd},\n" if safe_bkd else ""
+    bkd_group      = f",\n  {safe_bkd}" if safe_bkd else ""
+    bkd_order      = f", 2 DESC" if safe_bkd else ""
+
     win_raw = getattr(qo, "activation_window_days", None)
-    win = int(win_raw) if win_raw is not None else 30
+
+    # Multi-window path: catalog supplies default_windows and user didn't specify one.
+    default_windows = bd.get("default_windows") or []
+    if win_raw is None and len(default_windows) > 1:
+        windows = [int(w) for w in default_windows if int(w) > 0]
+        # One JOIN to all numerator events after the anchor; CASE WHEN per window.
+        numer_cols = "\n".join(
+            f"  COUNT(DISTINCT CASE WHEN n.numer_ts <= d.first_ts + INTERVAL '{w}' DAY"
+            f" THEN n.user_id END) AS {numer_label}_users_{w}d,"
+            for w in windows
+        )
+        rate_cols = "\n".join(
+            f"  ROUND(COUNT(DISTINCT CASE WHEN n.numer_ts <= d.first_ts + INTERVAL '{w}' DAY"
+            f" THEN n.user_id END) * 100.0 / NULLIF(COUNT(DISTINCT d.user_id), 0), 1)"
+            f" AS {safe_label}_{w}d{',' if i < len(windows) - 1 else ''}"
+            for i, w in enumerate(windows)
+        )
+        return f"""WITH denom_cohort AS (
+  SELECT user_id, MIN(timestamp) AS first_ts{bkd_denom_col}
+  FROM events
+  WHERE "event_name" = '{secondary_esc}' AND {tf}{gc}
+  GROUP BY user_id
+),
+numer_events AS (
+  SELECT d.user_id, e.timestamp AS numer_ts
+  FROM denom_cohort d
+  JOIN events e ON d.user_id = e.user_id
+  WHERE e."event_name" = '{primary_esc}'{numer_filter}
+  AND e.timestamp >= d.first_ts{gc_join}
+)
+SELECT
+{bkd_select_col}  COUNT(DISTINCT d.user_id) AS {denom_label}_users,
+{numer_cols}
+{rate_cols}
+FROM denom_cohort d
+LEFT JOIN numer_events n ON d.user_id = n.user_id{f'{chr(10)}GROUP BY {safe_bkd}{chr(10)}ORDER BY 1 DESC' if safe_bkd else ''}"""
+
+    # Single-window path.
+    win = int(win_raw) if win_raw is not None else (int(default_windows[0]) if default_windows else 30)
     if win > 0:
         win_suffix = f"_{win}d"
         numer_cte = (
@@ -498,9 +554,7 @@ def _compile_pct_users_metric_scalar(
             f"  AND e.timestamp BETWEEN d.first_ts AND d.first_ts + INTERVAL '{win}' DAY{gc_join}\n"
             f")"
         )
-        denom_select = "user_id, MIN(timestamp) AS first_ts"
     else:
-        # Lifetime: after anchor, no upper bound — still enforce temporal ordering.
         win_suffix = ""
         numer_cte = (
             f"numer_cohort AS (\n"
@@ -511,21 +565,22 @@ def _compile_pct_users_metric_scalar(
             f"  AND e.timestamp >= d.first_ts{gc_join}\n"
             f")"
         )
-        denom_select = "user_id, MIN(timestamp) AS first_ts"
 
+    group_by = f"GROUP BY {safe_bkd}\nORDER BY 1 DESC" if safe_bkd else ""
     return f"""WITH denom_cohort AS (
-  SELECT {denom_select}
+  SELECT user_id, MIN(timestamp) AS first_ts{bkd_denom_col}
   FROM events
   WHERE "event_name" = '{secondary_esc}' AND {tf}{gc}
   GROUP BY user_id
 ),
 {numer_cte}
 SELECT
-  COUNT(DISTINCT d.user_id)                                                          AS {denom_label}_users,
+{bkd_select_col}  COUNT(DISTINCT d.user_id)                                                          AS {denom_label}_users,
   COUNT(DISTINCT n.user_id)                                                          AS {numer_label}_users{win_suffix},
   ROUND(COUNT(DISTINCT n.user_id) * 100.0 / NULLIF(COUNT(DISTINCT d.user_id), 0), 1) AS {safe_label}{win_suffix}
 FROM denom_cohort d
-LEFT JOIN numer_cohort n ON d.user_id = n.user_id"""
+LEFT JOIN numer_cohort n ON d.user_id = n.user_id
+{group_by}"""
 
 
 def _compile_ratio_metric_monthly(

@@ -613,6 +613,7 @@ def build_100_question_suite(catalog: dict) -> list[EvalCase]:
             expected_analysis_type=exp_type,
             expected_route="orchestrator",
             tags=["metric_trend", exp_type],
+            gold_qo={"metric_id": mid},
         ))
         cases.append(EvalCase(
             question=f"show {mid.replace('_', ' ')} MOM for last 6 months",
@@ -620,6 +621,7 @@ def build_100_question_suite(catalog: dict) -> list[EvalCase]:
             expected_route="orchestrator",
             expected_columns_any=["month", "week", "date"],
             tags=["metric_trend", "mom"],
+            gold_qo={"metric_id": mid},
         ))
 
     # 2) Segment/breakdown questions (25)
@@ -627,17 +629,17 @@ def build_100_question_suite(catalog: dict) -> list[EvalCase]:
     # Catalog metric breakdowns (activation rate, transaction success rate) route through
     # "orchestrator" — so expected_route is left None for those to avoid false penalization.
     segment_templates = [
-        ("show transacting users by platform for Jan",                      "custom_segment"),
-        ("show onboarding completed by channel for Jan",                    "custom_segment"),
-        ("show activation rate by platform for last 90 days",               None),
-        ("show transaction success rate by transaction_channel for last 60 days", None),
-        ("show users by city for Jan",                                      None),
+        ("show transacting users by platform for Jan",                           "custom_segment", "platform"),
+        ("show onboarding completed by channel for Jan",                         "custom_segment", None),
+        ("show activation rate by platform for last 90 days",                    None,             "platform"),
+        ("show transaction success rate by transaction_channel for last 60 days", None,            "transaction_channel"),
+        ("show users by city for Jan",                                           None,             "city"),
     ]
     for i in range(25):
-        t, exp_route = segment_templates[i % len(segment_templates)]
-        gold = None
-        if "by platform" in t:
-            gold = {"analysis_type": "segment", "breakdown": "platform"}
+        t, exp_route, exp_breakdown = segment_templates[i % len(segment_templates)]
+        gold: dict[str, Any] = {"analysis_type": "segment"}
+        if exp_breakdown:
+            gold["breakdown"] = exp_breakdown
         cases.append(EvalCase(
             question=t,
             expected_analysis_type="segment",
@@ -663,18 +665,19 @@ def build_100_question_suite(catalog: dict) -> list[EvalCase]:
 
     # 4) Funnel/retention/diagnose mix (15)
     advanced_qs = [
-        ("show onboarding funnel for Jan", "funnel"),
-        ("D7 retention for transacting users", "retention"),
-        ("users who completed onboarding but not transacted in Jan", "behavioral_cohort"),
-        ("why did transacting users drop last month", "diagnose"),
-        ("time between onboarding completed and transaction reconciled", "time_between"),
+        ("show onboarding funnel for Jan",                                  "funnel",           {"event": "onboarding_completed"}),
+        ("D7 retention for transacting users",                              "retention",        {"metric_id": "d7_retention"}),
+        ("users who completed onboarding but not transacted in Jan",        "behavioral_cohort", {"event": "onboarding_completed", "event_b": "transaction_reconciled"}),
+        ("why did transacting users drop last month",                       "diagnose",         None),
+        ("time between onboarding completed and transaction reconciled",    "time_between",     {"event": "onboarding_completed", "event_b": "transaction_reconciled"}),
     ]
     for i in range(15):
-        q, at = advanced_qs[i % len(advanced_qs)]
+        q, at, gqo = advanced_qs[i % len(advanced_qs)]
         cases.append(EvalCase(
             question=q,
             expected_analysis_type=at,
             tags=["advanced", at],
+            gold_qo=gqo,
         ))
 
     # 4b) SQL structural correctness cases — deterministic gold_sql assertions.
@@ -771,10 +774,10 @@ def build_100_question_suite(catalog: dict) -> list[EvalCase]:
                 "forbidden": ["COUNT(DISTINCT CASE WHEN"],
             },
             gold_result={
-                "col_bounds": {"activation_rate": [0, 100]},
+                "col_bounds": {"activation_rate_30d": [0, 100]},
                 "row_count_min": 1,
                 "row_count_max": 1,
-                "col_present": ["onboarding_completed_users", "transaction_reconciled_users", "activation_rate"],
+                "col_present": ["onboarding_completed_users", "transaction_reconciled_users_30d", "activation_rate_30d"],
             },
         ),
         # UPI-filtered activation rate: filter must appear in numerator, not denominator.
@@ -788,7 +791,7 @@ def build_100_question_suite(catalog: dict) -> list[EvalCase]:
                 "forbidden_in_cte": {"denom_cohort": ["transaction_channel"]},
             },
             gold_result={
-                "col_bounds": {"activation_rate": [0, 100]},
+                "col_bounds": {"activation_rate_30d": [0, 100]},
                 "row_count_min": 1,
                 "row_count_max": 1,
             },
@@ -810,9 +813,9 @@ def build_100_question_suite(catalog: dict) -> list[EvalCase]:
                 "forbidden": ["COUNT(DISTINCT CASE WHEN"],
             },
             gold_result={
-                "col_bounds": {"activation_rate": [0, 100]},
+                "col_bounds": {"activation_rate_30d": [0, 100]},
                 "row_count_min": 1,
-                "col_present": ["month", "activation_rate"],
+                "col_present": ["month", "activation_rate_30d"],
             },
         ),
     ]
@@ -1248,7 +1251,7 @@ def build_multi_turn_suite() -> list[MultiTurnEvalCase]:
                                 "filters_contain": {"transaction_channel": "UPI"}},
                     "gold_sql": {"required": ["transaction_channel = 'UPI'",
                                               "WITH denom_cohort"]},
-                    "gold_result": {"col_bounds": {"activation_rate": [0, 100]}},
+                    "gold_result": {"col_bounds": {"activation_rate_30d": [0, 100]}},
                 },
                 {
                     "question": "share monthly trend",
@@ -1257,8 +1260,8 @@ def build_multi_turn_suite() -> list[MultiTurnEvalCase]:
                                 "filters_contain": {"transaction_channel": "UPI"}},
                     "gold_sql": {"required": ["transaction_channel = 'UPI'",
                                               "WITH denom_cohort", "cohort_month"]},
-                    "gold_result": {"col_bounds": {"activation_rate": [0, 100]},
-                                    "col_present": ["month", "activation_rate"]},
+                    "gold_result": {"col_bounds": {"activation_rate_30d": [0, 100]},
+                                    "col_present": ["month", "activation_rate_30d"]},
                 },
             ],
         ),
@@ -1376,6 +1379,90 @@ def run_multi_turn_eval_case(
     }
 
 
+def _gold_qo_wrong_on_snapshot(snap: dict, gold: dict) -> bool:
+    """True if any slot in gold_qo doesn't match the QO snapshot."""
+    for key in ("analysis_type", "event", "metric_id", "event_b", "breakdown", "metric_variant"):
+        if key not in gold:
+            continue
+        if gold[key] != snap.get(key):
+            return True
+    fc = gold.get("filters_contain")
+    if isinstance(fc, dict) and fc:
+        filt = snap.get("filters") or {}
+        if not all(str(filt.get(k)) == str(v) for k, v in fc.items()):
+            return True
+    return False
+
+
+def _determine_failure_stage(trace: dict, case: "EvalCase") -> str | None:
+    """
+    Identify which pipeline stage caused a failure. Returns None when the case passed.
+
+    Attribution order (first match wins):
+      fatal          → unhandled exception in the harness
+      orchestrator   → wrong analysis_type or LLM returned clarify/out_of_scope unexpectedly
+      fixup          → orchestrator was correct but fixup chain corrupted a slot
+      compiler       → SQL not compiled, or gold_sql structural assertion failed
+      execution      → SQL executed but threw an error
+      execution_semantic → result values failed gold_result bounds/cols
+      answer_quality → LLM judge found the answer irrelevant
+    """
+    if not trace.get("pass") is False and trace.get("pass"):
+        return None  # passed — no failure to attribute
+
+    if trace.get("fatal_error"):
+        return "fatal"
+
+    scores = trace.get("scores", {})
+    stages = trace.get("stages", {})
+
+    # Clarify/out_of_scope when we expected a real analysis type
+    raw_at = (stages.get("orchestrator_raw") or {}).get("analysis_type", "")
+    if raw_at in ("clarify", "out_of_scope"):
+        if case.expected_analysis_type and case.expected_analysis_type not in ("clarify", "out_of_scope"):
+            return "orchestrator"
+
+    # Wrong analysis_type
+    if case.expected_analysis_type and scores.get("intent_accuracy", 1.0) < 1.0:
+        return "orchestrator"
+
+    # Wrong QO slots — distinguish orchestrator vs fixup regression
+    if case.gold_qo and scores.get("gold_qo_score", 1.0) < 1.0:
+        raw = stages.get("orchestrator_raw") or {}
+        post = stages.get("qo_after_fixups") or {}
+        gold = case.gold_qo or {}
+        raw_wrong = _gold_qo_wrong_on_snapshot(raw, gold)
+        post_wrong = _gold_qo_wrong_on_snapshot(post, gold)
+        if raw_wrong and post_wrong:
+            return "orchestrator"
+        if not raw_wrong and post_wrong:
+            return "fixup"  # orchestrator was correct, fixup chain broke a slot
+        return "orchestrator"  # raw_wrong and not post_wrong — fixup recovered it (weird partial)
+
+    # No SQL compiled
+    compile_sql = (stages.get("compile") or {}).get("sql")
+    if not compile_sql:
+        return "compiler"
+
+    # SQL structural assertion failed
+    if case.gold_sql and scores.get("gold_sql_score", 1.0) < 1.0:
+        return "compiler"
+
+    # Execution error
+    if not (stages.get("execution") or {}).get("ok", True):
+        return "execution"
+
+    # Result semantic assertion failed
+    if getattr(case, "gold_result", None) and scores.get("gold_result_score", 1.0) < 1.0:
+        return "execution_semantic"
+
+    # LLM judge thinks answer is wrong
+    if scores.get("llm_judge_relevance", 1.0) < 0.5:
+        return "answer_quality"
+
+    return "unknown"
+
+
 def run_eval_case(
     conn: duckdb.DuckDBPyConnection,
     case: EvalCase,
@@ -1426,6 +1513,8 @@ def run_eval_case(
                 "gold_qo_detail": gold_d,
             }
             trace["pass"] = False
+            trace["failure_stage"] = _determine_failure_stage(trace, case)
+            trace["fixup_deltas"] = []
             trace["latency_ms"] = round((time.perf_counter() - t_case_start) * 1000)
             return trace
 
@@ -1467,6 +1556,9 @@ def run_eval_case(
                 "gold_qo_score": round(gold_s, 3),
                 "gold_qo_detail": gold_d,
             }
+            trace["pass"] = False
+            trace["failure_stage"] = _determine_failure_stage(trace, case)
+            trace["fixup_deltas"] = getattr(qo, "_fixup_deltas", [])
             trace["latency_ms"] = round((time.perf_counter() - t_case_start) * 1000)
             return trace
 
@@ -1485,6 +1577,9 @@ def run_eval_case(
                 "gold_qo_score": round(gold_s, 3),
                 "gold_qo_detail": gold_d,
             }
+            trace["pass"] = False
+            trace["failure_stage"] = "compiler"
+            trace["fixup_deltas"] = getattr(qo, "_fixup_deltas", [])
             trace["latency_ms"] = round((time.perf_counter() - t_case_start) * 1000)
             return trace
 
@@ -1519,6 +1614,8 @@ def run_eval_case(
                 },
             }
             trace["pass"] = ar >= 0.75
+            trace["failure_stage"] = _determine_failure_stage(trace, case) if not trace["pass"] else None
+            trace["fixup_deltas"] = getattr(qo, "_fixup_deltas", [])
             trace["latency_ms"] = round((time.perf_counter() - t_case_start) * 1000)
             return trace
 
@@ -1570,18 +1667,20 @@ def run_eval_case(
         )
         # Rule-based data-presentation check layered on top of LLM judge.
         dp = score_data_presentation(case.question, cols, sample_rows, qo.analysis_type)
-        # When SQL executed successfully with data, floor judge scores at 0.35 so a
-        # miscalibrated judge call can't completely kill an otherwise-correct case.
-        judge_floor = 0.35 if (exec_ok and len(sample_rows) > 0) else 0.0
-        j_rel  = max(judge_floor, judge["relevance"])
-        j_comp = max(judge_floor, judge["completeness"])
-        # AR formula: 30% query correctness, 15% routing, 20% LLM relevance, 10% completeness,
+        # No floor — judge scores are taken as-is. A floor inflates scores for
+        # confident-but-wrong SQL; correct queries don't need it.
+        j_rel  = judge["relevance"]
+        j_comp = judge["completeness"]
+        # AR formula: 30% query correctness, 10% routing, 15% LLM relevance,
+        #             10% LLM completeness, 10% QO slot accuracy (gold_qo),
         #             10% SQL structural, 10% result values, 5% presentation.
+        # gold_qo: 0.5 default when not defined → neutral; 1.0 = slots correct; 0.0 = wrong slots.
         ar = float(max(0.0, min(1.0, (
             0.30 * qc
-            + 0.15 * qr
-            + 0.20 * j_rel
+            + 0.10 * qr
+            + 0.15 * j_rel
             + 0.10 * j_comp
+            + 0.10 * gold_s
             + 0.10 * sql_s
             + 0.10 * result_s
             + 0.05 * dp
@@ -1624,6 +1723,8 @@ def run_eval_case(
         )
         trace["hard_fail"] = hard_fail
         trace["pass"] = (ar >= 0.75) and not hard_fail
+        trace["failure_stage"] = _determine_failure_stage(trace, case) if not trace["pass"] else None
+        trace["fixup_deltas"] = getattr(qo, "_fixup_deltas", [])
     except Exception as e:
         trace["fatal_error_type"] = type(e).__name__
         trace["fatal_error"] = f"{type(e).__name__}: {e}"
@@ -1750,10 +1851,31 @@ def run_benchmark(
 
     gold_scores = [float(t.get("scores", {}).get("gold_qo_score", 0.5)) for t in traces]
 
+    # Stage failure attribution — count failures by stage across all traces
+    stage_counts: dict[str, int] = {}
+    for t in traces:
+        if not t.get("pass"):
+            stage = t.get("failure_stage") or "unknown"
+            stage_counts[stage] = stage_counts.get(stage, 0) + 1
+
+    # Deterministic coverage — fraction of cases with at least one gold assertion
+    n_with_gold = sum(
+        1 for c in questions
+        if c.gold_qo or c.gold_sql or getattr(c, "gold_result", None)
+    )
+
+    # Fixup activity — how often each pass fires (has a delta) across all traces
+    fixup_fire_counts: dict[str, int] = {}
+    for t in traces:
+        for d in (t.get("fixup_deltas") or []):
+            name = d.get("fixup", "?")
+            fixup_fire_counts[name] = fixup_fire_counts.get(name, 0) + 1
+
     agg = {
         "n_cases": n,
         "pass_count": sum(1 for t in traces if t.get("pass")),
         "pass_rate": round(sum(1 for t in traces if t.get("pass")) / max(n, 1), 3),
+        "hard_fail_count": sum(1 for t in traces if t.get("hard_fail")),
         "avg_query_correctness": round(sum(t["scores"]["query_correctness"] for t in traces) / max(n, 1), 3),
         "avg_query_routing": round(sum(t["scores"]["query_routing"] for t in traces) / max(n, 1), 3),
         "avg_summary_relevance": round(sum(t["scores"]["summary_relevance"] for t in traces) / max(n, 1), 3),
@@ -1763,6 +1885,14 @@ def run_benchmark(
         "avg_answer_relevance": round(sum(t["scores"]["answer_relevance"] for t in traces) / max(n, 1), 3),
         "avg_intent_accuracy": avg_intent_accuracy,
         "avg_gold_qo_score": round(sum(gold_scores) / max(n, 1), 3),
+        "stage_failure_counts": stage_counts,
+        "deterministic_coverage": round(n_with_gold / max(n, 1), 3),
+        "gold_assertion_stats": {
+            "gold_qo_cases":     sum(1 for c in questions if c.gold_qo),
+            "gold_sql_cases":    sum(1 for c in questions if c.gold_sql),
+            "gold_result_cases": sum(1 for c in questions if getattr(c, "gold_result", None)),
+        },
+        "fixup_fire_counts": fixup_fire_counts,
         "by_tag": _aggregate_by_tag(traces),
         "latency_avg_ms": avg_lat,
         "latency_p50_ms": p50,
@@ -1860,7 +1990,37 @@ def main() -> None:
         hard=args.hard,
         hard_n=args.hard_n,
     )
-    print(f"Saved benchmark report to: {out}")
+
+    # Print a structured summary to stdout so you can see key stats immediately
+    import json as _json
+    data = _json.loads(out.read_text())
+    agg = data.get("aggregate", {})
+    print(f"\n{'='*60}")
+    print(f"  EVAL RESULTS  — {out.name}")
+    print(f"{'='*60}")
+    print(f"  Pass rate       : {agg.get('pass_rate', 0):.1%}  ({agg.get('pass_count')}/{agg.get('n_cases')} cases)")
+    print(f"  Avg AR          : {agg.get('avg_answer_relevance', 0):.3f}")
+    print(f"  Hard failures   : {agg.get('hard_fail_count', 0)}")
+    print(f"  Intent accuracy : {agg.get('avg_intent_accuracy', 'N/A')}")
+    print(f"  Gold QO score   : {agg.get('avg_gold_qo_score', 0):.3f}")
+    print(f"  Deterministic coverage: {agg.get('deterministic_coverage', 0):.1%}")
+    stage_fails = agg.get("stage_failure_counts", {})
+    if stage_fails:
+        print(f"\n  Failures by stage:")
+        for stage, cnt in sorted(stage_fails.items(), key=lambda x: -x[1]):
+            print(f"    {stage:<25} {cnt}")
+    fixup_fires = agg.get("fixup_fire_counts", {})
+    if fixup_fires:
+        print(f"\n  Fixup activation (times fired across {agg.get('n_cases')} cases):")
+        for name, cnt in sorted(fixup_fires.items(), key=lambda x: -x[1])[:10]:
+            print(f"    {name:<35} {cnt}")
+    print(f"{'='*60}")
+    trend = data.get("trend", {})
+    if trend:
+        delta = trend.get("pass_count_delta", 0)
+        sign = "+" if delta >= 0 else ""
+        print(f"  vs prev run: {sign}{delta} cases, AR delta={trend.get('answer_relevance_delta', 0):+.3f}")
+    print(f"\nSaved to: {out}")
 
 
 if __name__ == "__main__":

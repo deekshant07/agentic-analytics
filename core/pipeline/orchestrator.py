@@ -521,12 +521,16 @@ CURATED FUNNELS (use when user asks by funnel name):
 
 METRIC_ID MATCHING RULES — be conservative:
 - ONLY set metric_id when the user explicitly asks for a NAMED RATE, RATIO, or COMPOSITE metric by name:
-    ✓ "activation rate", "D7 retention", "churn rate", "DAU/MAU ratio", "first transaction rate"
+    ✓ "activation rate", "activation numbers", "activation data", "activation stats", "activation metrics"
+    ✓ "D7 retention", "churn rate", "DAU/MAU ratio", "first transaction rate"
     ✓ "show me DAU", "what is WAU", "daily active users" (named engagement metrics)
-- NEVER set metric_id for plain count / how-many questions — use event + analysis_type=metric instead:
+  IMPORTANT: "activation [any informal]" ALWAYS maps to the pre-built activation metric (metric_id), NOT to
+    an event count. "activation numbers" ≠ "count of an event called activation" — there is no such event;
+    "activation" is a business concept measured by the PRE-BUILT METRICS entry for activation.
+- NEVER set metric_id for plain count / how-many questions on primitive events without a pre-built metric:
     ✗ "how many users completed a purchase" → event="<purchase event>", metric_id=null
     ✗ "count of signups" → event="<signup event>", metric_id=null
-    ✗ "how many activations" → event="<activation event>", metric_id=null
+    NOTE: "how many activations" is NOT in this list — activation has a pre-built metric; always use metric_id.
 - If in doubt, leave metric_id null and fill event instead.
 - QUALIFIER DECOMPOSITION (mandatory before clarify/out_of_scope):
   Step A: If a word in the question exactly matches a value under DIMENSION VALUE HINTS, set filters[col]=that value.
@@ -535,6 +539,7 @@ METRIC_ID MATCHING RULES — be conservative:
   Informal words ("numbers", "stats", "data", "figures", "share") still mean "show that metric".
   Patterns (any industry):
     "[qualifier] activation [informal]" → analysis_type=metric, metric_id=<activation metric>, filters=<qualifier>.
+    "activation numbers/count/data/stats/metrics" → analysis_type=metric, metric_id=<activation metric> (no event needed).
     "[qualifier] retention [informal]" → analysis_type=retention, metric_id=<retention metric with route_as retention>, filters=<qualifier>, retention_window_days = first N days (D7→7, "for 14 days"/"first 14 days"→14).
   Use DIMENSION VALUE HINTS for qualifiers — includes catalog meanings, not only DB samples.
 - ACTIVATION WINDOW — for "% of users" ratio metrics (e.g. activation rate, conversion rate):
@@ -658,11 +663,16 @@ Rules:
   ── 3. RELATIVE ROLLING WINDOWS ──────────────────────────────────────────────
     "recently"/"past few days" → 14 | "past week"/"last 7d" → 7 | "past month" → 30
     "past 3 months" → 90 | "past year"/"last 12 months" → 365 | no qualifier → 30
+  COMPOUND: when a rolling window in months (e.g. "last 6 months", "past 3 months") is combined
+    with a trend intent ("trend", "share trend", "show trend", "over time"), also set
+    time_granularity="month". Similarly "last N weeks" + trend → time_granularity="week".
+    Example: "last 6 months onboarding trend" → time_range_days=180, time_granularity="month"
+    Example: "share last 3 months trend" → time_range_days=90, time_granularity="month"
 {type_specific_rules}
 - TIME WINDOW INHERITANCE: if the current question does NOT mention a new time period, copy the exact date_from, date_to, time_range_days, and time_granularity from the most recent turn in PREVIOUS QUERIES.
   EXCEPTIONS (treat as a new time instruction, do NOT inherit fixed dates):
   - If question includes trend keywords (MOM/WOW/month-over-month/week-over-week/monthly trend/weekly trend), set date_from=null and date_to=null, and apply Rule 2 trend settings.
-  - If question asks to "share trend", "show trend", or "compare over time", treat as trend intent and use time_granularity + time_range_days (no fixed date inheritance) unless an explicit named period is present.
+  - If question asks to "share trend", "show trend", or "compare over time", treat as trend intent and use time_granularity + time_range_days (no fixed date inheritance) unless an explicit named period is present. Apply the COMPOUND rule: if the rolling window is in months, set time_granularity="month"; if in weeks, set time_granularity="week".
   Follow-up filters/breakdowns still inherit time when no trend/new-period instruction is present.
   CRITICAL: time exceptions affect ONLY the four time fields (date_from, date_to, time_range_days,
   time_granularity). They NEVER reset event, metric_id, filters, breakdown, or any other slot.

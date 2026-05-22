@@ -1300,6 +1300,7 @@
           "secondary_event": "onboarding_completed",
           "value_field": "",
           "retention_days": 7,
+          "default_windows": [7, 14, 30],
           "filters": [
             "\"transaction_status\" = 'SUCCESS'",
             ""

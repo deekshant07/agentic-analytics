@@ -143,20 +143,31 @@ class TestActivationRateCompiler:
     """
 
     def test_scalar_uses_cte_not_hint(self, metrics):
-        """Daily (default) query must use CTE+LEFT JOIN, not inline ROUND(CASE WHEN ...)."""
+        """Default query must use CTE path (denom_cohort), not the inline sql_hint."""
         sql, _ = compile_query(_activation_qo(), metrics)
         assert "WITH denom_cohort" in sql, (
             "activation_rate scalar must use CTE path, not scalar hint.\n"
             f"SQL starts with: {sql[:120]}"
         )
-        assert "LEFT JOIN numer_cohort" in sql
+        # Either single-window (LEFT JOIN numer_cohort) or multi-window (LEFT JOIN numer_events).
+        assert ("LEFT JOIN numer_cohort" in sql or "LEFT JOIN numer_events" in sql), (
+            "activation_rate must join to a numerator CTE, not scan independently."
+        )
 
     def test_scalar_no_independent_count_ratio(self, metrics):
-        """Scalar SQL must not contain the broken ROUND(COUNT(CASE WHEN ...) / COUNT(...)) pattern."""
+        """Scalar SQL must not use the broken independent-scan CASE WHEN pattern from sql_hint.
+
+        The dangerous pattern (produces rates >100%):
+          ROUND(COUNT(DISTINCT CASE WHEN "event_name" = 'X' THEN user_id END) * 100.0
+                / COUNT(DISTINCT CASE WHEN "event_name" = 'Y' THEN user_id END), 1)
+        All event_name-based CASE WHENs must be inside a CTE that joins to denom_cohort,
+        never in a top-level aggregate without a cohort anchor.
+        """
         sql, _ = compile_query(_activation_qo(), metrics)
-        # The scalar hint has: ROUND(\n  COUNT(DISTINCT CASE WHEN "event_name" = ...
-        assert 'COUNT(DISTINCT CASE WHEN' not in sql, (
-            "Scalar rate must use cohort CTE, not independent CASE WHEN counts.\n"
+        # The broken hint pattern has 'event_name' inside CASE WHEN at the top-level SELECT.
+        # Safe multi-window pattern uses 'numer_ts' (column from the JOIN), not 'event_name'.
+        assert 'COUNT(DISTINCT CASE WHEN "event_name"' not in sql, (
+            "Scalar rate must not use independent event_name CASE WHEN counts.\n"
             "Independent counts produce rates > 100% when cohorts differ."
         )
 
@@ -211,33 +222,36 @@ class TestActivationRateCompiler:
         assert "INTERVAL '7' DAY" in sql, "Windowed activation must use INTERVAL constraint"
         assert "BETWEEN d.first_ts" in sql, "Windowed activation must join on first_ts range"
 
-    def test_default_activation_uses_30d_window(self, metrics):
-        """activation_window_days=None must default to 30-day conversion window, not lifetime.
+    def test_default_activation_uses_multi_window(self, metrics):
+        """activation_window_days=None with default_windows in catalog → multi-window output.
 
         Bug history: None was treated as lifetime (win=0), so users who transacted before
-        onboarding were counted. Now None → 30d BETWEEN join, which enforces temporal ordering.
+        onboarding were counted. Now None → multi-window (7d, 14d, 30d) via default_windows.
+        Each window uses numer_ts anchored to first_ts, enforcing temporal ordering.
         """
         qo = _activation_qo(activation_window_days=None)
         sql, _ = compile_query(qo, metrics)
-        numer_body = _cte_body("numer_cohort", sql)
-        assert "BETWEEN d.first_ts AND d.first_ts + INTERVAL '30' DAY" in numer_body, (
-            "activation_window_days=None must produce a 30-day BETWEEN join, not a raw time filter."
-        )
+        assert "INTERVAL '7' DAY" in sql, "Default multi-window must include 7d"
+        assert "INTERVAL '14' DAY" in sql, "Default multi-window must include 14d"
+        assert "INTERVAL '30' DAY" in sql, "Default multi-window must include 30d"
+        assert "d.first_ts" in sql, "Windows must be anchored to per-user first_ts (cohort-correct)"
 
-    def test_numerator_has_same_time_filter_as_denominator(self, metrics):
+    def test_numerator_scoped_to_denom_cohort(self, metrics):
         """
-        Numerator CTE must have the same time filter as denominator.
+        Numerator must be scoped to users in denom_cohort, not an independent scan.
 
-        Bug: denominator filtered to last 30 days but numerator had NO time filter,
-        scanning all history. This made rates asymmetric — denominator was recent
-        onboarders, numerator was all-time transactors, giving inflated rates.
+        Bug: numerator scanned all history while denominator was time-windowed.
+        Fix: multi-window path uses numer_events JOIN FROM denom_cohort, so the
+        numerator can only contain users who appear in the denom time window.
         """
         qo = _activation_qo(time_range_days=30, filters={"transaction_channel": "IMPS"})
         sql, _ = compile_query(qo, metrics)
-        numer_body = _cte_body("numer_cohort", sql)
         denom_body = _cte_body("denom_cohort", sql)
-        assert "INTERVAL '30'" in numer_body, (
-            "Numerator must have the same time filter as denominator.\n"
+        numer_body = _cte_body("numer_cohort", sql) or _cte_body("numer_events", sql)
+        assert denom_body, "denom_cohort CTE must exist"
+        assert numer_body, "numerator CTE (numer_cohort or numer_events) must exist"
+        assert "denom_cohort" in numer_body, (
+            "Numerator CTE must join FROM denom_cohort — prevents scanning all history.\n"
             "Bug: numerator scanned all history while denominator was time-windowed."
         )
         assert "INTERVAL '30'" in denom_body, "Denominator must still have its time filter"
@@ -1493,10 +1507,25 @@ class TestActivationRateDB:
         df = db_conn.execute(sql).df()
         assert len(df) == 1, f"Scalar metric must return exactly 1 row, got {len(df)}"
 
+    def _rate_col(self, df) -> str:
+        """Return the activation rate column name (single or multi-window variant)."""
+        for c in df.columns:
+            if c == "activation_rate" or c.startswith("activation_rate_"):
+                return c
+        raise KeyError(f"No activation_rate column found in {list(df.columns)}")
+
+    def _numer_col(self, df) -> str:
+        """Return the numerator column for the longest window available."""
+        for suffix in ("_30d", "_14d", "_7d", ""):
+            c = f"transaction_reconciled_users{suffix}"
+            if c in df.columns:
+                return c
+        raise KeyError(f"No transaction_reconciled_users column found in {list(df.columns)}")
+
     def test_scalar_rate_between_0_and_100(self, metrics, db_conn):
         sql, _ = compile_query(_activation_qo(), metrics)
         df = db_conn.execute(sql).df()
-        rate = float(df.iloc[0]["activation_rate"])
+        rate = float(df.iloc[0][self._rate_col(df)])
         assert 0 <= rate <= 100, (
             f"Activation rate must be 0-100%, got {rate}%.\n"
             "Bug: independent ROUND(COUNT/COUNT) pattern can exceed 100% when cohorts differ."
@@ -1507,8 +1536,9 @@ class TestActivationRateDB:
         sql, _ = compile_query(qo, metrics)
         df = db_conn.execute(sql).df()
         assert len(df) >= 1, "Monthly activation must return at least 1 month"
+        rc = self._rate_col(df)
         for _, row in df.iterrows():
-            rate = float(row["activation_rate"])
+            rate = float(row[rc])
             assert 0 <= rate <= 100, (
                 f"Month {row.get('month')}: activation rate {rate}% exceeds 100%.\n"
                 "Cohort CTE must bucket users by their denominator-event month."
@@ -1519,7 +1549,7 @@ class TestActivationRateDB:
         sql, _ = compile_query(_activation_qo(), metrics)
         df = db_conn.execute(sql).df()
         denom = int(df.iloc[0]["onboarding_completed_users"])
-        numer = int(df.iloc[0]["transaction_reconciled_users"])
+        numer = int(df.iloc[0][self._numer_col(df)])
         assert numer <= denom, (
             f"Numerator ({numer}) exceeds denominator ({denom}).\n"
             "LEFT JOIN on denom_cohort guarantees numer ⊆ denom for the same time window."
@@ -1530,7 +1560,7 @@ class TestActivationRateDB:
         sql, _ = compile_query(qo, metrics)
         df = db_conn.execute(sql).df()
         assert len(df) == 1
-        rate = df.iloc[0]["activation_rate"]
+        rate = df.iloc[0][self._rate_col(df)]
         assert rate is not None and str(rate).lower() != "nan", (
             "UPI activation rate must not be NULL or NaN."
         )
@@ -1539,21 +1569,22 @@ class TestActivationRateDB:
         qo = _activation_qo(filters={"transaction_channel": "UPI"})
         sql, _ = compile_query(qo, metrics)
         df = db_conn.execute(sql).df()
-        rate = float(df.iloc[0]["activation_rate"])
+        rate = float(df.iloc[0][self._rate_col(df)])
         assert 0 <= rate <= 100, f"UPI activation rate {rate}% is out of bounds"
 
     def test_expected_columns_present(self, metrics, db_conn):
         sql, _ = compile_query(_activation_qo(), metrics)
         df = db_conn.execute(sql).df()
-        for col in ("onboarding_completed_users", "transaction_reconciled_users", "activation_rate"):
-            assert col in df.columns, f"Expected column '{col}' missing from result"
+        assert "onboarding_completed_users" in df.columns, "denominator column missing"
+        assert self._numer_col(df), "numerator column missing"
+        assert self._rate_col(df), "activation_rate column missing"
 
     def test_monthly_expected_columns(self, metrics, db_conn):
         qo = _activation_qo(time_granularity="month", time_range_days=180)
         sql, _ = compile_query(qo, metrics)
         df = db_conn.execute(sql).df()
         assert "month" in df.columns
-        assert "activation_rate" in df.columns
+        assert self._rate_col(df), "activation_rate column missing in monthly result"
 
     def test_no_empty_result_for_30_day_window(self, metrics, db_conn):
         sql, _ = compile_query(_activation_qo(), metrics)
@@ -1578,8 +1609,9 @@ class TestActivationRateDB:
         assert "IS NOT NULL" in sql, "IS NOT NULL sentinel must survive into compiled SQL"
         df = db_conn.execute(sql).df()
         assert len(df) >= 1, "IN APP monthly trend must return at least 1 month of data"
+        rc = self._rate_col(df)
         for _, row in df.iterrows():
-            rate = float(row["activation_rate"])
+            rate = float(row[rc])
             assert 0 <= rate <= 100, f"IN APP activation rate {rate}% is out of bounds"
         # Also verify it returns MORE data than if we had used 'in_app' (which returns 0)
         denom = int(df.iloc[0]["onboarding_completed_users"])
