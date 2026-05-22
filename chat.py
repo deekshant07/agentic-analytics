@@ -24,9 +24,13 @@ load_dotenv(override=True)  # must run before core imports so LLM_STRONG/LLM_FAS
 try:
     import streamlit as _st_boot
 
-    for _k, _v in _st_boot.secrets.items():
-        if isinstance(_v, str) and _k not in os.environ:
-            os.environ[_k] = _v
+    for _k in (
+        "LLM_PROVIDER", "GROQ_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY",
+        "XAI_API_KEY", "CEREBRAS_API_KEY", "SAMBANOVA_API_KEY",
+        "LLM_STRONG_MODEL", "LLM_MEDIUM_MODEL", "LLM_FAST_MODEL",
+    ):
+        if _k in _st_boot.secrets and _k not in os.environ:
+            os.environ[_k] = str(_st_boot.secrets[_k])
 except Exception:
     pass
 
