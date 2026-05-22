@@ -781,11 +781,12 @@ def get_sql(
         if sql and str(sql).strip() not in ("", "__analyst__"):
             sql = "__diagnose__"
 
-    flow = [
-        f"orchestrate → {qo.analysis_type}",
-        f"resolver → {route}",
-        f"compiler → {'__diagnose__' if sql == '__diagnose__' else '__analyst__' if sql == '__analyst__' else 'SQL'}",
-    ]
+    fired_fixups = [d["fixup"] for d in (getattr(qo, "_fixup_deltas", None) or [])]
+    flow: list[str] = [f"orchestrate → {qo.analysis_type}"]
+    for fixup_name in fired_fixups:
+        flow.append(f"fixup → {fixup_name}")
+    flow.append(f"resolver → {route}")
+    flow.append(f"compiler → {'__diagnose__' if sql == '__diagnose__' else '__analyst__' if sql == '__analyst__' else 'SQL'}")
     setattr(qo, "_debug_flow", flow)
 
     return sql, metric_name, None, qo

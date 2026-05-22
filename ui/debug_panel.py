@@ -388,6 +388,7 @@ def _build_full_debug_signature(qo) -> dict:
         "metric_status_target": getattr(qo, "metric_status_target", None),
         "narration_metric_col": getattr(qo, "_narration_metric_col_debug", None),
         "narration_value_mode": getattr(qo, "_narration_value_mode_debug", None),
+        "fixup_deltas": list(getattr(qo, "_fixup_deltas", None) or []),
     }
 
 
@@ -550,7 +551,22 @@ def _render_debug_summary_v2(debug_sig: dict, metric_contract: dict, sql: str | 
         f"- time: granularity=`{debug_sig.get('time_granularity')}` · range_days=`{debug_sig.get('time_range_days')}` · source=`{debug_sig.get('time_source')}`"
     )
 
-    st.markdown("**2) Routing**")
+    fixup_deltas = debug_sig.get("fixup_deltas") or []
+    st.markdown("**2) Fixups**")
+    if fixup_deltas:
+        lines = []
+        for entry in fixup_deltas:
+            fname = entry.get("fixup", "?")
+            delta = entry.get("delta") or {}
+            for field, chg in delta.items():
+                bef = chg.get("before")
+                aft = chg.get("after")
+                lines.append(f"- `{fname}` · **{field}**: `{bef}` → `{aft}`")
+        st.markdown("\n".join(lines))
+    else:
+        st.markdown("- no fixups fired (all passes were no-ops)")
+
+    st.markdown("**3) Routing**")
     st.markdown(
         f"- route: `{debug_sig.get('route')}` · mode=`{debug_sig.get('effective_execution_mode')}`\n"
         f"- confidence: `{debug_sig.get('route_confidence')}` · reasons: `{', '.join(debug_sig.get('route_reasons') or []) or '—'}`\n"
@@ -558,27 +574,27 @@ def _render_debug_summary_v2(debug_sig: dict, metric_contract: dict, sql: str | 
         f"- comparison intent: `{_bool(debug_sig.get('comparison_intent'))}` · entities: `{', '.join(debug_sig.get('comparison_entities') or []) or '—'}` · guard: `{debug_sig.get('comparison_guard_status')}`"
     )
 
-    st.markdown("**3) Compile**")
+    st.markdown("**4) Compile**")
     st.markdown(
         f"- compiler mode: `{compiler_mode}`\n"
         f"- metric contract: `{metric_name}`\n"
         f"- SQL first line: `{(out.get('sql_first_line') or '—')}`"
     )
 
-    st.markdown("**4) Execution**")
+    st.markdown("**5) Execution**")
     st.markdown(
         f"- table rows: `{row_count if row_count is not None else '—'}`\n"
         f"- columns: `{', '.join(table_cols) if table_cols else '—'}`"
     )
 
-    st.markdown("**5) Narration**")
+    st.markdown("**6) Narration**")
     st.markdown(
         f"- selected metric column: `{narration_col or '—'}`\n"
         f"- value mode: `{narration_mode or '—'}`\n"
         f"- preview: `{_debug_trunc(out.get('narrative_preview') or '—', 260)}`"
     )
 
-    st.markdown("**6) Guardrails**")
+    st.markdown("**7) Guardrails**")
     guard_msgs = []
     if expected_rate:
         guard_msgs.append("expected rate metric: yes")
@@ -750,34 +766,46 @@ def _render_debug_pipeline(
     ]
     steps_html.append(_debug_step_html(3, "Orchestrator output (pre-override)", "ok", rows))
 
-    # ── Step 3 · Time overrides ───────────────────────────────────────────────
-    overrides_applied: list[tuple[str, str, str]] = []
-    for field, old, new in [
-        ("analysis_type",   pre.get("analysis_type"),   post_analysis),
-        ("metric_id",       pre.get("metric_id"),        post_metric_id),
-        ("time_granularity", pre.get("time_granularity"), post_gran),
-        ("time_range_days", pre.get("time_range_days"),  post_range),
-        ("date_from",       pre.get("date_from"),        post_datefrom),
-        ("date_to",         pre.get("date_to"),          post_dateto),
-    ]:
-        if str(old or "") != str(new or ""):
-            overrides_applied.append((field, str(old or "—"), str(new or "—")))
-    if overrides_applied:
-        rows = [
-            (
-                f'<div style="display:flex;gap:0.4rem;line-height:1.5;font-size:0.82rem">'
-                f'<span style="color:#64748b;min-width:160px;flex-shrink:0">{f}</span>'
-                f'<span style="color:#ef4444;font-family:monospace;text-decoration:line-through">{old}</span>'
-                f'<span style="color:#94a3b8;margin:0 0.25rem">→</span>'
-                f'<span style="color:#22c55e;font-family:monospace">{new}</span>'
-                f'</div>'
-            )
-            for f, old, new in overrides_applied
-        ]
-        steps_html.append(_debug_step_html(4, "Time overrides", "warn", rows))
+    # ── Step 4 · Fixup changes ────────────────────────────────────────────────
+    fixup_deltas = debug_sig.get("fixup_deltas") or []
+    if fixup_deltas:
+        # Build a flat list of (fixup_name, field, before, after) rows
+        table_rows_html: list[str] = []
+        for entry in fixup_deltas:
+            fname = entry.get("fixup", "?")
+            delta = entry.get("delta") or {}
+            for field, chg in delta.items():
+                bef = _debug_html_escape(str(chg.get("before") or "—"))
+                aft = _debug_html_escape(str(chg.get("after") or "—"))
+                fname_esc = _debug_html_escape(fname)
+                field_esc = _debug_html_escape(field)
+                table_rows_html.append(
+                    f'<tr>'
+                    f'<td style="padding:2px 8px;color:#7c3aed;font-family:monospace;font-size:0.78rem">{fname_esc}</td>'
+                    f'<td style="padding:2px 8px;color:#94a3b8;font-family:monospace;font-size:0.78rem">{field_esc}</td>'
+                    f'<td style="padding:2px 8px;color:#ef4444;font-family:monospace;font-size:0.78rem;text-decoration:line-through">{bef}</td>'
+                    f'<td style="padding:2px 8px;color:#22c55e;font-family:monospace;font-size:0.78rem">{aft}</td>'
+                    f'</tr>'
+                )
+        table_html = (
+            '<table style="width:100%;border-collapse:collapse;margin-top:0.3rem">'
+            '<tr>'
+            '<th style="text-align:left;color:#475569;font-size:0.72rem;padding:2px 8px">Fixup</th>'
+            '<th style="text-align:left;color:#475569;font-size:0.72rem;padding:2px 8px">Field</th>'
+            '<th style="text-align:left;color:#475569;font-size:0.72rem;padding:2px 8px">Before</th>'
+            '<th style="text-align:left;color:#475569;font-size:0.72rem;padding:2px 8px">After</th>'
+            '</tr>'
+            + "".join(table_rows_html)
+            + '</table>'
+        )
+        summary_row = _debug_kv(
+            "Fired fixups",
+            f"{len(fixup_deltas)} changed ({sum(len((e.get('delta') or {})) for e in fixup_deltas)} field mutations)",
+        )
+        steps_html.append(_debug_step_html(4, "Fixup changes", "warn", [summary_row], extra_html=table_html))
     else:
-        steps_html.append(_debug_step_html(4, "Time overrides", "skip",
-                                           [_debug_kv("Changes", "none")]))
+        steps_html.append(_debug_step_html(4, "Fixup changes", "skip",
+                                           [_debug_kv("Changes", "none — all fixups were no-ops")]))
 
     # ── Step 4 · Resolver ─────────────────────────────────────────────────────
     route         = debug_sig.get("route") or "—"
