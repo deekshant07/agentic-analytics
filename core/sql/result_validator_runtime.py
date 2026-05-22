@@ -111,6 +111,11 @@ def validate_result_shape(qo, df: pd.DataFrame) -> RuntimeValidation:
         breakdown = getattr(qo, "breakdown", None)
         if breakdown and breakdown in cols and len(num_cols) >= 1:
             return RuntimeValidation(True, "segment_shape_ok")
+        # Temporal-alias breakdown (e.g. LLM sets breakdown="month_name" for "by cohort month"):
+        # the fixup clears it to None and the compiler emits the time_granularity column.
+        gran = (getattr(qo, "time_granularity", None) or "day").lower()
+        if gran != "day" and gran in cols and len(num_cols) >= 1:
+            return RuntimeValidation(True, "segment_shape_ok")
         return RuntimeValidation(False, "segment_shape_mismatch", "I expected a segment breakdown but the result shape didn't match. Which dimension should I split by?")
 
     if analysis_type == "same_month_anchor":

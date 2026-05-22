@@ -289,6 +289,11 @@ def _apply_metric_variant_overrides(
 
 # ── 4. Invalid breakdown sanitization ────────────────────────────────────────
 
+_TEMPORAL_BREAKDOWN_RE = re.compile(
+    r"\b(month|week|day|year|date|cohort)\b", re.IGNORECASE
+)
+
+
 def _sanitize_invalid_breakdown(
     qo: QueryObject,
     sampled_values: Optional[dict],
@@ -297,14 +302,26 @@ def _sanitize_invalid_breakdown(
     Clear qo.breakdown when the requested column doesn't appear in the events
     table or has only one distinct value (not useful for slicing).
     Falls back to 'platform' which is always available.
+
+    Temporal aliases like "month_name" are cleared to None — the compiler uses
+    time_granularity to drive grouping and no dimensional breakdown is needed.
     """
     if not qo or qo.analysis_type != "segment" or not qo.breakdown:
         return
+
+    bd = str(qo.breakdown).strip()
+
+    # Temporal alias (e.g. "month_name", "cohort_month"): LLM used a time phrase as
+    # breakdown. Clear it so the compiler emits a clean temporal trend, not a bogus
+    # MAX(month_name) GROUP BY that errors or returns an unexpected shape.
+    if _TEMPORAL_BREAKDOWN_RE.search(bd):
+        qo.breakdown = None
+        return
+
     if not sampled_values:
         return
 
     event_vals = sampled_values.get("events", {})
-    bd = str(qo.breakdown).strip()
 
     if bd not in event_vals:
         qo.breakdown = "platform"
