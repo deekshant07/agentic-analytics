@@ -15,7 +15,7 @@ uv run streamlit run chat.py
 1. Push this repo to GitHub (see below).
 2. Go to [share.streamlit.io](https://share.streamlit.io) → **Create app**.
 3. Repository: your fork, **Branch**: `main`, **Main file path**: `chat.py`.
-4. **Advanced settings** → Python: `3.12` (matches `.python-version`).
+4. **Advanced settings** → Python: `3.12` (app supports 3.12+; local dev may use 3.13 via `uv`).
 5. **Secrets** (TOML format):
 
 ```toml
