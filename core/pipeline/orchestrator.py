@@ -1051,6 +1051,59 @@ def _resolve_qualified_prebuilt_metric(
     setattr(qo, "_qualified_metric_rescued", True)
 
 
+def _rescue_metric_id_for_named_concepts(
+    qo: QueryObject,
+    question: str,
+    catalog: dict,
+) -> None:
+    """
+    Deterministic post-LLM rescue: when metric_id=null but the prompt contains a
+    concept keyword (aarrr/category/domain_category from catalog), set metric_id.
+
+    Catalog-driven — no hardcoded domain knowledge, works for any industry.
+    Handles any phrasing: "14 day activation number", "share activation stats", etc.
+    """
+    if qo.metric_id:
+        return
+    if getattr(qo, "analysis_type", "") in ("retention", "clarify", "out_of_scope"):
+        return  # other rescues handle these
+
+    q_lower = question.lower()
+
+    # Build keyword → [metric] index from catalog concept fields
+    kw_to_metrics: dict[str, list[dict]] = {}
+    for m in _catalog_suggested_metrics(catalog):
+        if _is_retention_metric(m):
+            continue
+        keywords: set[str] = set()
+        for field in ("aarrr", "category"):
+            v = str(m.get(field) or "").lower().strip()
+            if len(v) >= 4:
+                keywords.add(v)
+        bd = m.get("builder_definition") or {}
+        v = str(bd.get("domain_category") or "").lower().strip()
+        if len(v) >= 4:
+            keywords.add(v)
+        for kw in keywords:
+            kw_to_metrics.setdefault(kw, []).append(m)
+
+    q_tokens = set(re.findall(r"\b[a-z][a-z0-9]*\b", q_lower)) - _ORCH_INFORMAL_METRIC_WORDS
+    for kw, candidates in kw_to_metrics.items():
+        if not re.search(rf"\b{re.escape(kw)}\b", q_lower):
+            continue
+        scored = sorted(
+            ((max(_score_metric_question_fit(q_tokens, m), 1), m) for m in candidates),
+            key=lambda x: (-x[0], len(x[1].get("id", ""))),
+        )
+        best = scored[0][1]
+        qo.metric_id = str(best.get("id") or "").strip() or None
+        if qo.metric_id:
+            qo.analysis_type = "metric"
+            apply_activation_window_from_prompt(qo, question, catalog=catalog)
+            setattr(qo, "_concept_keyword_rescued", True)
+        return
+
+
 @track(name="orchestrator", tags=["pipeline"], capture_input=False, capture_output=False)
 def orchestrate(
     question: str,
@@ -1165,6 +1218,7 @@ def orchestrate(
     qo.time_source = "explicit" if _question_has_time(question) else "default"
 
     _resolve_qualified_prebuilt_metric(qo, question, catalog, sampled_values)
+    _rescue_metric_id_for_named_concepts(qo, question, catalog)
 
     apply_activation_window_from_prompt(qo, question, catalog=catalog)
 
