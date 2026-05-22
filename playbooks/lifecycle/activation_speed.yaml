@@ -1,0 +1,72 @@
+id: lifecycle.activation_speed
+name: Activation Speed & Time-to-Value
+description: >
+  Measure how quickly new users reach their first meaningful value moment —
+  the activation event. Segment activation speed by cohort, platform, and
+  acquisition channel to identify which user groups are slow to activate and
+  what interventions can close the gap.
+
+match_signals:
+  keywords:
+    - activation speed
+    - time to activate
+    - time to first transaction
+    - time to first action
+    - how fast do users activate
+    - activation latency
+    - time to value
+    - time to first purchase
+    - how long to onboard
+    - onboarding speed
+    - first action timing
+    - activation funnel timing
+  anti_keywords:
+    - churn
+    - re-engagement
+    - campaign
+
+investigations:
+  - sub_question: >
+      What is the median and average time (in hours) from first app open
+      or registration to completing the activation event?
+    analysis_hint: time_between
+    rationale: >
+      The activation latency baseline reveals whether users are hitting value
+      within minutes (strong onboarding) or days (broken flow).
+    priority: 1
+
+  - sub_question: >
+      How does activation speed differ by platform (iOS vs Android vs Web)?
+      Show median time-to-activate per platform.
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform-level activation latency gaps point to UX friction specific
+      to one client — the fix may be as simple as a UI change.
+    priority: 2
+
+  - sub_question: >
+      Among users who activated within 24 hours vs those who took 7+ days —
+      what is their D30 retention rate?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Validates the strategic importance of fast activation — if early
+      activators retain at 2x the rate, fast-activation initiatives are
+      highest ROI investments.
+    priority: 3
+
+  - sub_question: >
+      Show the funnel from registration/install → first core action → activation
+      event to see where users drop before reaching value.
+    analysis_hint: funnel
+    rationale: >
+      Funnel view isolates the specific step where activation is being lost,
+      enabling surgical fixes rather than broad onboarding rewrites.
+    priority: 4
+
+narrative_requirements:
+  - "State the median and p75 time-to-activation overall"
+  - "Compare activation speed across platforms — name the slowest"
+  - "Quantify D30 retention for <24h activators vs 7+ day activators"
+  - "Identify the funnel step with highest drop-off before activation"
+  - "Recommend one intervention (push notification, onboarding step removal, in-app prompt) to accelerate activation"

@@ -1,0 +1,73 @@
+id: product.event_property_breakdown
+name: Event Property Explorer
+description: >
+  Deep-dive into what properties (platform, city, income bracket, occupation)
+  differentiate users who complete a specific event vs those who don't.
+  Answers "what kind of users do X?" and surfaces demographic or behavioural
+  patterns that drive or block key actions.
+
+match_signals:
+  keywords:
+    - which users do X
+    - who completes
+    - what type of users
+    - user properties for event
+    - demographic breakdown of event
+    - event by property
+    - what drives event
+    - property analysis
+    - event breakdown
+    - segment event
+    - who performs
+    - who does action
+    - user characteristics
+    - event demographics
+  anti_keywords:
+    - funnel
+    - retention
+    - time trend
+
+investigations:
+  - sub_question: >
+      Among users who completed the target event, what is the platform,
+      city, income bracket, occupation, and acquisition channel distribution?
+    analysis_hint: demographic_breakdown
+    rationale: >
+      Full demographic profile of event completers reveals the target user
+      archetype — essential for product positioning and targeted campaigns.
+    priority: 1
+
+  - sub_question: >
+      Which platform has the highest rate of users completing the target event?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform-level completion rates expose UX or feature availability gaps
+      that depress the event rate on specific clients.
+    priority: 2
+
+  - sub_question: >
+      Which city or geographic segment has the highest concentration of users
+      completing the event?
+    analysis_hint: segment
+    breakdown_hint: city
+    rationale: >
+      Geographic concentration guides localisation, growth team focus, and
+      supply-side expansion decisions.
+    priority: 3
+
+  - sub_question: >
+      What do users who completed the event do next within the same session?
+      Show the top follow-up events.
+    analysis_hint: journey
+    rationale: >
+      Post-event journey shows whether the event leads users deeper into
+      value or is a dead end, informing next-step nudge design.
+    priority: 4
+
+narrative_requirements:
+  - "Profile the top user archetype who completes the event (platform, city, income)"
+  - "State which platform and city have the highest and lowest completion rates"
+  - "Describe the typical next action after the event — does it lead to more value?"
+  - "Identify any surprising or non-obvious segment with high completion rates"
+  - "Recommend one targeting or personalisation change to increase the event completion rate"

@@ -1,0 +1,135 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Fintech-specific product metrics — neobanks, payment apps, lending, investment platforms.",
+    "extends": "universal.json"
+  },
+
+  "metrics": [
+
+    {
+      "id": "kyc_completion_rate",
+      "name": "KYC Completion Rate",
+      "category": "Activation",
+      "aarrr": "Activation",
+      "type": "conversion",
+      "description_hint": "% of users who started KYC and successfully completed it. Primary activation gate in any regulated fintech. Drop here = compliance friction.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains_all": [
+          ["kyc", "verif", "identity"],
+          ["complete", "success", "verified", "approved"]
+        ]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{end_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT CASE WHEN {event_col} = '{start_event}' THEN {user_col} END), 0), 1) AS kyc_completion_rate_pct FROM {table}"
+    },
+
+    {
+      "id": "payment_success_rate",
+      "name": "Payment Success Rate",
+      "category": "Revenue",
+      "aarrr": "Revenue",
+      "type": "ratio",
+      "description_hint": "% of initiated payments that complete successfully. Core reliability metric. Below 95% indicates infrastructure or UX issues.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains_all": [
+          ["payment", "transaction", "transfer", "pay"],
+          ["success", "complete", "confirmed"]
+        ]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{end_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT CASE WHEN {event_col} = '{start_event}' THEN {user_col} END), 0), 1) AS payment_success_rate_pct FROM {table}"
+    },
+
+    {
+      "id": "first_transaction_rate",
+      "name": "First Transaction Rate",
+      "category": "Activation",
+      "aarrr": "Activation",
+      "type": "ratio",
+      "description_hint": "% of all users who have completed at least one transaction. Key activation milestone — users who transact once are far more likely to stay.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains": ["transaction", "payment", "transfer", "purchase", "pay"]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{matched_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT {user_col}), 0), 1) AS first_txn_rate_pct FROM {table}"
+    },
+
+    {
+      "id": "avg_transaction_value",
+      "name": "Average Transaction Value",
+      "category": "Revenue",
+      "aarrr": "Revenue",
+      "type": "simple",
+      "description_hint": "Mean value per transaction. Segment by user cohort or product category to find high-value use cases worth doubling down on.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains": ["transaction", "payment", "transfer", "purchase"],
+        "numeric_col_contains": ["amount", "value", "price"]
+      },
+      "sql_template": "SELECT ROUND(AVG({numeric_col}), 2) AS avg_txn_value FROM {table} WHERE {event_col} = '{matched_event}' AND {numeric_col} > 0"
+    },
+
+    {
+      "id": "arpu",
+      "name": "Average Revenue Per User (ARPU)",
+      "category": "Revenue",
+      "aarrr": "Revenue",
+      "type": "ratio",
+      "description_hint": "Total transaction value divided by active users. Key monetisation health metric. Low ARPU with high DAU = engagement without revenue.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains": ["transaction", "payment", "transfer", "purchase"],
+        "numeric_col_contains": ["amount", "value"]
+      },
+      "sql_template": "SELECT ROUND(SUM({numeric_col}) / NULLIF(COUNT(DISTINCT {user_col}), 0), 2) AS arpu FROM {table} WHERE {event_col} = '{matched_event}' AND {numeric_col} > 0"
+    },
+
+    {
+      "id": "transaction_frequency",
+      "name": "Transactions Per Active User",
+      "category": "Engagement",
+      "aarrr": "Retention",
+      "type": "ratio",
+      "description_hint": "Average number of transactions per active user per month. Measures depth of usage — high-frequency users are your best retention cohort.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "event_name_contains": ["transaction", "payment", "transfer"]
+      },
+      "sql_template": "SELECT ROUND(COUNT(*) * 1.0 / NULLIF(COUNT(DISTINCT {user_col}), 0), 2) AS txns_per_user FROM {table} WHERE {event_col} = '{matched_event}' AND DATE({time_col}) >= DATE_TRUNC('month', CURRENT_DATE)"
+    },
+
+    {
+      "id": "loan_application_conversion",
+      "name": "Loan Application Conversion Rate",
+      "category": "Revenue",
+      "aarrr": "Revenue",
+      "type": "conversion",
+      "description_hint": "% of users who started a loan application and received approval. Tracks credit underwriting funnel quality.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains_all": [
+          ["loan", "credit", "lending", "borrow"],
+          ["approved", "disbursed", "sanctioned", "complete"]
+        ]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{end_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT CASE WHEN {event_col} = '{start_event}' THEN {user_col} END), 0), 1) AS loan_conversion_rate_pct FROM {table}"
+    },
+
+    {
+      "id": "investment_adoption_rate",
+      "name": "Investment Feature Adoption",
+      "category": "Engagement",
+      "aarrr": "Activation",
+      "type": "ratio",
+      "description_hint": "% of active users who have used any investment feature (mutual funds, stocks, gold, etc.). Cross-sell indicator — invested users have 3-5x higher LTV.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains": ["invest", "fund", "portfolio", "stock", "gold", "sip", "pot"]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{matched_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT {user_col}), 0), 1) AS investment_adoption_pct FROM {table}"
+    }
+
+  ]
+}

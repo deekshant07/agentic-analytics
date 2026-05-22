@@ -1,0 +1,89 @@
+id: quality.feature_breakage
+name: Feature Error / Technical Breakage
+description: >
+  Diagnose a sudden drop in a feature's usage or a spike in errors that suggests
+  a technical regression — broken UI, API errors, silent failures, or app crashes.
+  Works for any product where an event volume drops unexpectedly without a clear
+  business reason.
+
+match_signals:
+  keywords:
+    - error
+    - broken
+    - not working
+    - bug
+    - crash
+    - 500
+    - api error
+    - feature stopped
+    - sudden drop
+    - dropped overnight
+    - disappeared
+    - zero events
+    - missing data
+    - tracking issue
+    - no data
+    - data gap
+    - technical issue
+    - incident
+    - outage
+    - what happened to
+    - after the release
+    - after the update
+    - after release
+    - last release
+    - since the release
+    - since release
+    - since update
+    - regression
+    - unexpected drop
+  anti_keywords:
+    - churn
+    - engagement
+    - acquisition
+    - channel
+
+investigations:
+  - sub_question: >
+      Did the event volume for this feature drop suddenly on a specific date —
+      what was the exact day and how large was the drop in absolute terms?
+    analysis_hint: metric
+    rationale: >
+      Pinpointing the exact date of the drop correlates the incident with
+      a deployment, infrastructure event, or tracking change.
+    priority: 1
+
+  - sub_question: >
+      Is the drop concentrated on a specific platform, app version, or
+      geographic region — or is it universal across all surfaces?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Universal drops suggest infrastructure or tracking issues. Platform-
+      or version-specific drops suggest a code regression.
+    priority: 2
+
+  - sub_question: >
+      Are related upstream or downstream events also dropping, or is the
+      drop isolated to this single feature?
+    analysis_hint: metric
+    rationale: >
+      Checking adjacent events distinguishes a broken feature (isolated) from
+      a tracking pipeline failure (multiple events drop simultaneously).
+    priority: 3
+
+  - sub_question: >
+      Have the users who were previously using this feature shifted to an
+      alternative — or have they simply stopped engaging?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      User substitution would show parallel rise in a related event. Pure
+      abandonment with no substitution points to technical breakage.
+    priority: 4
+
+narrative_requirements:
+  - "State the exact date the drop started and the magnitude (absolute and percentage)"
+  - "Determine whether the drop is universal or platform/version-specific"
+  - "State whether adjacent events also dropped (pipeline failure vs feature bug)"
+  - "Explicitly say whether this looks like a data/tracking issue or a real user impact"
+  - "Recommend: engineering hotfix, tracking audit, or pipeline check"

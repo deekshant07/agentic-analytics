@@ -65,6 +65,19 @@ def generate_catalog_md(catalog, custom_events=None, exclusions=None, company_na
                     lines.append(f"  - `{prop['raw_name']}` ({prop['display_name']}): {prop['description']}{val_str}")
             lines.append("")
 
+        flow_candidates = entry.get("flow_candidates", [])
+        if flow_candidates:
+            lines.append("### Flow candidates")
+            for flow in flow_candidates[:8]:
+                entry_events = ", ".join(f"`{e}`" for e in flow.get("entry_events", [])) or "none"
+                success_events = ", ".join(f"`{e}`" for e in flow.get("success_events", [])) or "none"
+                failure_events = ", ".join(f"`{e}`" for e in flow.get("failure_events", [])) or "none"
+                lines.append(
+                    f"- **{flow.get('journey','general').replace('_',' ').title()} / {flow.get('object','general').replace('_',' ').title()}**:"
+                    f" start={entry_events}; success={success_events}; failure={failure_events}"
+                )
+            lines.append("")
+
         high_cols = [c for c in entry.get("columns",[]) if c.get("analysis_priority")=="high" and not c.get("is_pii")]
         if high_cols:
             lines.append("### Key dimensions ★")
@@ -96,8 +109,18 @@ def generate_catalog_md(catalog, custom_events=None, exclusions=None, company_na
         if metrics:
             lines.append("### Suggested metrics")
             for m in metrics:
-                hint = f"\n  `{m['sql_hint']}`" if m.get("sql_hint") else ""
-                lines.append(f"- **{m['name']}**: {m['description']}{hint}")
+                aarrr = m.get("aarrr", "") or m.get("category", "")
+                tag   = f" `[{aarrr}]`" if aarrr else ""
+                hint  = f"\n  `{m['sql_hint']}`" if m.get("sql_hint") else ""
+                lines.append(f"- **{m['name']}**{tag}: {m['description']}{hint}")
+            lines.append("")
+
+        suppressed = entry.get("suppressed_metrics", [])
+        if suppressed:
+            lines.append("### Suppressed metrics")
+            for m in suppressed:
+                reasons = "; ".join(m.get("validation_reasons", [])) or "validation failed"
+                lines.append(f"- **{m.get('name','Unknown Metric')}**: {reasons}")
             lines.append("")
 
     lines += ["---", "## Custom Events", "_Use these names directly — never expand the SQL manually._", ""]
@@ -123,6 +146,30 @@ def generate_catalog_md(catalog, custom_events=None, exclusions=None, company_na
     for c in exclusions.get("conventions", []):
         lines.append(f"- {c}")
     lines.append("")
+
+    # ── Source-of-truth conflicts (only rendered when present) ───────────────
+    conflicts = catalog.get("__conflicts__", [])
+    if conflicts:
+        n_errors   = sum(1 for c in conflicts if c.get("severity") == "error")
+        n_warnings = len(conflicts) - n_errors
+        lines += [
+            "---",
+            "## ⚠ Metric Conflicts Detected",
+            f"_{n_errors} error(s), {n_warnings} warning(s) — resolve before relying on these metrics._",
+            "",
+            "| Severity | Type | Details |",
+            "|----------|------|---------|",
+        ]
+        for c in conflicts:
+            icon     = "🔴 Error" if c.get("severity") == "error" else "🟡 Warning"
+            ctype    = c.get("type", "").replace("_", " ").title()
+            reason   = c.get("reason", "")
+            items    = "; ".join(c.get("items", []))
+            cell     = f"{reason}<br>_Affected:_ {items}" if items else reason
+            lines.append(f"| {icon} | {ctype} | {cell} |")
+        lines.append("")
+        lines.append("_Fix: open `catalog_editor.py`, review the flagged metrics, and align their SQL definitions._")
+        lines.append("")
 
     return "\n".join(lines)
 

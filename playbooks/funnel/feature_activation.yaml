@@ -1,0 +1,76 @@
+id: funnel.feature_activation
+name: Feature Activation Funnel
+description: >
+  Diagnose the path from user signup or discovery to first meaningful use of
+  a specific feature. Works for any "aha moment" analysis — the funnel from
+  account creation to the first value-delivering action.
+
+match_signals:
+  keywords:
+    - activation
+    - activated
+    - first use
+    - first time
+    - aha moment
+    - time to value
+    - feature adoption
+    - never used
+    - signed up but
+    - registered but never
+    - didn't activate
+    - low activation
+    - activation rate
+    - activation funnel
+    - never completed
+  anti_keywords:
+    - churn
+    - re-engage
+    - paid
+    - revenue
+    - checkout
+
+investigations:
+  - sub_question: >
+      What percentage of new users who signed up actually reached the
+      activation milestone (first meaningful feature use), and how has
+      this rate changed over the last 30 days?
+    analysis_hint: metric
+    rationale: >
+      The activation rate is the north-star for this analysis. Trend tells
+      you whether the gap between signup and activation is widening.
+    priority: 1
+
+  - sub_question: >
+      How many users who signed up in the last 30 days have NOT yet
+      performed their first meaningful action — and what platform are they on?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Quantifying the non-activated cohort and its platform distribution
+      shows the size of the opportunity and where to intervene.
+    priority: 2
+
+  - sub_question: >
+      How long does it take users to go from signup to their first value
+      action — and is this time increasing or decreasing?
+    analysis_hint: time_between
+    rationale: >
+      Rising time-to-activation signals friction in the path. Shortening
+      it via onboarding nudges is often the highest-leverage lever.
+    priority: 3
+
+  - sub_question: >
+      Which acquisition channel or user segment has the highest vs lowest
+      activation rate — where should we focus re-engagement?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      Segment differences reveal whether the activation problem is universal
+      or concentrated in specific traffic sources or user demographics.
+    priority: 4
+
+narrative_requirements:
+  - "State the current activation rate and its trend direction"
+  - "Quantify the number of users stuck between signup and activation"
+  - "State the median time-to-activation and whether it is changing"
+  - "Identify the segment (channel, platform, or demographic) with lowest activation"
+  - "Recommend one specific intervention: in-app nudge, onboarding step change, or channel targeting"

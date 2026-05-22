@@ -1,0 +1,75 @@
+id: growth.revenue_cohort_ltv
+name: Revenue Cohort Quality & LTV
+description: >
+  Compare the revenue quality of acquisition cohorts — which channels or
+  cohort months produce users with the highest lifetime value and transaction
+  depth. Answers "which cohorts are worth acquiring more of?" and sizes
+  payback periods for each channel.
+
+match_signals:
+  keywords:
+    - ltv
+    - lifetime value
+    - cohort revenue
+    - revenue cohort
+    - cohort quality
+    - high value cohort
+    - best cohort
+    - revenue by cohort
+    - transactions per cohort
+    - cohort ltv
+    - value by acquisition
+    - revenue per user
+    - high revenue users
+    - channel ltv
+    - channel quality
+  anti_keywords:
+    - onboarding
+    - d7 retention
+    - user lifecycle
+
+investigations:
+  - sub_question: >
+      For each acquisition cohort (monthly), what is the average number of
+      transactions and average transaction value per user?
+    analysis_hint: xyz_matrix
+    rationale: >
+      Cohort × transaction depth matrix reveals which months or channels
+      produce high-LTV users vs one-time transactors.
+    priority: 1
+
+  - sub_question: >
+      Which acquisition channels (organic, referral, paid, etc.) produce users
+      with the highest average transaction count per user?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      Channel-level LTV ranking directly informs budget allocation — shift
+      spend toward channels with the best payback.
+    priority: 2
+
+  - sub_question: >
+      How do transaction rates differ across user income brackets or occupation
+      segments?
+    analysis_hint: segment
+    breakdown_hint: income_bucket
+    rationale: >
+      Income/occupation segmentation reveals which user profiles monetize best
+      and guides targeting for paid acquisition campaigns.
+    priority: 3
+
+  - sub_question: >
+      Among users who transacted once, how many went on to transact a second
+      time? Show the funnel from first to second transaction.
+    analysis_hint: behavioral_cohort
+    rationale: >
+      First-to-second transaction conversion rate is the most important LTV
+      driver — a low rate means one-time users are not becoming habitual ones.
+    priority: 4
+
+narrative_requirements:
+  - "Rank acquisition cohorts by average transactions per user — name the top 2 and bottom 2"
+  - "Identify which acquisition channel delivers the highest average transaction depth"
+  - "State the first-to-second transaction conversion rate and compare to industry benchmarks"
+  - "Name the income or demographic segment with highest transaction rate"
+  - "Recommend one cohort to invest more acquisition budget in and explain why"

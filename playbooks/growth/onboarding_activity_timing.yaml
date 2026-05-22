@@ -1,0 +1,48 @@
+# Matched for DEEP analysis only (qo.depth == "deep") — see core/playbooks.py.
+# Documents a common gap: calendar onboarding-vs-activity splits are not a single catalog column.
+
+id: growth.onboarding_activity_timing
+name: Onboarding timing vs later activity
+description: >
+  User wants to compare people who completed onboarding in the same calendar month as a
+  later behavior (e.g. first transaction) vs everyone else. This is a cross-date lifecycle
+  definition — not the same as acquisition_cohort (marketing channel). Two sound implementations:
+  (1) a modeled onboarding date on the users table; (2) first onboarding_completed (or similar)
+  from the events stream — the quick compiler uses (2) until (1) is exposed in the semantic layer.
+
+match_signals:
+  keywords:
+    - onboarded in the same month
+    - onboarded same month
+    - same month as onboarding
+    - onboarding month vs
+    - split transacting users by onboard
+    - lifecycle split
+    - first transaction same month as onboard
+  anti_keywords:
+    - acquisition channel only
+    - by referral only
+
+investigations:
+  - sub_question: >
+      What share of March transactors had their first onboarding_completed in the same
+      calendar month as their first successful transaction — vs onboarded in an earlier month?
+    analysis_hint: same_month_anchor
+    event_hint: transaction_reconciled
+    rationale: >
+      Quick path: orchestrator sets analysis_type same_month_anchor (event=activity in window,
+      event_b=onboarding_completed); compiler emits a deterministic bucket query.
+    priority: 1
+
+  - sub_question: >
+      As a proxy, how do transacting users break down by acquisition_cohort (channel) in the window?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      Channel mix is often actionable while lifecycle-month logic is being modeled in the warehouse.
+    priority: 2
+
+narrative_requirements:
+  - "Contrast user-table onboarding_date (preferred when available) vs event-derived first onboarding_completed"
+  - "State clearly if the answer uses a proxy dimension (channel) vs true same-month onboarding logic"
+  - "Recommend adding a derived column or view for onboarding_month vs first_txn_month if the product needs this weekly"

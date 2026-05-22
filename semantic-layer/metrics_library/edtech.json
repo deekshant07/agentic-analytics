@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Edtech product metrics",
+    "extends": "universal.json"
+  },
+  "metrics": [
+    {
+      "id": "course_completion_rate",
+      "name": "Course Completion Rate",
+      "category": "Activation",
+      "aarrr": "Activation",
+      "type": "conversion",
+      "description_hint": "% of users who started and completed a course.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains_all": [
+          ["course", "lesson", "enroll", "start"],
+          ["complete", "finished", "certified", "passed"]
+        ]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{end_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT CASE WHEN {event_col} = '{start_event}' THEN {user_col} END), 0), 1) AS course_completion_rate_pct FROM {table}"
+    },
+    {
+      "id": "weekly_learning_users",
+      "name": "Weekly Learning Users",
+      "category": "Engagement",
+      "aarrr": "Retention",
+      "type": "cumulative",
+      "description_hint": "Unique users active in learning events in a 7-day window.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "event_name_contains": ["lesson", "course", "practice", "quiz", "study", "session"]
+      },
+      "sql_template": "SELECT DATE({time_col}) AS date, COUNT(DISTINCT {user_col}) AS wlu FROM {table} WHERE {event_col} = '{matched_event}' AND DATE({time_col}) BETWEEN DATE(CURRENT_DATE - INTERVAL '6 days') AND CURRENT_DATE GROUP BY 1"
+    }
+  ]
+}

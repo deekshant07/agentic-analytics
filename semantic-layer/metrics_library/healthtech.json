@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Healthtech product metrics",
+    "extends": "healthcare.json"
+  },
+  "metrics": [
+    {
+      "id": "appointment_completion_rate",
+      "name": "Appointment Completion Rate",
+      "category": "Activation",
+      "aarrr": "Activation",
+      "type": "conversion",
+      "description_hint": "% of booked appointments that were completed.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains_all": [
+          ["appointment", "book", "scheduled"],
+          ["completed", "attended", "consulted", "success"]
+        ]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{end_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT CASE WHEN {event_col} = '{start_event}' THEN {user_col} END), 0), 1) AS appointment_completion_rate_pct FROM {table}"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+id: lifecycle.user_lifecycle_stages
+name: User Lifecycle Stage Distribution
+description: >
+  Classify all active users into lifecycle stages — New, Casual, Engaged,
+  Power User, At Risk, and Churned — based on recency and frequency of their
+  core action. Answers "where are our users in their product journey?" and
+  surfaces which stages are growing or shrinking.
+
+match_signals:
+  keywords:
+    - lifecycle
+    - lifecycle stage
+    - lifecycle distribution
+    - user health
+    - active vs churned
+    - where are users
+    - user journey stage
+    - new vs active vs churned
+    - user segments
+    - user classification
+    - health of the user base
+    - power users
+    - at risk users
+    - churned users
+    - user state
+  anti_keywords:
+    - funnel
+    - onboarding steps
+    - registration
+
+investigations:
+  - sub_question: >
+      What is the current distribution of users across lifecycle stages —
+      New, Casual, Engaged, Power User, At Risk, and Churned?
+    analysis_hint: user_lifecycle
+    rationale: >
+      Stage distribution is the baseline health metric. A large At Risk or
+      Churned bucket demands intervention before it becomes permanent loss.
+    priority: 1
+
+  - sub_question: >
+      How has the number of daily active users (core action) trended over the
+      last 30 days — is the active base growing or contracting?
+    analysis_hint: metric
+    rationale: >
+      The lifecycle snapshot is static. The trend line reveals whether the
+      user health is improving or deteriorating.
+    priority: 2
+
+  - sub_question: >
+      Which platform (iOS, Android, Web) has the highest share of At Risk
+      and Churned users?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform-level lifecycle variance points to UX or feature gaps specific
+      to one client type, enabling targeted fixes.
+    priority: 3
+
+  - sub_question: >
+      Among At Risk users (inactive 15-30 days), what was their last action
+      before going quiet?
+    analysis_hint: journey
+    rationale: >
+      Knowing the last touchpoint before at-risk users went silent reveals
+      where to intervene: a failed flow, a dead end, or a missing hook.
+    priority: 4
+
+  - sub_question: >
+      Is the change in active user count driven by a shift in new users
+      (first event in last 30 days) vs returning users — which population
+      grew or shrank more?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      New-user growth masking returning-user decline signals poor retention
+      even during apparent growth. Returning-user growth is stickier and
+      more valuable for LTV forecasting.
+    priority: 5
+
+narrative_requirements:
+  - "State how many users are in each stage and the Churned/At Risk percentage"
+  - "Identify whether the Active + Engaged base is growing or shrinking over the last 30 days"
+  - "Name the platform with the worst lifecycle health"
+  - "Recommend one intervention for the largest at-risk or churned bucket"
+  - "Suggest a re-engagement mechanic specific to the last-action finding"

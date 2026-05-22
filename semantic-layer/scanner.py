@@ -15,6 +15,8 @@ import json
 from pathlib import Path
 from dataclasses import dataclass, field, asdict
 
+from event_semantics import infer_event_semantics, infer_flow_candidates, infer_capabilities
+
 
 @dataclass
 class ColumnProfile:
@@ -37,6 +39,9 @@ class TableProfile:
     event_properties: dict   # event_name -> list of non-null column names
     event_groups: dict       # event_name -> {group_col: value, ...}
     event_counts: dict       # event_name -> row count
+    event_semantics: dict    # event_name -> semantic interpretation
+    flow_candidates: list    # detected lifecycle / process candidates
+    capabilities: dict       # inferred generic product/data capabilities
     date_range: dict         # {min: str, max: str, days: int}
     unique_users: int        # COUNT(DISTINCT user_id)
     product_signals: dict    # pre-computed: feature_adoption, funnels, retention
@@ -160,6 +165,10 @@ def compute_product_signals(conn, table_name: str, event_name_col: str,
             pass
 
     return signals
+
+
+def _columns_as_dicts(columns: list[ColumnProfile]) -> list[dict]:
+    return [asdict(col) for col in columns]
 
 
 def scan(db_path: str) -> dict:
@@ -356,7 +365,10 @@ def scan(db_path: str) -> dict:
                         FROM "{table_name}"
                     """).fetchone()
                     if r and r[0] and r[1]:
-                        days = (r[1] - r[0]).days if hasattr(r[1], 'days') else None
+                        try:
+                            days = (r[1] - r[0]).days
+                        except Exception:
+                            days = None
                         date_range = {
                             "min": str(r[0]),
                             "max": str(r[1]),
@@ -396,6 +408,19 @@ def scan(db_path: str) -> dict:
                 retention = product_signals.get("retention", {})
                 print(f"    → {n_funnels} funnels detected  |  retention: {retention}")
 
+        event_semantics = {}
+        flow_candidates = []
+        capabilities = {}
+        if is_event_table and event_names:
+            event_semantics = infer_event_semantics(
+                event_names, event_counts=event_counts, event_groups=event_groups
+            )
+            flow_candidates = infer_flow_candidates(
+                event_semantics, auto_funnels=product_signals.get("auto_funnels", [])
+            )
+            capabilities = infer_capabilities(event_semantics, flow_candidates, _columns_as_dicts(columns))
+            print(f"    → {len(event_semantics)} semantic events  |  {len(flow_candidates)} flow candidates")
+
         profile = TableProfile(
             name=table_name,
             row_count=row_count,
@@ -407,6 +432,9 @@ def scan(db_path: str) -> dict:
             event_properties=event_properties,
             event_groups=event_groups,
             event_counts=event_counts,
+            event_semantics=event_semantics,
+            flow_candidates=flow_candidates,
+            capabilities=capabilities,
             date_range=date_range,
             unique_users=unique_users,
             product_signals=product_signals,

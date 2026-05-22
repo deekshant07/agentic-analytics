@@ -1,0 +1,73 @@
+id: product.feature_stickiness
+name: Feature Stickiness & Habit Loop
+description: >
+  Identify which features create return habits — measured by DAU/MAU ratio
+  per feature and power user frequency distribution. Features with high
+  stickiness should be promoted in onboarding; low-stickiness features may
+  need redesign or removal.
+
+match_signals:
+  keywords:
+    - feature stickiness
+    - which features are sticky
+    - habit forming
+    - habit loop
+    - feature engagement
+    - feature frequency
+    - feature adoption frequency
+    - daily feature usage
+    - how often feature used
+    - feature power users
+    - feature engagement depth
+    - feature return rate
+    - most engaged feature
+  anti_keywords:
+    - overall dau
+    - total transactions
+    - acquisition
+
+investigations:
+  - sub_question: >
+      For the most adopted features (top 5 events by unique users), what
+      is the daily vs monthly active user ratio for each?
+    analysis_hint: stickiness
+    rationale: >
+      DAU/MAU per feature quantifies habit formation — a feature used daily
+      by 30%+ of its monthly users is a core habit loop.
+    priority: 1
+
+  - sub_question: >
+      Among users who use a specific feature regularly (5+ times in the
+      last 30 days), what is their D30 retention rate compared to users
+      who use it rarely (1-2 times)?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Retention uplift from feature frequency validates its role in the
+      habit loop and justifies investment in promoting it.
+    priority: 2
+
+  - sub_question: >
+      What is the power user frequency distribution for the core action —
+      how many users perform it 1x, 2-3x, weekly, or daily?
+    analysis_hint: stickiness
+    rationale: >
+      The power user curve shapes the engagement strategy — if the 80th
+      percentile only uses the feature 3x per month, the product isn't
+      building daily habits yet.
+    priority: 3
+
+  - sub_question: >
+      After users first discover and use a sticky feature, what do they do
+      next in the same session?
+    analysis_hint: journey
+    rationale: >
+      Post-feature journey shows whether sticky features cross-sell to
+      other value-creating actions or are used in isolation.
+    priority: 4
+
+narrative_requirements:
+  - "Name the top 3 stickiest features by DAU/MAU ratio"
+  - "State the retention uplift for power users of the stickiest feature"
+  - "Describe the power user curve — what % of users are in the daily-habit tier?"
+  - "Describe what users do after engaging with the stickiest feature"
+  - "Recommend one onboarding change to surface the stickiest feature earlier"

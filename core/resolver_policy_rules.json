@@ -1,0 +1,34 @@
+{
+  "routes": [
+    {
+      "name": "core_metric",
+      "route": "orchestrator",
+      "priority": 100,
+      "base_confidence": 0.95
+    },
+    {
+      "name": "custom_split",
+      "route": "custom_split",
+      "priority": 80,
+      "base_confidence": 0.9
+    },
+    {
+      "name": "custom_single",
+      "route": "custom_single",
+      "priority": 60,
+      "base_confidence": 0.78
+    },
+    {
+      "name": "custom_segment",
+      "route": "custom_segment",
+      "priority": 55,
+      "base_confidence": 0.8
+    },
+    {
+      "name": "default_compiler",
+      "route": "orchestrator",
+      "priority": 10,
+      "base_confidence": 0.55
+    }
+  ]
+}

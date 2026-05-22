@@ -1,0 +1,72 @@
+id: lifecycle.first_week_signals
+name: First Week Behaviour Predictors
+description: >
+  Identify which actions in days 1-7 most strongly predict D30 retention.
+  Classic "aha moment" analysis — find the feature or event that separates
+  users who stay from users who churn, and measure how quickly activating
+  users reach it.
+
+match_signals:
+  keywords:
+    - first week
+    - day 1 behaviour
+    - aha moment
+    - activation signal
+    - early signal
+    - predict retention
+    - what predicts retention
+    - onboarding signals
+    - d1 to d7 actions
+    - early user behaviour
+    - first session
+    - activation event
+    - habit formation
+    - early engagement
+  anti_keywords:
+    - acquisition channel
+    - paid campaign
+    - revenue
+
+investigations:
+  - sub_question: >
+      Among users who joined in the last 90 days, which events did they complete
+      in their first 7 days? Show the frequency of each early action.
+    analysis_hint: metric
+    rationale: >
+      Frequency of first-week events ranks candidate activation signals — the
+      most common actions among retained users are the leading indicators.
+    priority: 1
+
+  - sub_question: >
+      How long does it take (in hours/days) from first app open to completing
+      the activation event?
+    analysis_hint: time_between
+    rationale: >
+      Activation speed predicts stickiness. Users who activate within 24h
+      retain at significantly higher rates; slow activators need nudges.
+    priority: 2
+
+  - sub_question: >
+      Among users who completed the activation event in their first week vs
+      those who did not — what is the D30 retention rate difference?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Quantifies the lift from the activation event, validating whether it is
+      genuinely causal or just correlated with intent.
+    priority: 3
+
+  - sub_question: >
+      What do users do immediately AFTER completing the activation event?
+      Show the next 3 events in their journey.
+    analysis_hint: journey
+    rationale: >
+      Post-activation path shows whether users naturally progress toward the
+      core value loop or get lost — informs onboarding flow design.
+    priority: 4
+
+narrative_requirements:
+  - "Name the top 3 first-week events most common among 30-day retained users"
+  - "State the median hours to activation and the drop-off at each hour tier"
+  - "Quantify the D30 retention uplift from completing vs not completing the activation event"
+  - "Describe the most common post-activation path (what users do next)"
+  - "Recommend one change to the onboarding flow to accelerate the activation moment"

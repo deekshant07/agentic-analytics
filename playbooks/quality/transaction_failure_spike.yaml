@@ -1,0 +1,77 @@
+id: quality.transaction_failure_spike
+name: Transaction / Payment Failure Spike
+description: >
+  Diagnose a sudden or gradual rise in transaction, payment, or API failures.
+  Works for fintech payments, e-commerce checkouts, SaaS billing, or any
+  success-rate metric. The LLM maps these angles to catalog status/failure columns.
+
+match_signals:
+  keywords:
+    - transaction failure
+    - payment failure
+    - failed
+    - failures
+    - failure rate
+    - success rate
+    - error rate
+    - spike
+    - dropped
+    - payment issue
+    - transaction issue
+    - why are transactions failing
+    - failure spike
+    - transaction success
+    - payment success
+    - decline rate
+  anti_keywords:
+    - onboarding
+    - signup
+    - churn
+    - retention
+    - engagement
+
+investigations:
+  - sub_question: >
+      How has the transaction or payment failure rate (failures / total attempts)
+      trended over the last 30 days — when did the spike start?
+    analysis_hint: metric
+    rationale: >
+      Rate trend pinpoints when the failure spike began. Comparing to a
+      stable baseline isolates whether this is new or worsening gradually.
+    priority: 1
+
+  - sub_question: >
+      Is the failure rate worse on a specific platform, device type, or
+      geographic region — where is the problem concentrated?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Spatial isolation (platform, region, channel) is often the fastest
+      path to root cause — e.g., Android payment SDK bug, specific bank down.
+    priority: 2
+
+  - sub_question: >
+      What are the most common failure reasons or error codes, and which
+      reason accounts for the largest share of failures?
+    analysis_hint: segment
+    breakdown_hint: failure_reason
+    rationale: >
+      Failure reason breakdown tells you whether this is a systemic issue
+      (one dominant reason) or scattered (infrastructure instability).
+    priority: 3
+
+  - sub_question: >
+      How has the total volume of transaction attempts changed alongside the
+      failure rate — is this a demand spike or a quality degradation?
+    analysis_hint: metric
+    rationale: >
+      Separating volume change from rate change is critical: a sudden influx
+      of new users can inflate failures without product degradation.
+    priority: 4
+
+narrative_requirements:
+  - "State the current failure rate and how it compares to the baseline period"
+  - "Identify when the spike started relative to any known releases or incidents"
+  - "Name the top failure reason and its share of total failures"
+  - "State whether this is demand-driven (volume spike) or quality-driven (rate change)"
+  - "Recommend whether to escalate to engineering (technical) or ops (process)"

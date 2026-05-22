@@ -1,0 +1,75 @@
+id: retention.stickiness_dau_mau
+name: Product Stickiness (DAU/MAU & Power Users)
+description: >
+  Measure how habitually users return — expressed as DAU/MAU ratio (daily
+  stickiness) and the power user frequency distribution. Industry benchmarks:
+  >25% DAU/MAU = strong habit, 10-25% = casual usage, <10% = utility/episodic.
+  Answers "is this product forming habits?" and "who are the power users?"
+
+match_signals:
+  keywords:
+    - stickiness
+    - dau mau
+    - dau/mau
+    - l7
+    - l28
+    - daily monthly ratio
+    - habit
+    - how often users return
+    - user engagement depth
+    - power users
+    - engaged users
+    - frequency of use
+    - how sticky
+    - usage frequency
+    - daily engagement
+    - returning users frequency
+  anti_keywords:
+    - acquisition
+    - new users
+    - funnel
+    - churn
+
+investigations:
+  - sub_question: >
+      What is the DAU/MAU stickiness ratio over the last 60 days?
+      Show the trend of daily active users, monthly active users, and the ratio.
+    analysis_hint: stickiness
+    rationale: >
+      DAU/MAU is the canonical stickiness metric. A rising ratio means users
+      are building stronger habits; a falling ratio signals engagement erosion.
+    priority: 1
+
+  - sub_question: >
+      How is event usage distributed across users — what share of users
+      perform the core action once, occasionally, regularly, or 30+ times?
+    analysis_hint: stickiness
+    rationale: >
+      The power user curve reveals the concentration of engagement. If 10% of
+      users drive 80% of events, the product has a retention problem outside
+      its power core.
+    priority: 2
+
+  - sub_question: >
+      How has DAU trended week over week? Is the daily active base growing?
+    analysis_hint: metric
+    rationale: >
+      Trend provides the directional signal — stickiness ratio alone is
+      insufficient if the denominator (MAU) is also shrinking.
+    priority: 3
+
+  - sub_question: >
+      Which platform (iOS, Android, Web) has the highest engagement frequency?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform-level engagement gaps may indicate a native feature or UX
+      advantage on one client that can be replicated elsewhere.
+    priority: 4
+
+narrative_requirements:
+  - "State the current DAU/MAU ratio and compare to the 25% benchmark"
+  - "Describe the power user distribution — what % of users are 31+ event users?"
+  - "Identify whether stickiness is rising or falling and over what period"
+  - "Name the platform with highest and lowest engagement frequency"
+  - "Recommend one mechanic to shift casual users (2-3x) into regular users (8-15x)"

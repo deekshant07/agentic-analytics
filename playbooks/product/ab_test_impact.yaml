@@ -1,0 +1,88 @@
+id: product.ab_test_impact
+name: A/B Test or Feature Launch Impact Analysis
+description: >
+  Measure the impact of a recent product change, A/B test, feature launch,
+  or UI redesign on key metrics. Answers "did this change move the needle?"
+  by comparing behaviour before and after the change.
+
+match_signals:
+  keywords:
+    - a/b test
+    - ab test
+    - experiment
+    - launch impact
+    - feature launch
+    - release impact
+    - before and after
+    - since we launched
+    - after the update
+    - did it work
+    - impact of
+    - effect of
+    - did the change
+    - ship
+    - shipped
+    - rolled out
+    - rollout impact
+    - v2
+    - redesign
+    - how did the test
+    - test perform
+    - how did our test
+    - did the launch
+    - how did the launch
+    - feature perform
+    - perform
+    - test result
+    - test results
+  anti_keywords:
+    - churn
+    - lapsed
+    - acquisition channel
+
+investigations:
+  - sub_question: >
+      How did the key metric (conversion rate, activation rate, or engagement)
+      change in the period after the launch compared to the equivalent period
+      before — what is the before/after delta?
+    analysis_hint: metric
+    rationale: >
+      The before/after comparison is the primary signal. A clean period
+      split avoids confounding with seasonal effects when periods are equal length.
+    priority: 1
+
+  - sub_question: >
+      Is the impact consistent across all platforms and user segments,
+      or is the effect concentrated in a specific group?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      If only one segment improved, the change may have benefited one surface
+      (e.g., only iOS) while harming another — partial rollout risk.
+    priority: 2
+
+  - sub_question: >
+      Did the downstream funnel metrics (activation, conversion, retention)
+      also improve, or did the change only move a surface-level metric?
+    analysis_hint: funnel
+    rationale: >
+      Surface-level improvements that don't flow through to downstream
+      metrics (e.g., more clicks but not more completions) indicate
+      the change moved noise, not signal.
+    priority: 3
+
+  - sub_question: >
+      How did user retention change for the cohort exposed to the new
+      version compared to users from the pre-launch period?
+    analysis_hint: retention
+    rationale: >
+      Retention is the ultimate test of product value. A launch that
+      improves short-term metrics but hurts retention is net negative.
+    priority: 4
+
+narrative_requirements:
+  - "State the before/after delta for the primary metric with exact numbers"
+  - "State whether the effect is consistent across all platforms and segments"
+  - "Confirm whether downstream metrics (funnel, retention) also improved"
+  - "Flag any segments where the change had a negative effect"
+  - "Give a verdict: did this change succeed, partially succeed, or need reverting?"

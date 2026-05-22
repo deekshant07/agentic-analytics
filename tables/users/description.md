@@ -1,3 +1,3 @@
 # User Information
 
-This table stores information about users of the Jupiter Money neobank, including demographics, account details, and engagement metrics.
+This table stores information about users, including their demographics, account details, and engagement metrics.

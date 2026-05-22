@@ -1,0 +1,82 @@
+id: growth.low_activation_cohort
+name: Low Activation — Signed Up But Never Acted
+description: >
+  Investigate the cohort of users who completed signup or installation but
+  never performed the core value action (first transaction, first purchase,
+  first meaningful feature use). This is the "leaky bucket" between acquisition
+  and activation. Works for any product.
+
+match_signals:
+  keywords:
+    - signed up but never
+    - installed but never
+    - registered but never
+    - never transacted
+    - never purchased
+    - never activated
+    - zero transactions
+    - low activation
+    - activation problem
+    - installed not activated
+    - didn't complete
+    - dormant new users
+    - new users who haven't
+    - conversion from signup
+    - install to activation
+    - install but never
+    - installed and never
+    - never do their first
+    - never did their first
+    - never completed their first
+    - never made a
+    - install and never
+  anti_keywords:
+    - churn
+    - lapsed
+    - retention
+    - returning users
+
+investigations:
+  - sub_question: >
+      How many users who signed up or installed in the last 30/60/90 days
+      have never performed the core value action — what is the activation gap?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Quantifying the activation gap is the first step. Without knowing
+      the absolute size, it's impossible to prioritise vs other work.
+    priority: 1
+
+  - sub_question: >
+      Of users who never activated, where did they stop in the onboarding or
+      setup flow — is there a consistent abandonment point?
+    analysis_hint: funnel
+    rationale: >
+      The abandonment step tells you where to focus product investment:
+      reducing friction at the blocking step increases activation directly.
+    priority: 2
+
+  - sub_question: >
+      How does the platform, acquisition channel, and demographic profile
+      of non-activated users compare to activated users?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Profile comparison reveals if non-activation is concentrated in
+      a specific segment — enabling targeted interventions.
+    priority: 3
+
+  - sub_question: >
+      How long after signup do users who eventually activate do so —
+      and is there a window after which activation becomes very unlikely?
+    analysis_hint: time_between
+    rationale: >
+      The activation window analysis tells you the optimal timing for
+      intervention nudges (e.g., "send push at day 3, not day 10").
+    priority: 4
+
+narrative_requirements:
+  - "State the activation gap: what % of new users never activated"
+  - "Name the most common drop-off point in the onboarding/setup flow"
+  - "Compare non-activated vs activated user profiles (platform, channel, demo)"
+  - "State the median time-to-activation for users who do activate"
+  - "Recommend the optimal intervention: timing, channel, and message"

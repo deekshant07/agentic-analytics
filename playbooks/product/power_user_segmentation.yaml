@@ -1,0 +1,76 @@
+id: product.power_user_segmentation
+name: Power User vs Casual User Segmentation
+description: >
+  Identify and characterise the power user segment — users who engage
+  most deeply with the product. Understand how they differ from casual or
+  one-time users, and what drives power-user behaviour. Works for any product
+  with repeat-use mechanics.
+
+match_signals:
+  keywords:
+    - power users
+    - power user
+    - most active
+    - top users
+    - heavy users
+    - best users
+    - loyal users
+    - high value users
+    - user segments
+    - user segmentation
+    - casual vs power
+    - who are our best users
+    - who uses us the most
+    - top percentile
+    - pareto
+    - 80 20
+  anti_keywords:
+    - churn
+    - lapsed
+    - acquisition
+    - failure
+
+investigations:
+  - sub_question: >
+      What percentage of users account for the majority of total activity —
+      how concentrated is usage across the user base (top 20% behaviour)?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Understanding the Pareto distribution of usage tells you how dependent
+      the product is on a small power-user segment and the risk if they churn.
+    priority: 1
+
+  - sub_question: >
+      How do power users (top quartile by activity) differ from casual users
+      in their demographic profile — age, occupation, account type, geography?
+    analysis_hint: demographic_breakdown
+    rationale: >
+      Demographic differences between power users and casual users reveal
+      product-market fit concentration and acquisition targeting opportunities.
+    priority: 2
+
+  - sub_question: >
+      What is the retention rate of power users vs casual users — do
+      power users churn less, and by how much?
+    analysis_hint: retention
+    rationale: >
+      If power users retain significantly better, the product strategy should
+      focus on moving casual users toward power-user behaviours.
+    priority: 3
+
+  - sub_question: >
+      What actions do power users perform that casual users don't —
+      what is the behaviour pattern that separates the two groups?
+    analysis_hint: journey
+    rationale: >
+      Identifying the differentiating actions of power users creates a
+      playbook for onboarding and nudging casual users toward those same actions.
+    priority: 4
+
+narrative_requirements:
+  - "State what percentage of users are 'power users' and what threshold defines them"
+  - "Describe how power users differ demographically from casual users"
+  - "State the retention rate differential between power and casual users"
+  - "Identify the top 1-2 actions that characterise power-user behaviour"
+  - "Recommend: how to nudge casual users toward the power-user behaviour pattern"

@@ -1,0 +1,80 @@
+id: funnel.registration_onboarding
+name: Registration / Onboarding Funnel Friction
+description: >
+  Diagnose where prospective users are dropping out of the signup or onboarding
+  flow. Works for any product — app, web, fintech, SaaS, e-commerce, etc.
+  The LLM maps these investigation angles to the actual onboarding events in the catalog.
+
+match_signals:
+  keywords:
+    - onboarding
+    - registration
+    - sign up
+    - signup
+    - sign-up
+    - drop off
+    - drop-off
+    - dropping off
+    - dropped off
+    - completing registration
+    - new user funnel
+    - account creation
+    - where are users dropping
+    - why aren't users completing
+    - onboarding completion
+    - registered but not
+    - funnel drop
+    - onboarding funnel
+    - onboarding drop
+  anti_keywords:
+    - churn
+    - re-engage
+    - lapsed
+    - revenue
+    - purchase
+
+investigations:
+  - sub_question: >
+      Where exactly are users dropping out of the registration or onboarding
+      funnel — which step has the largest absolute user loss?
+    analysis_hint: funnel
+    rationale: >
+      The full funnel view pinpoints the specific step with the highest drop-off.
+      Without this you're guessing where to fix.
+    priority: 1
+
+  - sub_question: >
+      How has the onboarding or signup completion rate trended over the last
+      30 days — is this a new problem or a persistent pattern?
+    analysis_hint: metric
+    rationale: >
+      Trend context tells you when the problem started, correlating it with
+      product releases, marketing campaigns, or seasonal events.
+    priority: 2
+
+  - sub_question: >
+      Is the registration drop-off worse on a specific platform or device type
+      (e.g., Android vs iOS vs Web)?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform-specific friction often signals a technical bug or UX regression
+      on one surface — isolating it gives engineering a clear fix target.
+    priority: 3
+
+  - sub_question: >
+      Which acquisition channels have the best vs worst onboarding completion
+      rate — is the problem with traffic quality or product friction?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      If one channel has disproportionately low completion, the problem may be
+      expectation mismatch (traffic quality) not product UX friction.
+    priority: 4
+
+narrative_requirements:
+  - "Name the step with the single largest absolute user loss (not just percentage)"
+  - "State whether this is a new degradation or a historical pattern (use trend data)"
+  - "Call out whether one platform is disproportionately responsible"
+  - "Distinguish between UX friction (gradual drop) and technical failure (sudden cliff)"
+  - "End with one actionable fix recommendation tied to the biggest drop-off step"

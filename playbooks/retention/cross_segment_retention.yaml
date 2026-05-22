@@ -1,0 +1,74 @@
+id: retention.cross_segment_retention
+name: Cross-Segment Retention Comparison
+description: >
+  Compare D7 / D30 retention rates across two or more user segments —
+  platform, acquisition channel, city, or cohort. Identifies which segments
+  retain best and worst, and whether differences are structural or driven by
+  onboarding / product quality variations.
+
+match_signals:
+  keywords:
+    - retention by platform
+    - retention by channel
+    - compare retention
+    - which segment retains best
+    - which cohort retains
+    - ios vs android retention
+    - channel retention
+    - city retention
+    - segment retention
+    - retention difference
+    - retention breakdown
+    - who retains better
+    - retention vs segment
+  anti_keywords:
+    - global retention
+    - overall retention
+    - average retention
+
+investigations:
+  - sub_question: >
+      What is the D7 and D30 retention rate broken down by platform?
+      Which platform has the highest and lowest retention?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform is the first-order retention segmentation — native apps and
+      web often have structurally different retention economics.
+    priority: 1
+
+  - sub_question: >
+      How does retention differ by acquisition channel (organic vs paid,
+      or by specific channel if available)?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      Acquisition channel quality drives long-term retention. High-retention
+      channels deserve more budget; low-retention channels may be gaming
+      installs without genuine intent.
+    priority: 2
+
+  - sub_question: >
+      Show the cohort retention matrix — D1/D7/D30 retention curves for
+      users acquired in each of the last 8 weeks.
+    analysis_hint: retention
+    rationale: >
+      Cohort-over-cohort comparison reveals if recent product changes
+      (features, onboarding revisions) are improving or worsening retention.
+    priority: 3
+
+  - sub_question: >
+      Among users who churned (did core action then stopped), what is their
+      demographic profile vs retained users?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Profile comparison validates whether churn is concentrated in a
+      specific demographic, indicating a product-market fit gap.
+    priority: 4
+
+narrative_requirements:
+  - "State the D7 and D30 retention by platform — name the gap between best and worst"
+  - "Identify which acquisition channel produces the most retained users"
+  - "Show whether recent cohorts are retaining better or worse than older cohorts"
+  - "Profile the churned segment — platform, age bucket, acquisition channel"
+  - "Recommend one segment-specific intervention (onboarding variant, feature access, re-engagement timing)"

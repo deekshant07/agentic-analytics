@@ -1,0 +1,83 @@
+id: quality.verification_friction
+name: Identity / Verification Flow Friction
+description: >
+  Diagnose friction in any identity, compliance, or verification flow —
+  OTP verification, KYC/KYB checks, email confirmation, phone binding,
+  document upload, video verification, etc. Works across fintech, healthcare,
+  and any regulated or identity-sensitive product.
+
+match_signals:
+  keywords:
+    - verification
+    - verify
+    - otp
+    - kyc
+    - kyb
+    - identity
+    - id check
+    - phone binding
+    - sim binding
+    - phone verification
+    - email verification
+    - document verification
+    - video kyc
+    - vkyc
+    - compliance
+    - aadhaar
+    - pan
+    - ssn
+    - id verification
+    - verification failed
+    - verification friction
+    - verification drop
+  anti_keywords:
+    - purchase
+    - checkout
+    - churn
+    - dau
+    - engagement
+
+investigations:
+  - sub_question: >
+      What is the end-to-end completion rate of the verification flow, and
+      at which specific step do most users abandon or fail?
+    analysis_hint: funnel
+    rationale: >
+      The funnel view of verification steps shows exactly where users get stuck
+      — whether it's OTP delivery, document upload, or final approval.
+    priority: 1
+
+  - sub_question: >
+      How has the verification completion or success rate trended over the
+      last 30 days — is this a new regression or a persistent issue?
+    analysis_hint: metric
+    rationale: >
+      Trend identifies whether a third-party provider degraded, a product
+      change introduced friction, or the problem is long-standing.
+    priority: 2
+
+  - sub_question: >
+      Is verification friction worse on specific platforms, device types,
+      or user demographics (e.g., age group, geography)?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform or demographic segmentation often reveals technical root causes
+      — e.g., SMS OTP fails more on specific carriers, older devices.
+    priority: 3
+
+  - sub_question: >
+      How long does it take users to complete the verification step, and
+      are users who take longer more likely to abandon?
+    analysis_hint: time_between
+    rationale: >
+      Time-to-complete is a proxy for friction severity. Rising median time
+      suggests the verification provider is getting slower or users are confused.
+    priority: 4
+
+narrative_requirements:
+  - "State the overall verification completion rate and the step with largest drop-off"
+  - "State whether this is a new regression or persistent pattern"
+  - "Identify if a specific provider, platform, or demographic is disproportionately affected"
+  - "Quantify the time-to-complete and whether it is changing"
+  - "Recommend: provider switch, UX copy improvement, or technical escalation"

@@ -2343,14 +2343,820 @@
       "vkyc_initiated": 8120,
       "vkyc_call_started": 6498,
       "vkyc_call_completed": 5932,
-      "mpin_set": 5825,
       "onboarding_completed": 5825,
+      "mpin_set": 5825,
       "vkyc_failed": 1963
+    },
+    "event_semantics": {
+      "aadhaar_number_entered": {
+        "raw_name": "aadhaar_number_entered",
+        "tokens": [
+          "aadhaar",
+          "number",
+          "entered"
+        ],
+        "object": "aadhaar_number",
+        "journey": "verification",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 9467,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.75
+      },
+      "aadhaar_otp_requested": {
+        "raw_name": "aadhaar_otp_requested",
+        "tokens": [
+          "aadhaar",
+          "otp",
+          "requested"
+        ],
+        "object": "aadhaar_otp",
+        "journey": "verification",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 9379,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "aadhaar_otp_verified": {
+        "raw_name": "aadhaar_otp_verified",
+        "tokens": [
+          "aadhaar",
+          "otp",
+          "verified"
+        ],
+        "object": "aadhaar_otp",
+        "journey": "verification",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 8972,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "app_install": {
+        "raw_name": "app_install",
+        "tokens": [
+          "app",
+          "install"
+        ],
+        "object": "install",
+        "journey": "onboarding",
+        "stage": "observed",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 15000,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.75
+      },
+      "app_opened": {
+        "raw_name": "app_opened",
+        "tokens": [
+          "app",
+          "opened"
+        ],
+        "object": "opened",
+        "journey": "onboarding",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 217388,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "bureau_pull_completed": {
+        "raw_name": "bureau_pull_completed",
+        "tokens": [
+          "bureau",
+          "pull",
+          "completed"
+        ],
+        "object": "bureau_pull",
+        "journey": "verification",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 8787,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "bureau_pull_initiated": {
+        "raw_name": "bureau_pull_initiated",
+        "tokens": [
+          "bureau",
+          "pull",
+          "initiated"
+        ],
+        "object": "bureau_pull",
+        "journey": "verification",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 8928,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "dob_entered": {
+        "raw_name": "dob_entered",
+        "tokens": [
+          "dob",
+          "entered"
+        ],
+        "object": "dob",
+        "journey": "onboarding",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 10696,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.75
+      },
+      "email_entered": {
+        "raw_name": "email_entered",
+        "tokens": [
+          "email",
+          "entered"
+        ],
+        "object": "email",
+        "journey": "onboarding",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 10532,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.75
+      },
+      "home_screen_viewed": {
+        "raw_name": "home_screen_viewed",
+        "tokens": [
+          "home",
+          "screen",
+          "viewed"
+        ],
+        "object": "home",
+        "journey": "engagement",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 203030,
+        "groups": {
+          "event_category": "engagement",
+          "account_type": "pro"
+        },
+        "confidence": 0.75
+      },
+      "mobile_number_entered": {
+        "raw_name": "mobile_number_entered",
+        "tokens": [
+          "mobile",
+          "number",
+          "entered"
+        ],
+        "object": "mobile_number",
+        "journey": "onboarding",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 12699,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.75
+      },
+      "mpin_set": {
+        "raw_name": "mpin_set",
+        "tokens": [
+          "mpin",
+          "set"
+        ],
+        "object": "mpin",
+        "journey": "onboarding",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 5825,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "confidence": 0.75
+      },
+      "name_entered": {
+        "raw_name": "name_entered",
+        "tokens": [
+          "name",
+          "entered"
+        ],
+        "object": "name",
+        "journey": "onboarding",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 10972,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.75
+      },
+      "notification_received": {
+        "raw_name": "notification_received",
+        "tokens": [
+          "notification",
+          "received"
+        ],
+        "object": "notification",
+        "journey": "engagement",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 71232,
+        "groups": {
+          "event_category": "engagement",
+          "account_type": "salary"
+        },
+        "confidence": 0.75
+      },
+      "onboarding_completed": {
+        "raw_name": "onboarding_completed",
+        "tokens": [
+          "onboarding",
+          "completed"
+        ],
+        "object": "onboarding",
+        "journey": "onboarding",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 5825,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "confidence": 0.95
+      },
+      "otp_requested": {
+        "raw_name": "otp_requested",
+        "tokens": [
+          "otp",
+          "requested"
+        ],
+        "object": "otp",
+        "journey": "verification",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 12070,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "otp_verified": {
+        "raw_name": "otp_verified",
+        "tokens": [
+          "otp",
+          "verified"
+        ],
+        "object": "otp",
+        "journey": "verification",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 11170,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "pan_entered": {
+        "raw_name": "pan_entered",
+        "tokens": [
+          "pan",
+          "entered"
+        ],
+        "object": "pan",
+        "journey": "verification",
+        "stage": "intermediate",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 10247,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.75
+      },
+      "pan_validation_completed": {
+        "raw_name": "pan_validation_completed",
+        "tokens": [
+          "pan",
+          "validation",
+          "completed"
+        ],
+        "object": "pan_validation",
+        "journey": "verification",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 9854,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "pan_validation_initiated": {
+        "raw_name": "pan_validation_initiated",
+        "tokens": [
+          "pan",
+          "validation",
+          "initiated"
+        ],
+        "object": "pan_validation",
+        "journey": "verification",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 10199,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "sim_binding_completed": {
+        "raw_name": "sim_binding_completed",
+        "tokens": [
+          "sim",
+          "binding",
+          "completed"
+        ],
+        "object": "sim",
+        "journey": "verification",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 12194,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "sim_binding_initiated": {
+        "raw_name": "sim_binding_initiated",
+        "tokens": [
+          "sim",
+          "binding",
+          "initiated"
+        ],
+        "object": "sim",
+        "journey": "verification",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 12511,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "transaction_reconciled": {
+        "raw_name": "transaction_reconciled",
+        "tokens": [
+          "transaction",
+          "reconciled"
+        ],
+        "object": "transaction",
+        "journey": "transaction",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 183520,
+        "groups": {
+          "event_category": "payments",
+          "account_type": "savings"
+        },
+        "confidence": 0.95
+      },
+      "vkyc_call_completed": {
+        "raw_name": "vkyc_call_completed",
+        "tokens": [
+          "vkyc",
+          "call",
+          "completed"
+        ],
+        "object": "vkyc",
+        "journey": "verification",
+        "stage": "completed",
+        "outcome": "success",
+        "terminal": true,
+        "event_count": 5932,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "confidence": 0.95
+      },
+      "vkyc_call_started": {
+        "raw_name": "vkyc_call_started",
+        "tokens": [
+          "vkyc",
+          "call",
+          "started"
+        ],
+        "object": "vkyc",
+        "journey": "verification",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 6498,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "confidence": 0.95
+      },
+      "vkyc_failed": {
+        "raw_name": "vkyc_failed",
+        "tokens": [
+          "vkyc",
+          "failed"
+        ],
+        "object": "vkyc",
+        "journey": "verification",
+        "stage": "failed",
+        "outcome": "failure",
+        "terminal": true,
+        "event_count": 1963,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "basic"
+        },
+        "confidence": 0.95
+      },
+      "vkyc_initiated": {
+        "raw_name": "vkyc_initiated",
+        "tokens": [
+          "vkyc",
+          "initiated"
+        ],
+        "object": "vkyc",
+        "journey": "verification",
+        "stage": "started",
+        "outcome": "unknown",
+        "terminal": false,
+        "event_count": 8120,
+        "groups": {
+          "event_category": "onboarding",
+          "account_type": "pro"
+        },
+        "confidence": 0.95
+      }
+    },
+    "flow_candidates": [
+      {
+        "flow_id": "onboarding__onboarding",
+        "journey": "onboarding",
+        "object": "onboarding",
+        "entry_events": [],
+        "success_events": [
+          "onboarding_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "onboarding_completed"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "onboarding__opened",
+        "journey": "onboarding",
+        "object": "opened",
+        "entry_events": [
+          "app_opened"
+        ],
+        "success_events": [],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "app_opened"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "transaction__transaction",
+        "journey": "transaction",
+        "object": "transaction",
+        "entry_events": [],
+        "success_events": [
+          "transaction_reconciled"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "transaction_reconciled"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "verification__aadhaar_otp",
+        "journey": "verification",
+        "object": "aadhaar_otp",
+        "entry_events": [
+          "aadhaar_otp_requested"
+        ],
+        "success_events": [
+          "aadhaar_otp_verified"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "aadhaar_otp_requested",
+          "aadhaar_otp_verified"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "verification__aadhaar_otp__funnel",
+        "journey": "verification",
+        "object": "aadhaar_otp",
+        "entry_events": [
+          "aadhaar_otp_requested"
+        ],
+        "success_events": [
+          "otp_verified"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "aadhaar_otp_requested",
+          "otp_verified"
+        ],
+        "confidence": 0.78,
+        "source": "auto_funnel"
+      },
+      {
+        "flow_id": "verification__bureau_pull",
+        "journey": "verification",
+        "object": "bureau_pull",
+        "entry_events": [
+          "bureau_pull_initiated"
+        ],
+        "success_events": [
+          "bureau_pull_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "bureau_pull_completed",
+          "bureau_pull_initiated"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "verification__bureau_pull__funnel",
+        "journey": "verification",
+        "object": "bureau_pull",
+        "entry_events": [
+          "bureau_pull_initiated"
+        ],
+        "success_events": [
+          "bureau_pull_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "bureau_pull_completed",
+          "bureau_pull_initiated"
+        ],
+        "confidence": 0.78,
+        "source": "auto_funnel"
+      },
+      {
+        "flow_id": "verification__otp",
+        "journey": "verification",
+        "object": "otp",
+        "entry_events": [
+          "otp_requested"
+        ],
+        "success_events": [
+          "otp_verified"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "otp_requested",
+          "otp_verified"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "verification__otp__funnel",
+        "journey": "verification",
+        "object": "otp",
+        "entry_events": [
+          "otp_requested"
+        ],
+        "success_events": [
+          "otp_verified"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "otp_requested",
+          "otp_verified"
+        ],
+        "confidence": 0.78,
+        "source": "auto_funnel"
+      },
+      {
+        "flow_id": "verification__pan_validation",
+        "journey": "verification",
+        "object": "pan_validation",
+        "entry_events": [
+          "pan_validation_initiated"
+        ],
+        "success_events": [
+          "pan_validation_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "pan_validation_completed",
+          "pan_validation_initiated"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "verification__pan_validation__funnel",
+        "journey": "verification",
+        "object": "pan_validation",
+        "entry_events": [
+          "pan_validation_initiated"
+        ],
+        "success_events": [
+          "pan_validation_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "pan_validation_completed",
+          "pan_validation_initiated"
+        ],
+        "confidence": 0.78,
+        "source": "auto_funnel"
+      },
+      {
+        "flow_id": "verification__sim",
+        "journey": "verification",
+        "object": "sim",
+        "entry_events": [
+          "sim_binding_initiated"
+        ],
+        "success_events": [
+          "sim_binding_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "sim_binding_completed",
+          "sim_binding_initiated"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "verification__sim__funnel",
+        "journey": "verification",
+        "object": "sim",
+        "entry_events": [
+          "sim_binding_initiated"
+        ],
+        "success_events": [
+          "sim_binding_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "sim_binding_completed",
+          "sim_binding_initiated"
+        ],
+        "confidence": 0.78,
+        "source": "auto_funnel"
+      },
+      {
+        "flow_id": "verification__vkyc",
+        "journey": "verification",
+        "object": "vkyc",
+        "entry_events": [
+          "vkyc_call_started",
+          "vkyc_initiated"
+        ],
+        "success_events": [
+          "vkyc_call_completed"
+        ],
+        "failure_events": [
+          "vkyc_failed"
+        ],
+        "intermediate_events": [],
+        "events": [
+          "vkyc_call_completed",
+          "vkyc_call_started",
+          "vkyc_failed",
+          "vkyc_initiated"
+        ],
+        "confidence": 0.95,
+        "source": "semantic_grouping"
+      },
+      {
+        "flow_id": "verification__vkyc__funnel",
+        "journey": "verification",
+        "object": "vkyc",
+        "entry_events": [
+          "vkyc_initiated"
+        ],
+        "success_events": [
+          "vkyc_call_completed"
+        ],
+        "failure_events": [],
+        "intermediate_events": [],
+        "events": [
+          "vkyc_call_completed",
+          "vkyc_initiated"
+        ],
+        "confidence": 0.78,
+        "source": "auto_funnel"
+      }
+    ],
+    "capabilities": {
+      "journeys": {
+        "verification": 16,
+        "onboarding": 8,
+        "engagement": 2,
+        "transaction": 1
+      },
+      "flow_presence": {
+        "onboarding": true,
+        "transaction": true,
+        "verification": true
+      },
+      "has_terminal_success": true,
+      "monetization_model": "transaction_value_only",
+      "numeric_signals": {
+        "fee_like_columns": [],
+        "transaction_value_columns": [
+          "amount"
+        ]
+      },
+      "has_referral_signal": false
     },
     "date_range": {
       "min": "2026-01-01",
       "max": "2026-03-25",
-      "days": null
+      "days": 83
     },
     "unique_users": 15000,
     "product_signals": {
@@ -2451,11 +3257,11 @@
           "users": 5932,
           "adoption_pct": 39.5
         },
-        "mpin_set": {
+        "onboarding_completed": {
           "users": 5825,
           "adoption_pct": 38.8
         },
-        "onboarding_completed": {
+        "mpin_set": {
           "users": 5825,
           "adoption_pct": 38.8
         },
@@ -2553,7 +3359,12 @@
           "users_converted": 895,
           "conversion_pct": 14.0
         }
-      ]
+      ],
+      "retention": {
+        "d1": 27.1,
+        "d7": 25.8,
+        "d30": 17.5
+      }
     }
   },
   "users": {
@@ -2850,6 +3661,9 @@
     "event_properties": {},
     "event_groups": {},
     "event_counts": {},
+    "event_semantics": {},
+    "flow_candidates": [],
+    "capabilities": {},
     "date_range": {},
     "unique_users": 0,
     "product_signals": {}

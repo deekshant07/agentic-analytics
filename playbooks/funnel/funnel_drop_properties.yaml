@@ -1,0 +1,73 @@
+id: funnel.funnel_drop_properties
+name: Funnel Drop-Off Property Analysis
+description: >
+  At the worst-converting funnel step, break down converters vs droppers by
+  platform, city, acquisition channel, and other dimensions. Identifies
+  whether funnel drop-off is uniform or concentrated in a specific segment —
+  enabling surgical fixes rather than blanket redesigns.
+
+match_signals:
+  keywords:
+    - why do users drop at step
+    - funnel drop by platform
+    - which segment drops off
+    - funnel drilldown
+    - funnel breakdown by property
+    - funnel conversion by platform
+    - funnel conversion by city
+    - who drops off funnel
+    - funnel abandonment by segment
+    - funnel property analysis
+    - funnel segment analysis
+    - step drop off reason
+    - which users abandon funnel
+  anti_keywords:
+    - overall funnel
+    - total conversion
+    - overall drop
+
+investigations:
+  - sub_question: >
+      At the worst drop-off funnel step, how does conversion rate differ
+      by platform (iOS, Android, Web)? Show entered vs converted per platform.
+    analysis_hint: funnel_property_drilldown
+    breakdown_hint: platform
+    rationale: >
+      Platform-level CVR at the problem step immediately reveals whether the
+      drop is a code/UX bug on a specific client or a universal issue.
+    priority: 1
+
+  - sub_question: >
+      Show the full funnel conversion rates (all steps) to identify where
+      the biggest overall drop occurs.
+    analysis_hint: funnel
+    rationale: >
+      The overall funnel view confirms which step is the primary bottleneck
+      so the property drilldown focuses on the right transition.
+    priority: 2
+
+  - sub_question: >
+      At the worst drop-off step, how does conversion rate differ by city
+      or geographic segment?
+    analysis_hint: funnel_property_drilldown
+    breakdown_hint: city
+    rationale: >
+      Geographic CVR gaps may reveal regulatory friction, localisation issues,
+      or supply-side gaps affecting conversion in specific markets.
+    priority: 3
+
+  - sub_question: >
+      Compare the funnel conversion rate this period vs the prior period
+      — did the drop-off worsen or improve?
+    analysis_hint: funnel_compare
+    rationale: >
+      Period comparison frames whether this is a new regression or a
+      persistent structural issue, shaping urgency and owner assignment.
+    priority: 4
+
+narrative_requirements:
+  - "Name the funnel step with the worst step-CVR and the overall conversion loss"
+  - "State the CVR gap between best and worst platforms at that step"
+  - "Identify whether any city or geographic segment shows outsized drop-off"
+  - "State whether the drop-off is new (regression) or persistent (structural)"
+  - "Recommend one fix: platform-specific bug investigation, localisation change, or funnel step removal"

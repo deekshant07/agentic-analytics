@@ -1,0 +1,191 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Universal product metrics — apply to any industry. Based on AARRR framework + dbt metric types.",
+    "metric_types": ["simple", "ratio", "retention", "conversion", "cumulative"],
+    "aarrr_categories": ["Acquisition", "Activation", "Engagement", "Retention", "Revenue", "Referral"]
+  },
+
+  "metrics": [
+
+    {
+      "id": "dau",
+      "name": "Daily Active Users (DAU)",
+      "category": "Engagement",
+      "aarrr": "Retention",
+      "type": "simple",
+      "description_hint": "Unique users who performed any meaningful action on a given day. Core pulse metric — if DAU drops, something is wrong.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "event_name_contains": ["open", "launch", "start", "session", "view", "login", "visit"]
+      },
+      "sql_template": "SELECT DATE({time_col}) AS date, COUNT(DISTINCT {user_col}) AS dau FROM {table} WHERE {event_col} = '{matched_event}' GROUP BY 1 ORDER BY 1"
+    },
+
+    {
+      "id": "wau",
+      "name": "Weekly Active Users (WAU)",
+      "category": "Engagement",
+      "aarrr": "Retention",
+      "type": "cumulative",
+      "description_hint": "Unique users active in a rolling 7-day window. Less noisy than DAU for products with weekly usage patterns.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "min_date_range_days": 7,
+        "event_name_contains": ["open", "launch", "start", "session", "view", "login", "visit"]
+      },
+      "sql_template": "SELECT DATE({time_col}) AS date, COUNT(DISTINCT {user_col}) AS wau FROM {table} WHERE {event_col} = '{matched_event}' AND DATE({time_col}) BETWEEN DATE(CURRENT_DATE - INTERVAL '6 days') AND CURRENT_DATE GROUP BY 1"
+    },
+
+    {
+      "id": "mau",
+      "name": "Monthly Active Users (MAU)",
+      "category": "Engagement",
+      "aarrr": "Retention",
+      "type": "cumulative",
+      "description_hint": "Unique users active in a calendar month. Standard investor-facing metric. DAU/MAU ratio above 20% indicates strong daily habit.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "min_date_range_days": 28,
+        "event_name_contains": ["open", "launch", "start", "session", "view", "login", "visit"]
+      },
+      "sql_template": "SELECT DATE_TRUNC('month', {time_col}) AS month, COUNT(DISTINCT {user_col}) AS mau FROM {table} WHERE {event_col} = '{matched_event}' GROUP BY 1 ORDER BY 1"
+    },
+
+    {
+      "id": "dau_mau_ratio",
+      "name": "DAU/MAU Stickiness Ratio",
+      "category": "Engagement",
+      "aarrr": "Retention",
+      "type": "ratio",
+      "description_hint": "Percentage of monthly users who are active daily. Consumer apps aim for 50%+, SaaS for 20%+. Best single indicator of habit formation.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "min_date_range_days": 28,
+        "event_name_contains": ["open", "launch", "start", "session", "view", "login", "visit"]
+      },
+      "sql_template": "WITH dau AS (SELECT COUNT(DISTINCT {user_col}) AS n FROM {table} WHERE {event_col} = '{matched_event}' AND DATE({time_col}) = CURRENT_DATE), mau AS (SELECT COUNT(DISTINCT {user_col}) AS n FROM {table} WHERE {event_col} = '{matched_event}' AND DATE({time_col}) >= DATE_TRUNC('month', CURRENT_DATE)) SELECT ROUND(dau.n * 100.0 / NULLIF(mau.n, 0), 1) AS dau_mau_pct FROM dau, mau"
+    },
+
+    {
+      "id": "d1_retention",
+      "name": "Day 1 Retention",
+      "category": "Retention",
+      "aarrr": "Retention",
+      "type": "retention",
+      "description_hint": "% of new users who return the day after their first session. Measures whether the product delivers enough value on day 0 to bring users back.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "min_date_range_days": 2
+      },
+      "sql_template": "WITH first_seen AS (SELECT {user_col}, MIN(DATE({time_col})) AS first_date FROM {table} GROUP BY 1), returned AS (SELECT DISTINCT f.{user_col} FROM first_seen f JOIN {table} e ON e.{user_col} = f.{user_col} WHERE DATE(e.{time_col}) = f.first_date + INTERVAL '1 day') SELECT COUNT(DISTINCT first_seen.{user_col}) AS cohort_size, COUNT(DISTINCT returned.{user_col}) AS retained, ROUND(COUNT(DISTINCT returned.{user_col}) * 100.0 / NULLIF(COUNT(DISTINCT first_seen.{user_col}), 0), 1) AS d1_retention_pct FROM first_seen LEFT JOIN returned ON returned.{user_col} = first_seen.{user_col}"
+    },
+
+    {
+      "id": "d7_retention",
+      "name": "Day 7 Retention",
+      "category": "Retention",
+      "aarrr": "Retention",
+      "type": "retention",
+      "description_hint": "% of new users who return on day 7. Key predictor of long-term retention. Consumer benchmark: 25%+. SaaS benchmark: 40%+.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "min_date_range_days": 8
+      },
+      "sql_template": "WITH first_seen AS (SELECT {user_col}, MIN(DATE({time_col})) AS first_date FROM {table} GROUP BY 1), returned AS (SELECT DISTINCT f.{user_col} FROM first_seen f JOIN {table} e ON e.{user_col} = f.{user_col} WHERE DATE(e.{time_col}) = f.first_date + INTERVAL '7 days') SELECT COUNT(DISTINCT first_seen.{user_col}) AS cohort_size, COUNT(DISTINCT returned.{user_col}) AS retained, ROUND(COUNT(DISTINCT returned.{user_col}) * 100.0 / NULLIF(COUNT(DISTINCT first_seen.{user_col}), 0), 1) AS d7_retention_pct FROM first_seen LEFT JOIN returned ON returned.{user_col} = first_seen.{user_col}"
+    },
+
+    {
+      "id": "d30_retention",
+      "name": "Day 30 Retention",
+      "category": "Retention",
+      "aarrr": "Retention",
+      "type": "retention",
+      "description_hint": "% of new users who return on day 30. Strongest signal of true product-market fit. If D30 is healthy, the product has found a lasting use case.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "min_date_range_days": 31
+      },
+      "sql_template": "WITH first_seen AS (SELECT {user_col}, MIN(DATE({time_col})) AS first_date FROM {table} GROUP BY 1), returned AS (SELECT DISTINCT f.{user_col} FROM first_seen f JOIN {table} e ON e.{user_col} = f.{user_col} WHERE DATE(e.{time_col}) = f.first_date + INTERVAL '30 days') SELECT COUNT(DISTINCT first_seen.{user_col}) AS cohort_size, COUNT(DISTINCT returned.{user_col}) AS retained, ROUND(COUNT(DISTINCT returned.{user_col}) * 100.0 / NULLIF(COUNT(DISTINCT first_seen.{user_col}), 0), 1) AS d30_retention_pct FROM first_seen LEFT JOIN returned ON returned.{user_col} = first_seen.{user_col}"
+    },
+
+    {
+      "id": "new_users",
+      "name": "New Users",
+      "category": "Acquisition",
+      "aarrr": "Acquisition",
+      "type": "simple",
+      "description_hint": "Users appearing for the first time — the top of the funnel. Track daily to catch acquisition spikes or drops tied to campaigns.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "event_name_contains": ["install", "signup", "register", "onboard", "first", "new"]
+      },
+      "sql_template": "SELECT DATE({time_col}) AS date, COUNT(DISTINCT {user_col}) AS new_users FROM {table} WHERE {event_col} = '{matched_event}' GROUP BY 1 ORDER BY 1"
+    },
+
+    {
+      "id": "activation_rate",
+      "name": "Activation Rate",
+      "category": "Activation",
+      "aarrr": "Activation",
+      "type": "ratio",
+      "description_hint": "% of new users who complete the key activation event — the moment they first experience the product's core value. Most critical metric for early-stage products.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains": ["complete", "finish", "verified", "activated", "onboard", "setup", "created"]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{matched_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT {user_col}), 0), 1) AS activation_rate_pct FROM {table}"
+    },
+
+    {
+      "id": "churn_rate",
+      "name": "User Churn Rate",
+      "category": "Retention",
+      "aarrr": "Retention",
+      "type": "ratio",
+      "description_hint": "% of previously active users who showed no activity in the current period. Inverse of retention. Even small churn rates compound badly over time.",
+      "requires": {
+        "has_user_col": true,
+        "has_time_col": true,
+        "min_date_range_days": 14
+      },
+      "sql_template": "WITH prev AS (SELECT DISTINCT {user_col} FROM {table} WHERE DATE({time_col}) BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '31 days'), curr AS (SELECT DISTINCT {user_col} FROM {table} WHERE DATE({time_col}) >= CURRENT_DATE - INTERVAL '30 days') SELECT COUNT(DISTINCT prev.{user_col}) AS prev_users, COUNT(DISTINCT curr.{user_col}) AS curr_users, ROUND((1 - COUNT(DISTINCT curr.{user_col}) * 1.0 / NULLIF(COUNT(DISTINCT prev.{user_col}), 0)) * 100, 1) AS churn_rate_pct FROM prev LEFT JOIN curr ON curr.{user_col} = prev.{user_col}"
+    },
+
+    {
+      "id": "referral_rate",
+      "name": "Referral Rate",
+      "category": "Referral",
+      "aarrr": "Referral",
+      "type": "ratio",
+      "description_hint": "% of users who referred at least one other user. Strong referral programs have rates above 5%. Tracks organic growth flywheel.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains": ["referral", "invite", "share", "refer"]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{matched_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT {user_col}), 0), 1) AS referral_rate_pct FROM {table}"
+    },
+
+    {
+      "id": "feature_adoption_rate",
+      "name": "Feature Adoption Rate",
+      "category": "Engagement",
+      "aarrr": "Activation",
+      "type": "ratio",
+      "description_hint": "% of active users who have used a specific feature at least once. Low adoption signals discoverability issues or unclear value proposition.",
+      "requires": {
+        "has_user_col": true
+      },
+      "sql_template": "SELECT '{matched_event}' AS feature, ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{matched_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT {user_col}), 0), 1) AS adoption_pct FROM {table}"
+    }
+
+  ]
+}

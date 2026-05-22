@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Ecommerce product metrics",
+    "extends": "universal.json"
+  },
+  "metrics": [
+    {
+      "id": "checkout_completion_rate",
+      "name": "Checkout Completion Rate",
+      "category": "Revenue",
+      "aarrr": "Revenue",
+      "type": "conversion",
+      "description_hint": "% of users who start checkout and complete purchase.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains_all": [
+          ["checkout", "cart", "payment"],
+          ["purchase", "order", "complete", "success"]
+        ]
+      },
+      "sql_template": "SELECT ROUND(COUNT(DISTINCT CASE WHEN {event_col} = '{end_event}' THEN {user_col} END) * 100.0 / NULLIF(COUNT(DISTINCT CASE WHEN {event_col} = '{start_event}' THEN {user_col} END), 0), 1) AS checkout_completion_rate_pct FROM {table}"
+    },
+    {
+      "id": "aov",
+      "name": "Average Order Value (AOV)",
+      "category": "Revenue",
+      "aarrr": "Revenue",
+      "type": "simple",
+      "description_hint": "Average value per completed order.",
+      "requires": {
+        "has_user_col": true,
+        "event_name_contains": ["purchase", "order", "checkout", "payment"],
+        "numeric_col_contains": ["amount", "value", "price", "order_value"]
+      },
+      "sql_template": "SELECT ROUND(AVG({numeric_col}), 2) AS aov FROM {table} WHERE {event_col} = '{matched_event}' AND {numeric_col} > 0"
+    }
+  ]
+}

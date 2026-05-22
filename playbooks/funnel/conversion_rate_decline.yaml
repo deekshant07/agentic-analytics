@@ -1,0 +1,92 @@
+id: funnel.conversion_rate_decline
+name: Conversion Rate Decline
+description: >
+  Diagnose a drop in conversion rate through any multi-step funnel — onboarding,
+  purchase, activation, or upgrade. Identifies which step lost the most
+  conversion, which user segments are most affected, and whether the drop is
+  driven by new users entering the funnel differently or existing users
+  converting less (mix-shift check).
+
+match_signals:
+  keywords:
+    - conversion rate
+    - conversion dropped
+    - conversion decline
+    - conversion down
+    - conversion fell
+    - conversion rate fell
+    - converting less
+    - fewer conversions
+    - why aren't users converting
+    - conversion rate decreased
+    - conversion getting worse
+    - drop in conversion
+    - funnel drop
+    - funnel declined
+    - lower conversion
+    - conversion rate why
+  anti_keywords:
+    - transaction failure
+    - payment error
+    - technical error
+    - breakage
+    - api error
+
+investigations:
+  - sub_question: >
+      What is the overall funnel conversion rate trend month-over-month for
+      [period] — when did the decline start and how large is it?
+    analysis_hint: metric
+    rationale: >
+      Establishing the magnitude and timing of the decline against a stable
+      baseline determines whether this is gradual erosion or a sudden
+      step-change tied to a specific release or event.
+    priority: 1
+
+  - sub_question: >
+      In the current period, what is the step-by-step conversion rate across
+      the full funnel — which step has the highest absolute drop-off?
+    analysis_hint: funnel
+    rationale: >
+      The funnel step with the highest drop-off is the bottleneck. Fixing
+      the worst step first has the greatest leverage on overall conversion.
+    priority: 2
+
+  - sub_question: >
+      How does the decline in conversion rate compare across platforms
+      (iOS, Android, Web) — is the drop concentrated on one surface?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform-specific drops point to UX regressions, app-version issues,
+      or device-level friction that can be fixed without a full funnel
+      redesign.
+    priority: 3
+
+  - sub_question: >
+      How many users started the funnel in the last 30 days but never
+      completed it, and what step did most of them last reach?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Quantifying incomplete-funnel users and their last step reveals the
+      highest-value re-engagement target and the most critical drop point.
+    priority: 4
+
+  - sub_question: >
+      Is the conversion rate decline driven by new users (first funnel
+      attempt in last 30 days) or by returning users converting less —
+      which cohort changed more?
+    analysis_hint: segment
+    rationale: >
+      New-user drops suggest acquisition quality decay or onboarding friction.
+      Returning-user drops suggest product degradation or trust erosion —
+      requiring very different fixes.
+    priority: 5
+
+narrative_requirements:
+  - "State the current conversion rate vs the baseline period (absolute and relative change)"
+  - "Name the single funnel step with the largest drop-off and its magnitude"
+  - "State whether the decline is platform-specific or universal across surfaces"
+  - "Quantify how many users are stuck incomplete in the funnel right now"
+  - "Determine whether new users or returning users are driving the decline (mix-shift)"
+  - "Recommend one specific fix for the highest-drop funnel step"

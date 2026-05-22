@@ -1,0 +1,85 @@
+id: retention.churn_cliff
+name: User Churn / Retention Cliff
+description: >
+  Diagnose why users are not returning after their initial sessions or
+  transactions. Covers D1/D7/D30 retention analysis, churn investigation,
+  and identifying the cohorts at highest churn risk. Works for any product
+  with repeat-usage mechanics.
+
+match_signals:
+  keywords:
+    - churn
+    - churning
+    - retention
+    - retaining
+    - retention matrix
+    - cohort retention
+    - not coming back
+    - users leaving
+    - losing users
+    - d1
+    - d7
+    - d30
+    - day 1 retention
+    - day 7 retention
+    - day 30 retention
+    - retention rate
+    - retention cliff
+    - retention drop
+    - returning users
+    - why are users leaving
+    - user loss
+    - inactive users
+  anti_keywords:
+    - signup
+    - registration
+    - onboarding
+    - acquisition
+    - new users
+
+investigations:
+  - sub_question: >
+      What is the D1, D7, and D30 retention rate for users who first
+      performed the core action — and is retention improving or declining
+      by cohort?
+    analysis_hint: retention
+    rationale: >
+      Cohort retention curves reveal where users fall off. A D1 problem
+      means the first session failed to deliver value; D30 means the habit
+      loop is broken.
+    priority: 1
+
+  - sub_question: >
+      How has the overall retention rate (returning users / prior cohort)
+      trended week over week for the last 8 weeks?
+    analysis_hint: metric
+    rationale: >
+      Trend view shows whether retention is structurally declining or had
+      a specific cohort that performed anomalously well or poorly.
+    priority: 2
+
+  - sub_question: >
+      Which user segments — by platform, acquisition channel, geography,
+      or user type — have the worst retention rates?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Segment-level retention pinpoints which users to target for re-engagement
+      and which channels may be bringing low-quality users.
+    priority: 3
+
+  - sub_question: >
+      Of users who churned (performed core action then stopped), what was
+      their platform and demographic profile compared to retained users?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Comparing churned vs retained users' profiles reveals if churn is
+      driven by product-market fit gaps in specific segments.
+    priority: 4
+
+narrative_requirements:
+  - "State the D1, D7, D30 retention rates and which window shows the biggest cliff"
+  - "Identify whether retention is getting worse over time (cohort trend)"
+  - "Name the segment with the worst retention — platform, channel, or demographic"
+  - "Distinguish structural churn (product value gap) from triggered churn (specific event)"
+  - "Recommend one specific intervention: re-engagement campaign, feature fix, or onboarding change"

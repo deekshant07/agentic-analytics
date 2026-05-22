@@ -1,0 +1,109 @@
+id: funnel.conversion_purchase
+cookbook_id: fintech_growth
+recipe_id: funnel_conversion_purchase_v1
+name: Purchase / Checkout Conversion Funnel
+description: >
+  Diagnose where users abandon the purchase, checkout, or payment flow.
+  Covers e-commerce, fintech payments, SaaS upgrade flows, and any
+  monetisation funnel. LLM maps angles to catalog's actual conversion events.
+
+match_signals:
+  keywords:
+    - checkout
+    - cart
+    - purchase funnel
+    - payment funnel
+    - conversion funnel
+    - buy
+    - order
+    - transaction funnel
+    - upgrade
+    - subscribe
+    - monetisation
+    - add to cart
+    - payment drop
+    - checkout drop
+    - why aren't users buying
+    - conversion rate
+    - conversion drop
+    - purchase drop
+    - checkout funnel
+    - purchase conversion
+  anti_keywords:
+    - onboarding
+    - signup
+    - registration
+    - churn
+    - lapsed
+
+tool_controls:
+  allowed_analysis_types:
+    - metric
+    - segment
+    - funnel
+    - time_between
+    - behavioral_cohort
+
+validation_rules:
+  required_filters:
+    is_test: false
+  wau_max: 8000000000
+  enforce_week_start_labels: true
+
+ingredients:
+  - id: fintech.metric_definitions
+    type: documentation
+    name: Fintech metric definition pack
+    uri: semantic-layer/metrics_library/fintech.json
+  - id: global.exclusions
+    type: snippet
+    name: Mandatory exclusions
+    content: "Exclude test/internal users from all KPI reporting."
+
+mandatory_filters:
+  - "is_test = FALSE"
+
+investigations:
+  - sub_question: >
+      Where are users abandoning the purchase or checkout funnel — which step
+      has the largest absolute drop-off in user count?
+    analysis_hint: funnel
+    rationale: >
+      Full funnel view reveals the precise abandonment step. The biggest drop
+      is where to invest engineering and UX effort first.
+    priority: 1
+
+  - sub_question: >
+      How has the overall purchase or payment success rate trended over the
+      last 30 days — is conversion improving or declining?
+    analysis_hint: metric
+    rationale: >
+      Trend view distinguishes a sudden regression (e.g., a broken payment
+      gateway) from a gradual decline (e.g., growing user friction).
+    priority: 2
+
+  - sub_question: >
+      Which user segments — by platform, geography, account type, or product
+      category — have the worst conversion rates?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Segment breakdown exposes who is struggling most and where to focus
+      targeted fixes (e.g., iOS-only payment bug, regional pricing issue).
+    priority: 3
+
+  - sub_question: >
+      How long does it take users to move from intent (e.g., start checkout)
+      to completion — and is this time increasing?
+    analysis_hint: time_between
+    rationale: >
+      Rising time-to-complete signals friction accumulation: slow pages,
+      confusing steps, or external payment gateway latency.
+    priority: 4
+
+narrative_requirements:
+  - "Name the funnel step with the single largest user drop (absolute count)"
+  - "State whether conversion rate is improving or declining (trend direction)"
+  - "Identify the segment (platform, geography, or type) with the worst conversion"
+  - "Distinguish technical failure (sudden drop) from UX friction (gradual decline)"
+  - "Quantify the revenue or volume impact if possible from the data"

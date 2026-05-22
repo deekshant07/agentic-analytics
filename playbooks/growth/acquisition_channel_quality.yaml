@@ -1,0 +1,81 @@
+id: growth.acquisition_channel_quality
+name: Acquisition Channel Quality Analysis
+description: >
+  Diagnose which marketing or acquisition channels bring users who actually
+  convert, activate, and retain — versus channels that drive volume but poor
+  downstream quality. Works for any product with acquisition source tracking
+  (UTM, referral, channel, campaign).
+
+match_signals:
+  keywords:
+    - acquisition
+    - channel
+    - marketing channel
+    - utm
+    - campaign
+    - referral
+    - organic
+    - paid
+    - facebook ads
+    - google ads
+    - influencer
+    - app store
+    - channel quality
+    - best channel
+    - which channel
+    - where do users come from
+    - channel performance
+    - channel comparison
+    - ltv by channel
+    - quality users
+  anti_keywords:
+    - churn
+    - engagement
+    - feature
+    - broken
+
+investigations:
+  - sub_question: >
+      Which acquisition channels deliver the highest end-to-end conversion rate
+      from install / signup to the first core action (activation)?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      Activation rate by channel reveals which channels bring genuinely
+      interested users vs tire-kickers driven by incentive campaigns.
+    priority: 1
+
+  - sub_question: >
+      Which acquisition channels produce users with the highest 30-day
+      retention rate — which channels invest in long-term value?
+    analysis_hint: retention
+    rationale: >
+      Channel-level retention separates channels that acquire users who
+      form habits from those who acquire one-time or bounced users.
+    priority: 2
+
+  - sub_question: >
+      How has the volume of new users from each acquisition channel trended
+      over the last 30 days — are any channels growing or collapsing?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      Volume trends expose channel dependency risk and identify emerging
+      growth channels worth doubling down on.
+    priority: 3
+
+  - sub_question: >
+      What is the average time-to-activation for users from each channel —
+      do some channels produce users who engage faster?
+    analysis_hint: time_between
+    rationale: >
+      Faster time-to-activation from a channel suggests better intent signal
+      or better ad-to-product message alignment.
+    priority: 4
+
+narrative_requirements:
+  - "Rank the top 3 channels by activation rate, not just volume"
+  - "Identify the highest-volume channel and whether it also has good quality"
+  - "Flag any channels that drive volume but have below-average retention"
+  - "State which channel has the fastest time-to-activation"
+  - "Recommend reallocating budget toward the highest quality-per-dollar channels"

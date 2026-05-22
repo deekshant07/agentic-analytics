@@ -1,0 +1,86 @@
+id: retention.engagement_drop
+name: Engagement Drop / DAU Decline
+description: >
+  Diagnose a drop in user engagement metrics — DAU, WAU, session frequency,
+  feature interactions, or any measure of how actively users use the product.
+  Works for any product with an engagement/activity signal.
+
+match_signals:
+  keywords:
+    - engagement
+    - dau
+    - wau
+    - mau
+    - active users
+    - sessions
+    - session frequency
+    - app opens
+    - daily active
+    - weekly active
+    - monthly active
+    - engagement drop
+    - engagement fell
+    - engagement declining
+    - less active
+    - users less engaged
+    - usage dropped
+    - engagement down
+    - stickiness
+    - declining
+    - been declining
+    - dau declined
+    - dau dropped
+    - dau falling
+    - dau has been
+  anti_keywords:
+    - signup
+    - registration
+    - churn
+    - new users
+    - acquisition
+
+investigations:
+  - sub_question: >
+      How has daily or weekly active user count trended over the last 30 days —
+      when exactly did engagement start declining and by how much?
+    analysis_hint: metric
+    rationale: >
+      The trend establishes the baseline and identifies the inflection point.
+      Knowing when it started narrows the root cause to events around that date.
+    priority: 1
+
+  - sub_question: >
+      Is the engagement drop driven by fewer users being active, or by active
+      users engaging less frequently — is this a reach problem or a depth problem?
+    analysis_hint: metric
+    rationale: >
+      Reach problem: user count is falling (acquisition or early churn).
+      Depth problem: same users but lower session frequency (product value loss).
+      These require completely different interventions.
+    priority: 2
+
+  - sub_question: >
+      Which platform, user segment, or demographic shows the steepest
+      engagement decline — is it concentrated or broad-based?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      If one segment drives the decline, the fix is targeted. Broad-based
+      decline suggests a systemic product or marketing issue.
+    priority: 3
+
+  - sub_question: >
+      How have notification delivery, push open rates, or re-engagement
+      touchpoints trended — are users being reached but not responding?
+    analysis_hint: metric
+    rationale: >
+      If notification volume is flat but engagement is falling, the issue
+      is product value. If reach is also declining, the CRM channel needs attention.
+    priority: 4
+
+narrative_requirements:
+  - "State the percentage decline in DAU/WAU and the exact start date"
+  - "Distinguish reach problem (fewer active users) from depth problem (less frequent use)"
+  - "Name the segment most responsible for the decline"
+  - "State whether any re-engagement channels are working or also declining"
+  - "Recommend whether to focus on re-engagement campaigns or product feature investment"

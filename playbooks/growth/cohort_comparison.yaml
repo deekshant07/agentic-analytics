@@ -1,0 +1,72 @@
+id: growth.cohort_comparison
+name: Cohort Performance Comparison
+description: >
+  Compare how different cohorts of users — acquired in different time periods,
+  through different channels, or on different platforms — behave over time.
+  Answers "are newer cohorts better or worse than older ones?" and "which
+  user group performs best?"
+
+match_signals:
+  keywords:
+    - cohort
+    - cohorts
+    - cohort comparison
+    - cohort analysis
+    - compare cohorts
+    - newer users vs older
+    - january cohort
+    - monthly cohort
+    - weekly cohort
+    - are newer users better
+    - cohort quality
+    - cohort performance
+    - user vintage
+  anti_keywords:
+    - churn
+    - lapsed
+    - feature breakage
+
+investigations:
+  - sub_question: >
+      How does the activation rate compare across monthly user acquisition
+      cohorts over the last 6 months — are recent cohorts better or worse?
+    analysis_hint: retention
+    rationale: >
+      Cohort-over-cohort comparison is the most important signal for whether
+      product changes are improving or degrading the new-user experience.
+    priority: 1
+
+  - sub_question: >
+      How does 30-day retention compare across monthly cohorts —
+      is the product getting stickier for newer users?
+    analysis_hint: retention
+    rationale: >
+      Retention cohort curves reveal product improvement over time.
+      Declining curves in recent cohorts signal a regression.
+    priority: 2
+
+  - sub_question: >
+      How does the mix of acquisition channels differ across cohorts —
+      is the shift in channel mix driving the change in cohort quality?
+    analysis_hint: segment
+    breakdown_hint: acquisition_cohort
+    rationale: >
+      Channel mix shifts can explain cohort quality changes. If a high-quality
+      channel dried up, newer cohorts will underperform even if the product improved.
+    priority: 3
+
+  - sub_question: >
+      How does the platform split (iOS vs Android vs Web) differ across
+      cohorts — and does the platform mix correlate with cohort quality?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Platform mix changes (e.g., more Android users after a campaign) can
+      explain cohort quality differences if platform-level retention differs.
+    priority: 4
+
+narrative_requirements:
+  - "State whether recent cohorts are performing better or worse than historical ones"
+  - "Identify if the change is driven by channel mix, platform mix, or product changes"
+  - "Quantify the activation and 30-day retention difference between best and worst cohorts"
+  - "Recommend whether to fix product (universal) or rebalance acquisition (targeted)"

@@ -1,0 +1,76 @@
+id: retention.re_engagement
+name: Lapsed User / Re-engagement Analysis
+description: >
+  Diagnose the population of users who were once active but have gone dormant,
+  and identify the best segments to target for re-engagement. Works for any
+  product with a defined "lapsed" window — typically 30, 60, or 90 days of
+  no activity.
+
+match_signals:
+  keywords:
+    - lapsed
+    - dormant
+    - inactive
+    - win back
+    - win-back
+    - re-engage
+    - re-engagement
+    - reactivation
+    - reactivate
+    - lost users
+    - lost customers
+    - used to use
+    - haven't been active
+    - not active in
+    - bring back users
+    - resurrect
+  anti_keywords:
+    - new users
+    - acquisition
+    - onboarding
+    - signup
+
+investigations:
+  - sub_question: >
+      How large is the lapsed user population (active 30–90 days ago but
+      not active in the last 30 days), and how has this cohort size trended?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Sizing the lapsed cohort and its trend tells you whether lapse is
+      accelerating — giving priority and urgency to the re-engagement effort.
+    priority: 1
+
+  - sub_question: >
+      Of lapsed users, which platform, acquisition channel, or demographic
+      segment makes up the largest share — where should re-engagement be focused?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Targeting the biggest lapsed segment maximises the re-engagement ROI
+      and personalises the intervention (e.g., push notification vs email).
+    priority: 2
+
+  - sub_question: >
+      What was the last action lapsed users performed before going dormant —
+      is there a common exit point that signals disengagement?
+    analysis_hint: metric
+    rationale: >
+      The exit event pattern reveals whether users leave after a specific
+      friction point (e.g., failed transaction, abandoned onboarding step).
+    priority: 3
+
+  - sub_question: >
+      Among users who were previously lapsed but returned, what actions
+      did they perform on their return — what does a successful re-engagement look like?
+    analysis_hint: retention
+    rationale: >
+      Understanding the return-path of re-activated users gives a template
+      for what to nudge lapsed users toward in a re-engagement campaign.
+    priority: 4
+
+narrative_requirements:
+  - "State the size of the lapsed cohort and whether it is growing"
+  - "Identify the top 1-2 segments (platform, channel) to target for re-engagement"
+  - "Name the most common exit event before lapsing"
+  - "Describe what a successful re-engagement looks like based on returners' behaviour"
+  - "Recommend a specific channel and message strategy for the top lapsed segment"

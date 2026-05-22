@@ -1,0 +1,73 @@
+id: retention.resurrection_analysis
+name: Resurrection / Win-Back Analysis
+description: >
+  Understand what brings churned users back. Identifies the re-engagement
+  triggers (push, email, referral, organic), the time gap before resurrection,
+  and whether resurrected users retain as well as never-churned users.
+  Critical for sizing win-back campaign ROI.
+
+match_signals:
+  keywords:
+    - resurrection
+    - win back
+    - winback
+    - win-back
+    - re-engagement
+    - reactivation
+    - churned users returning
+    - bring back users
+    - lapsed users
+    - dormant users
+    - users who came back
+    - re-activated
+    - returning after gap
+    - re-engaged users
+    - lapsed reactivation
+  anti_keywords:
+    - new users
+    - acquisition
+    - onboarding
+
+investigations:
+  - sub_question: >
+      How many users who were inactive for 30+ days returned to perform the
+      core action in the last 60 days? Show the weekly trend of resurrections.
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Resurrection volume and trend shows whether win-back efforts are working
+      and sizes the recoverable user pool.
+    priority: 1
+
+  - sub_question: >
+      Among resurrected users, what was their first action upon returning?
+      Show the top re-entry events in the first session after returning.
+    analysis_hint: journey
+    rationale: >
+      The re-entry event reveals what triggered return — a notification, a
+      referral, a feature launch — and guides win-back message design.
+    priority: 2
+
+  - sub_question: >
+      Do resurrected users retain after coming back? Compare their D7
+      retention rate against first-time users in the same period.
+    analysis_hint: retention
+    rationale: >
+      If resurrected users churn again quickly, win-back campaigns are
+      low-ROI. High resurrection retention validates investment in win-back.
+    priority: 3
+
+  - sub_question: >
+      What was the gap distribution between last activity and resurrection —
+      were users gone for 30 days, 60 days, or 90+ days?
+    analysis_hint: time_between
+    rationale: >
+      Gap length informs optimal re-engagement timing. A gap of 30-45 days
+      before messaging may maximize win-back rates.
+    priority: 4
+
+narrative_requirements:
+  - "State the weekly volume of resurrected users and whether the trend is rising"
+  - "Describe the top re-entry events — what do resurrected users do first?"
+  - "Compare D7 retention of resurrected vs first-time users"
+  - "Identify the optimal gap window for win-back outreach based on the data"
+  - "Recommend one win-back message or in-app prompt based on the re-entry event pattern"

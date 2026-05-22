@@ -1,0 +1,75 @@
+id: product.feature_adoption
+name: Feature Adoption & Discovery
+description: >
+  Diagnose the adoption curve of a specific product feature — who is
+  discovering it, who is using it repeatedly, and who is not. Works for
+  any product feature rollout, A/B test follow-up, or feature health check.
+
+match_signals:
+  keywords:
+    - feature adoption
+    - adoption
+    - feature usage
+    - who uses
+    - using the feature
+    - feature discovery
+    - how many use
+    - feature penetration
+    - feature health
+    - rollout
+    - launched feature
+    - new feature
+    - which users use
+    - feature engagement
+    - used by
+  anti_keywords:
+    - churn
+    - payment
+    - transaction
+    - failure
+    - broken
+
+investigations:
+  - sub_question: >
+      What percentage of active users have tried this feature at least once,
+      and how has adoption grown since launch or over the last 30 days?
+    analysis_hint: metric
+    rationale: >
+      Adoption rate and its growth curve tell you if the feature is gaining
+      traction organically or stagnating after the initial launch boost.
+    priority: 1
+
+  - sub_question: >
+      Among users who tried the feature, what percentage use it repeatedly
+      (more than once) — is it driving habit or single-use?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Repeat usage rate distinguishes a genuinely useful feature from one
+      that satisfies curiosity but doesn't deliver ongoing value.
+    priority: 2
+
+  - sub_question: >
+      Which user segments — by platform, account type, geography, or
+      demographics — have the highest and lowest feature adoption rates?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Segment differences reveal where the feature resonates most and
+      where to focus product education or placement improvements.
+    priority: 3
+
+  - sub_question: >
+      What do users who adopt this feature do next — does feature usage
+      correlate with higher retention or more core actions?
+    analysis_hint: journey
+    rationale: >
+      Understanding the post-feature journey reveals whether the feature
+      drives product engagement or is an isolated action with no downstream impact.
+    priority: 4
+
+narrative_requirements:
+  - "State the overall adoption rate (% of active users who tried the feature)"
+  - "State the repeat-use rate (% of triers who used it more than once)"
+  - "Identify the segment with highest adoption — who loves this feature most"
+  - "State whether feature adoption correlates with higher retention"
+  - "Recommend: improve discoverability, double down on power users, or rethink value prop"
