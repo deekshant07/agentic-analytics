@@ -29,5 +29,4 @@ core/chat_history.db
 qa/eval_results/*.json
 qa/eval_results/*.log
 
-# Optional: keep duckdb in repo for Streamlit demo (committed intentionally)
-# jupiter.duckdb
+# jupiter.duckdb is intentionally committed for Streamlit Cloud demo
