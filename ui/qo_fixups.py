@@ -290,7 +290,7 @@ def _apply_metric_variant_overrides(
 # ── 4. Invalid breakdown sanitization ────────────────────────────────────────
 
 _TEMPORAL_BREAKDOWN_RE = re.compile(
-    r"\b(month|week|day|year|date|cohort)\b", re.IGNORECASE
+    r"(?<![a-z])(month|week|day|year|date|cohort)(?![a-z])", re.IGNORECASE
 )
 
 
@@ -314,7 +314,14 @@ def _sanitize_invalid_breakdown(
     # Temporal alias (e.g. "month_name", "cohort_month"): LLM used a time phrase as
     # breakdown. Clear it so the compiler emits a clean temporal trend, not a bogus
     # MAX(month_name) GROUP BY that errors or returns an unexpected shape.
+    # Also translate the temporal intent to time_granularity so the query isn't silently
+    # downgraded to a daily aggregate.
     if _TEMPORAL_BREAKDOWN_RE.search(bd):
+        bd_l = bd.lower()
+        if "month" in bd_l and qo.time_granularity == "day":
+            qo.time_granularity = "month"
+        elif "week" in bd_l and qo.time_granularity == "day":
+            qo.time_granularity = "week"
         qo.breakdown = None
         return
 
@@ -1054,3 +1061,48 @@ def _extract_clarify_context(history: Optional[list[dict]]) -> Optional[str]:
         if turn.get("analysis_type") == "clarify" and turn.get("answer"):
             return str(turn["answer"])[:400]
     return None
+
+
+# ── 7. Postcondition invariant validator ──────────────────────────────────────
+
+def validate_qo_postconditions(
+    qo: QueryObject,
+    sampled_values: Optional[dict] = None,
+) -> list[str]:
+    """
+    Run after all fixups. Returns a list of human-readable violation strings.
+    Violations are surfaced in the debug panel and logged — never raise here.
+
+    Add one entry per invariant. Each invariant should be expressible as:
+    "after fixups, property X must hold" — not "this specific LLM error happened".
+    That distinction is what keeps this list short as the system grows.
+    """
+    violations: list[str] = []
+    if not qo:
+        return violations
+
+    ev_vals = (sampled_values or {}).get("events", {})
+    bd = getattr(qo, "breakdown", None)
+    at = getattr(qo, "analysis_type", "") or ""
+
+    # breakdown must be None or a known column
+    if bd and ev_vals and bd not in ev_vals:
+        violations.append(f"breakdown '{bd}' not in sampled_values.events")
+
+    # segment without a breakdown is a compiler no-op
+    if at == "segment" and not bd:
+        violations.append("analysis_type=segment but breakdown is None after fixups")
+
+    # time_granularity must be a valid value
+    gran = getattr(qo, "time_granularity", "day") or "day"
+    if gran not in ("day", "week", "month"):
+        violations.append(f"time_granularity '{gran}' is not one of day/week/month")
+
+    # breakdown column must not also appear as a filter (GROUP BY + WHERE col = X collapses to 1 row)
+    flt = dict(getattr(qo, "filters", None) or {})
+    if bd and bd in flt:
+        violations.append(
+            f"breakdown '{bd}' also present in filters — query will return a single row per filter value"
+        )
+
+    return violations

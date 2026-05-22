@@ -67,6 +67,7 @@ from ui.qo_fixups import (
     _materialize_metric_status_into_filters_for_equality_cohorts,
     _strip_redundant_calendar_day_filter,
     _extract_clarify_context,
+    validate_qo_postconditions,
 )
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -288,7 +289,7 @@ def _looks_like_rate_metric(df: pd.DataFrame) -> bool:
     return (vals <= 1.0).all() and (vals >= 0).all() and len(vals) >= 3
 
 
-def _fmt_period_value(v, col: Optional[str] = None, qo=None) -> str:
+def _fmt_period_value(v, col: str, qo=None) -> str:
     try:
         f = float(v)
         if col and is_rate_column_name(col) and 0 <= f <= 100:
@@ -403,8 +404,14 @@ def _period_hint_from_qo(qo) -> str:
         n = getattr(qo, "time_range_days", 30) or 30
         base = f"last {n} days"
     win = getattr(qo, "activation_window_days", None)
+    if win is None:
+        # Surface the compiler default so narration always states the conversion window
+        mid = (getattr(qo, "metric_id", None) or "").lower()
+        if "activation" in mid or "pct_users" in mid:
+            from core.pipeline.activation_window import effective_activation_window_days
+            win = effective_activation_window_days(qo)
     if win and int(win) > 0:
-        return f"{base}, {int(win)}-day activation window"
+        return f"{base}, {int(win)}-day conversion window"
     return base
 
 
@@ -482,7 +489,7 @@ def _scalar_summary_agent(df: pd.DataFrame, qo, metric_name: Optional[str]) -> s
         window = f"**{cal.strip()}**"
     else:
         window = f"**{_period_hint_from_qo(qo)}**"
-    return f"**{_fmt_period_value(val)}** **{label}** in {window}."
+    return f"**{_fmt_period_value(val, metric_col, qo)}** **{label}** in {window}."
 
 
 def _analyst_so_what(
@@ -564,7 +571,7 @@ def small_narration(
         lines = []
         for _, row in df.sort_values(mc, ascending=False).iterrows():
             cat = str(row["cohort_month_alignment"])
-            lines.append(f"**{cat}**: {_fmt_period_value(row[mc])}")
+            lines.append(f"**{cat}**: {_fmt_period_value(row[mc], mc, qo)}")
         detail = "; ".join(lines)
         return (
             f"In {window}, among **{subj}**, split by when they first completed **{anc}** "
@@ -602,7 +609,7 @@ def small_narration(
     if metric_col and cat_cols:
         top_rows = df.nlargest(3, metric_col)
         top_str  = ", ".join(
-            f"{row[cat_cols[0]]} ({_fmt_period_value(row[metric_col])})"
+            f"{row[cat_cols[0]]} ({_fmt_period_value(row[metric_col], metric_col, qo)})"
             for _, row in top_rows.iterrows()
         )
         base = f"**{label}** — top segments: {top_str}."
@@ -696,6 +703,11 @@ def get_sql(
         sampled_values=sampled,
         metrics=metrics,
     )
+
+    # Postcondition invariants — non-fatal; violations are surfaced in the debug panel.
+    _violations = validate_qo_postconditions(qo, sampled)
+    if _violations:
+        setattr(qo, "_debug_invariant_violations", _violations)
 
     # Structural validation — catches missing required fields (e.g. event=null for stickiness)
     # after all fixups have run. Returns a clarify message rather than silently compiling

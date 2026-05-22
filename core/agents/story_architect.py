@@ -413,7 +413,20 @@ def build_story_arc(
 
     # Granularity framing so the LLM interprets per-period numbers correctly
     gran = qo.time_granularity or "day"
-    if qo.analysis_type == "behavioral_cohort":
+    _mid = (getattr(qo, "metric_id", None) or "").lower()
+    if qo.analysis_type == "metric" and ("activation" in _mid or "pct_users" in _mid):
+        from core.pipeline.activation_window import effective_activation_window_days
+        _act_win = effective_activation_window_days(qo)
+        framing = (
+            f"FRAME: **Activation / conversion rate ({_act_win}-day conversion window)** — "
+            f"values are percentages (0–100). "
+            f"ALWAYS format the rate as X% (with the percent symbol). "
+            f"ALWAYS state the {_act_win}-day conversion window explicitly in the narrative "
+            f"(e.g. 'within {_act_win} days of onboarding/signup'). "
+            f"ALWAYS state the lookback period (how many cohort months/days are included). "
+            f"Do NOT describe this metric as a raw count."
+        )
+    elif qo.analysis_type == "behavioral_cohort":
         framing = (
             "FRAME: **Behavioral anti-cohort** — each period counts users who did the primary event "
             "but **never** the second event in the window (bucketed by first primary-event time). "

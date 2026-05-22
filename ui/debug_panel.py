@@ -389,6 +389,7 @@ def _build_full_debug_signature(qo) -> dict:
         "narration_metric_col": getattr(qo, "_narration_metric_col_debug", None),
         "narration_value_mode": getattr(qo, "_narration_value_mode_debug", None),
         "fixup_deltas": list(getattr(qo, "_fixup_deltas", None) or []),
+        "invariant_violations": list(getattr(qo, "_debug_invariant_violations", None) or []),
     }
 
 
@@ -565,6 +566,12 @@ def _render_debug_summary_v2(debug_sig: dict, metric_contract: dict, sql: str | 
         st.markdown("\n".join(lines))
     else:
         st.markdown("- no fixups fired (all passes were no-ops)")
+
+    invariant_violations = debug_sig.get("invariant_violations") or []
+    if invariant_violations:
+        st.markdown("**Invariant violations** ⚠️")
+        for v in invariant_violations:
+            st.markdown(f"- {v}")
 
     st.markdown("**3) Routing**")
     st.markdown(

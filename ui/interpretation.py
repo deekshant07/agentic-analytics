@@ -244,7 +244,7 @@ def build_refine_suggestions(qo, sampled_values: dict[str, dict[str, list]]) -> 
             if current_win != w:  # None (lifetime) is always different from any int
                 analyst_chips.append((
                     f"{lbl} activation",
-                    f"Show {w}-day activation rate by cohort month",
+                    f"Show monthly activation rate trend with {w}-day conversion window",
                 ))
         analyst_chips.append((
             "Activation funnel",
