@@ -30,3 +30,6 @@ qa/eval_results/*.json
 qa/eval_results/*.log
 
 # jupiter.duckdb is intentionally committed for Streamlit Cloud demo
+
+# uv lockfile — Streamlit Cloud uses requirements.txt instead
+uv.lock
