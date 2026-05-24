@@ -322,15 +322,19 @@ _ANALYSIS_TYPES: dict[str, dict] = {
         "rules": (
             '- For retention: retention_window_days = **first N days** after cohort entry — '
             'did the user return at least once in days 0..N-1 after their cohort anchor (NOT "days N..2N"). '
+            'retention_window_days is ALWAYS in whole days — convert hours before setting: '
+            '"24hr retention"→1, "48hr retention"→2, sub-day→1 (same rule as activation). '
             'When the user says "for 14 days", "first 14 days", or "14 day retention", set retention_window_days=14. '
             'For "MOM"/"month over month" retention with an explicit N-day window: analysis_type=retention, '
             'time_granularity=month, time_range_days≈180, retention_window_days=N (one retention_pct per cohort month). '
             'Scale defaults when no explicit N: time_range_days ≤ 14 → 1, ≤ 60 → 7, > 60 → 30. '
-            'When the user names "D1"/"Day 1" use 1; "D7"/"Day 7" use 7; "D30"/"Day 30" use 30.\n'
-            '- For activation rate with an explicit window ("7-day activation", "D30 activation", "activate within 1 day"): '
-            'set metric_id=<activation metric> AND activation_window_days=<N> (any explicit day count, e.g. 7, 60). '
-            'Use activation_window_days for "7 day activation", "D7 activation", "7-day activation" — NOT retention_window_days. '
-            'Without a window ("activation rate", "MOM activation"): set activation_window_days=null (compiler defaults to 30-day window).\n'
+            'When the user names "D1"/"Day 1" use 1; "D7"/"Day 7" use 7; "D30"/"Day 30" use 30; "D0"/"Day 0" use 0.\n'
+            '- For activation rate with an explicit window ("7-day activation", "D30 activation", "activate within 1 day", "24hr conversion", "48hr conversion"): '
+            'set metric_id=<activation metric> AND activation_window_days=<N in whole days> — ALWAYS convert hours to days first (24hr→1, 48hr→2, sub-day→1). '
+            'Use activation_window_days for "7 day activation", "D7 activation", "7-day activation", hour-based windows — NOT retention_window_days. '
+            '"D0 activation" / "same-day activation" / "day-0 activation" → activation_window_days=0 '
+            '(signals multi-window: compiler shows all catalog D-windows — D1/D7/D14/D30 — as a cohort trend). '
+            'Without a window ("activation rate", "MOM activation"): set activation_window_days=null (same multi-window behavior).\n'
             '- For retention with no explicit event: check PRE-BUILT METRICS for metrics of type "retention" and set metric_id '
             'to the highest-confidence approved one. Only fall back to a representative session or core-action event if no catalog retention metric exists.'
         ),
@@ -543,8 +547,12 @@ METRIC_ID MATCHING RULES — be conservative:
     "[qualifier] retention [informal]" → analysis_type=retention, metric_id=<retention metric with route_as retention>, filters=<qualifier>, retention_window_days = first N days (D7→7, "for 14 days"/"first 14 days"→14).
   Use DIMENSION VALUE HINTS for qualifiers — includes catalog meanings, not only DB samples.
 - ACTIVATION WINDOW — for "% of users" ratio metrics (e.g. activation rate, conversion rate):
-  When the user names an explicit day window ("7-day", "D7", "D30", "within N days"):
-    set metric_id=<that metric> AND activation_window_days=<N>.
+  activation_window_days is ALWAYS in whole days. Convert before setting:
+    "24hr" / "24 hours" / "1 day"  → 1
+    "48hr" / "48 hours" / "2 days" → 2
+    "12hr" / "6hr" / sub-day       → round up to 1 (smallest representable unit is 1 day)
+  When the user names an explicit day or hour window ("7-day", "D7", "D30", "24hr", "within N days"):
+    set metric_id=<that metric> AND activation_window_days=<N in whole days after conversion>.
   Without an explicit window: set activation_window_days=null (compiler uses its default window).
 
 AVAILABLE EVENTS — use ONLY the exact strings shown for "event", "event_b", and "funnel_steps":
@@ -596,11 +604,15 @@ Think step by step in the "_reasoning" field before filling any other slot:
   "secondary_date_from":   "<for behavioral_cohort cross-period SAME event: second window inclusive start, else null>",
   "secondary_date_to":     "<for behavioral_cohort cross-period SAME event: second window exclusive end, else null>",
   "breakdown":             "<dimension column or null — also used as the property for funnel_property_drilldown>",
+  "breakdown_source":      "explicit|default",
   "funnel_steps":          [],
   "event_b":               "<for behavioral_cohort: event they did NOT do; retention: return event; time_between: end event; same_month_anchor: anchor/lifecycle event (e.g. signup_completed); else optional>",
-  "retention_window_days":  7,
-  "activation_window_days": "<days after onboarding for '% of users' metrics — user-stated N, or null for compiler default 30>",
+  "retention_window_days":        7,
+  "retention_window_days_source": "explicit|default",
+  "activation_window_days": "<whole days after onboarding for '% of users' metrics — always convert hours to days (24hr→1, 48hr→2, sub-day→1); 0 for D0/multi-window; null for compiler default>",
+  "activation_window_days_source": "explicit|default",
   "time_granularity":       "day",
+  "time_granularity_source": "explicit|default",
   "time_source":           "explicit|inherited|default",
   "diagnose_period_end":   "<YYYY-MM-DD last day of the month being diagnosed, or null>",
   "xyz_axis1":             "<for xyz_matrix: second groupby dimension beyond cohort_month (e.g. 'platform', 'acquisition_cohort', 'city'); null for other types>",
@@ -683,6 +695,19 @@ Rules:
   - "explicit" when question contains a new time instruction (named month/range, MOM/WOW, last/past N unit).
   - "inherited" when time is copied from previous turn.
   - "default" when neither explicit nor inherited is used.
+- Set time_granularity_source:
+  - "explicit" when user said "by month", "weekly", "MOM", "WOW", "daily trend", "monthly", "week over week", etc.
+  - "default" when granularity was not mentioned — leave time_granularity="day" but mark source="default".
+  Compilers use this to distinguish "user wants daily buckets" from "system defaulted to day".
+- Set retention_window_days_source:
+  - "explicit" when user named a specific window ("D7", "14-day retention", "for 14 days", "24hr retention").
+  - "default" when no window was stated (compiler uses catalog default or scale rule).
+- Set activation_window_days_source:
+  - "explicit" when user named a specific window ("D7", "24hr", "7-day", "within 30 days").
+  - "default" when no window was stated (activation_window_days=null).
+- Set breakdown_source:
+  - "explicit" when user said "by <dimension>", "split by", "break down by", "per <dimension>".
+  - "default" when breakdown was not mentioned (breakdown=null).
 - Never output column or event names that are not in the lists above.
 
 DEPTH — set "deep" when the question genuinely needs multiple analytical angles
@@ -702,6 +727,48 @@ to give a complete answer. Set "quick" for everything else.
   • Questions already answered by a rich type: funnel, retention, journey, behavioral_cohort
   • Forecast requests
   • Any question where one focused SQL query gives the complete answer
+
+WORKED EXAMPLES — study slot choices here before filling your own:
+
+Q: "D0 activation"
+→ analysis_type=metric, metric_id=<activation metric>, activation_window_days=0,
+   time_granularity=day, time_source=default
+   [D0 → win=0 signals multi-window; compiler shows all catalog D-windows as cohort trend]
+
+Q: "24hr conversion rate"
+→ analysis_type=metric, metric_id=<activation/conversion metric>, activation_window_days=1,
+   time_source=default
+   [ALWAYS convert hours to whole days: 24hr=1, 48hr=2, sub-day=1]
+
+Q: "show me activation rate by month over last 6 months"
+→ analysis_type=metric, metric_id=<activation metric>, activation_window_days=null,
+   time_granularity=month, time_range_days=180, time_source=explicit
+   [user said "by month" and "6 months" → time_granularity=month is explicit, not default]
+
+Q: "D7 retention"
+→ analysis_type=retention, metric_id=<retention metric>, retention_window_days=7,
+   time_source=default
+   [D7 → retention_window_days=7; never use activation_window_days for retention]
+
+Q: "show me D7 and D30 activation"
+→ analysis_type=metric, metric_id=<activation metric>, activation_window_days=null,
+   time_source=default
+   [multiple windows requested → null lets the compiler emit all catalog default_windows]
+
+Q: "why did activation drop last week"
+→ analysis_type=diagnose, metric_id=<activation metric>,
+   time_source=explicit, depth=deep
+   [investigative root-cause question → diagnose + deep, not segment or metric]
+
+Q: "funnel from signup to first purchase"
+→ analysis_type=funnel, funnel_steps=[<signup event>, <purchase event>],
+   time_source=default
+   [step order matters: earlier event listed first]
+
+Q: "MOM activation by cohort"
+→ analysis_type=metric, metric_id=<activation metric>, activation_window_days=null,
+   time_granularity=month, time_range_days=180, time_source=explicit
+   [MOM = time_granularity=month; time_range_days≥90 to get multiple cohort months]
 """
 
 
@@ -1213,8 +1280,9 @@ def orchestrate(
         return QueryObject(analysis_type="clarify",
                            clarify_message="I couldn't parse that question. Could you rephrase it?")
 
-    data.pop("_reasoning", None)  # scratchpad — never leaks into QueryObject
+    _reasoning = data.pop("_reasoning", None)  # scratchpad — never leaks into QueryObject slots
     qo = QueryObject.from_dict(data)
+    qo._llm_reasoning = _reasoning or ""  # preserved for debug panel only
     qo.time_source = "explicit" if _question_has_time(question) else "default"
 
     _resolve_qualified_prebuilt_metric(qo, question, catalog, sampled_values)

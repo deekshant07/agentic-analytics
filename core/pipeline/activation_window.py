@@ -34,13 +34,26 @@ def _prompt_has_retention_window_context(prompt_lower: str) -> bool:
     )
 
 
+_HOURS_RE = re.compile(r"\b(\d+)\s*(?:hr|hrs|hour|hours)\b", re.IGNORECASE)
+
+
+def _hours_to_days(hours: int) -> int:
+    """Convert hours to whole days, rounding up (minimum 1 day)."""
+    return max(1, -(-hours // 24))  # ceiling division
+
+
 def parse_retention_window_days_from_prompt(prompt: str) -> Optional[int]:
-    """Extract D{N} retention window (e.g. D7, 7 day retention, for 14 days)."""
+    """Extract D{N} retention window (e.g. D7, 7 day retention, for 14 days, 24hr retention)."""
     if not prompt:
         return None
     pl = prompt.lower()
     if not _prompt_has_retention_window_context(pl):
         return None
+
+    # Hours: "24hr retention", "48 hour retention" → convert to days
+    m = _HOURS_RE.search(pl)
+    if m:
+        return _hours_to_days(int(m.group(1)))
 
     m = re.search(
         r"\b(?:d(\d+)|(?<!last )(?<!past )(?<!next )(?<!previous )(\d+)\s*-?\s*days?)\b"
@@ -104,12 +117,17 @@ def parse_activation_window_days_from_prompt(prompt: str) -> Optional[int]:
     """
     Extract N-day activation window from natural language.
 
-    Handles D7, 7-day, and 7 day (space) before/after the word ``activation``.
+    Handles D7, 7-day, 7 day, and hour-based windows (24hr→1, 48hr→2).
     Skips rolling-window phrases like ``last 7 days``.
     """
     if not prompt:
         return None
     pl = prompt.lower()
+
+    # Hours: "24hr activation", "24 hour conversion" → convert to days
+    m = _HOURS_RE.search(pl)
+    if m:
+        return _hours_to_days(int(m.group(1)))
 
     m = re.search(
         r"\b(?:d(\d+)|(?<!last )(?<!past )(?<!next )(?<!previous )(\d+)\s*-?\s*days?)\b"

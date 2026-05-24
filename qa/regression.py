@@ -257,25 +257,53 @@ class TestActivationRateCompiler:
         assert "INTERVAL '30'" in denom_body, "Denominator must still have its time filter"
 
     def test_monthly_numerator_uses_conversion_window_join(self, metrics):
-        """Monthly trend: numerator must use a BETWEEN join from anchor event, not a raw time filter.
+        """Monthly trend: numerator must enforce temporal ordering — only events AFTER the anchor.
 
         Bug history: numerator used AND {tf} (same raw INTERVAL as denominator), which let users
-        who transacted before onboarding be counted. Fix: join denom_cohort and use
-        BETWEEN d.first_ts AND d.first_ts + INTERVAL N DAY to enforce temporal ordering.
+        who transacted before onboarding be counted. Fix: join denom_cohort and enforce
+        e.timestamp >= d.first_ts (multi-window) or BETWEEN d.first_ts ... N DAY (single-window).
+
+        With default_windows set, the monthly compiler now uses the multi-window path
+        (numer_events CTE + CASE WHEN per window) instead of numer_cohort + BETWEEN.
+        Both paths enforce temporal ordering by joining from denom_cohort.
         """
         qo = _activation_qo(time_granularity="month", time_range_days=180)
         sql, _ = compile_query(qo, metrics)
-        numer_body = _cte_body("numer_cohort", sql)
+        numer_body = _cte_body("numer_cohort", sql) or _cte_body("numer_events", sql)
         denom_body = _cte_body("denom_cohort", sql)
+        assert numer_body, "Numerator CTE (numer_cohort or numer_events) must exist."
         assert "FROM denom_cohort d" in numer_body, (
             "Numerator must join denom_cohort to enforce conversion after anchor event."
         )
-        assert "BETWEEN d.first_ts" in numer_body, (
-            "Numerator must use BETWEEN d.first_ts ... for conversion window."
+        # Single-window uses BETWEEN; multi-window uses >= d.first_ts + CASE WHEN per window.
+        enforces_ordering = "BETWEEN d.first_ts" in numer_body or ">= d.first_ts" in numer_body
+        assert enforces_ordering, (
+            "Numerator must anchor to d.first_ts to prevent counting pre-onboarding events."
         )
         assert "INTERVAL '180'" in denom_body, (
             "Denominator must still be filtered to the 180-day observation window."
         )
+
+    def test_hour_based_window_uses_day_not_hour_count(self, metrics):
+        """24hr / 48hr windows must be expressed in days, not the raw hour count.
+
+        Bug risk: LLM sets activation_window_days=24 for "24hr conversion". The orchestrator
+        prompt now explicitly requires hours→days conversion, but if it ever regresses the
+        compiler would silently produce INTERVAL '24' DAY (24-day window) instead of 1-day.
+
+        This test locks in the correct compiler behaviour for win=1 (24hr→1 day) and
+        win=2 (48hr→2 days), and confirms win=24 does NOT appear in either.
+        """
+        for hours, days in [(24, 1), (48, 2)]:
+            qo = _activation_qo(activation_window_days=days, time_range_days=30)
+            sql, _ = compile_query(qo, metrics)
+            numer_body = _cte_body("numer_cohort", sql) or _cte_body("numer_events", sql)
+            assert f"INTERVAL '{days}' DAY" in sql, (
+                f"{hours}hr should produce INTERVAL '{days}' DAY, not '{hours}' DAY"
+            )
+            assert f"INTERVAL '{hours}' DAY" not in sql or days == hours, (
+                f"{hours}hr must not produce a raw {hours}-day interval (hours mistaken for days)"
+            )
 
 
 class TestSegmentAnalysisTypePctUsersMetric:
@@ -1486,6 +1514,163 @@ class TestChartTypeRouting:
         assert fig is not None
         assert fig.layout.barnorm == "percent", (
             "Categorical time-series (coarse time + cat dim) must use 100% stacked bars."
+        )
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L1 — ANALYSIS TYPE SMOKE TESTS
+# Every analysis type must compile without crashing and route to the expected
+# handler. These catch regressions introduced by QO schema changes, new fixups,
+# or compiler refactors that break previously-untested paths.
+# ═════════════════════════════════════════════════════════════════════════════
+
+def _make_qo(**kwargs) -> QueryObject:
+    return QueryObject(**kwargs)
+
+
+class TestAnalysisTypeSmokeCompile:
+    """
+    One happy-path compile test per analysis type.
+
+    Coverage gap history: funnel, behavioral_cohort, time_between, stickiness,
+    user_lifecycle, same_month_anchor, diagnose had zero regression tests.
+    Any QO schema field addition or compiler refactor could silently break them.
+
+    These tests assert route (SQL | __analyst__ | __diagnose__) and no crash.
+    They do NOT require a DB.
+    """
+
+    def test_funnel_routes_to_analyst(self, metrics):
+        """Funnel compile must not crash and must route to __analyst__ for multi-step SQL."""
+        qo = _make_qo(
+            analysis_type="funnel",
+            funnel_steps=["event_a", "event_b"],
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql == "__analyst__", (
+            "Funnel queries must route to __analyst__ — they require multi-step execution."
+        )
+
+    def test_behavioral_cohort_anti_compiles_to_sql(self, metrics):
+        """Anti-cohort (did A but NOT B) must compile to SQL with an anti-join CTE."""
+        qo = _make_qo(
+            analysis_type="behavioral_cohort",
+            event="event_a",
+            event_b="event_b",
+            metric_variant="anti_cohort",
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql and sql not in ("__analyst__", "__diagnose__", ""), (
+            "Anti-cohort must compile directly to SQL, not route to analyst."
+        )
+        assert "did_a" in sql.lower() or "event_a" in sql, (
+            "Anti-cohort SQL must reference the primary event (did_a CTE or event filter)."
+        )
+        assert "NOT IN" in sql or "LEFT JOIN" in sql, (
+            "Anti-cohort must use NOT IN or anti-join to exclude users who did event_b."
+        )
+
+    def test_behavioral_cohort_overlap_compiles_to_sql(self, metrics):
+        """Overlap cohort (did A AND B) must compile to SQL with an intersection."""
+        qo = _make_qo(
+            analysis_type="behavioral_cohort",
+            event="event_a",
+            event_b="event_b",
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql and sql not in ("__analyst__", "__diagnose__", ""), (
+            "Overlap cohort must compile to SQL."
+        )
+
+    def test_time_between_routes_to_analyst(self, metrics):
+        """time_between needs multi-query execution — must route to __analyst__."""
+        qo = _make_qo(
+            analysis_type="time_between",
+            event="event_a",
+            event_b="event_b",
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql == "__analyst__", (
+            "time_between must route to __analyst__ for median/percentile computation."
+        )
+
+    def test_stickiness_routes_to_analyst(self, metrics):
+        qo = _make_qo(
+            analysis_type="stickiness",
+            event="event_a",
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql == "__analyst__", "stickiness must route to __analyst__."
+
+    def test_user_lifecycle_routes_to_analyst(self, metrics):
+        qo = _make_qo(
+            analysis_type="user_lifecycle",
+            event="event_a",
+            event_b="event_b",
+            time_range_days=90,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql == "__analyst__", "user_lifecycle must route to __analyst__."
+
+    def test_same_month_anchor_compiles_to_sql(self, metrics):
+        """same_month_anchor has its own SQL compiler — must not route to analyst."""
+        qo = _make_qo(
+            analysis_type="same_month_anchor",
+            event="event_a",
+            event_b="event_b",
+            time_range_days=90,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql and sql not in ("__analyst__", "__diagnose__", ""), (
+            "same_month_anchor must compile to SQL directly."
+        )
+
+    def test_diagnose_routes_to_diagnose_sentinel(self, metrics):
+        qo = _make_qo(
+            analysis_type="diagnose",
+            metric_id="activation_rate",
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql == "__diagnose__", "diagnose must return __diagnose__ sentinel."
+
+    def test_retention_window_days_falsy_zero_preserved(self, metrics):
+        """retention_window_days=0 must survive QO parsing, not silently become 7.
+
+        Bug class: `d.get('retention_window_days') or 7` treated 0 as falsy and
+        returned 7. Same pattern as activation_window_days had before its fix.
+        """
+        from core.sql.query_object import QueryObject as QO
+        data = {
+            "analysis_type": "retention",
+            "metric_id": "d7_retention",
+            "retention_window_days": 0,
+        }
+        qo = QO.from_dict(data)
+        assert qo.retention_window_days == 0, (
+            "retention_window_days=0 must be preserved — falsy-zero must not default to 7."
+        )
+
+    def test_retention_hours_parsed_to_days(self):
+        """'24hr retention' must produce retention_window_days=1, not 24.
+
+        Bug class: regex parser had no hour pattern; LLM would set 24 and the
+        deterministic rescue also would not catch it.
+        """
+        from core.pipeline.activation_window import parse_retention_window_days_from_prompt
+        assert parse_retention_window_days_from_prompt("24hr retention") == 1, (
+            "24hr retention must convert to 1 day."
+        )
+        assert parse_retention_window_days_from_prompt("48 hour retention") == 2, (
+            "48 hour retention must convert to 2 days."
+        )
+        assert parse_retention_window_days_from_prompt("6hr retention") == 1, (
+            "Sub-day retention must round up to 1 day."
         )
 
 

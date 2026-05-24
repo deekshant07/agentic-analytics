@@ -335,18 +335,23 @@ def _compile_pct_users_metric_monthly(
     qo: QueryObject, metric: dict, col_label: str = "pct"
 ) -> Optional[str]:
     """
-    Cohort-correct monthly trend for '% of users' funnel metrics (e.g. activation_rate).
+    Cohort-correct trend for '% of users' funnel metrics (e.g. activation_rate).
 
-    A naive GROUP BY timestamp gives >100% rates because numerator and denominator
-    are from different user populations per month.
+    Groups users into cohorts by the period they completed the denominator event
+    (secondary_event), then measures what fraction converted (primary_event) within
+    each window. This avoids the naive GROUP BY timestamp bug that produces >100%
+    rates when numerator and denominator span different user populations per period.
 
-    Correct: cohort users by the month they completed the denominator event, then
-    left-join to the numerator event.
+    Window routing (activation_window_days → win_raw):
+      None or 0 + default_windows has >1 entry
+                  → multi-window: one CASE WHEN column per window in a single scan.
+                    Use this for "D0 activation", "show me activation", bare metric calls.
+      N > 0       → single-window: BETWEEN d.first_ts AND d.first_ts + INTERVAL N DAY.
+                    Use this for "D7 activation", "30-day activation", explicit requests.
+      anything else → single 30-day window fallback.
 
-    Window semantics (via qo.activation_window_days):
-      None → default 30-day window
-      0    → lifetime: any time after the cohort event
-      N > 0 → restricted: conversion within N days of the cohort event
+    win=0 is the D0 sentinel set by the orchestrator. It is NOT "lifetime" — it means
+    "user asked for D0 milestones, show all catalog windows together."
 
     Breakdown: when qo.breakdown is set, adds that dimension column from denom events
       (MAX per user) so each time bucket is further split by the dimension.
@@ -400,10 +405,55 @@ def _compile_pct_users_metric_monthly(
     bkd_select_col = f"  d.{safe_bkd},\n" if safe_bkd else ""
     bkd_group_n    = ", 2" if safe_bkd else ""
 
-    # activation_window_days=None → default 30-day window.
-    # 0 → explicit lifetime (no upper bound, but still after the anchor event).
     # retention_window_days is NOT used here — it's for retention queries.
     win_raw = getattr(qo, "activation_window_days", None)
+    default_windows = bd.get("default_windows") or []
+
+    # Multi-window path: D0 (win=0) or no explicit window + catalog has multiple windows.
+    # "D0 activation" is treated as "show me all D-windows together" — not a single lifetime column.
+    use_multi_window = (win_raw is None or int(win_raw) == 0) and len(default_windows) > 1
+    if use_multi_window:
+        windows = sorted(set(int(w) for w in default_windows if int(w) > 0))
+        denom_select = f"user_id, MIN(timestamp) AS first_ts, DATE_TRUNC('{g}', MIN(timestamp))::DATE AS cohort_{g}{bkd_denom_col}"
+        # Single join; CASE WHEN per window in the SELECT.
+        numer_cte = (
+            f"numer_events AS (\n"
+            f"  SELECT d.user_id, e.timestamp AS numer_ts\n"
+            f"  FROM denom_cohort d\n"
+            f"  JOIN events e ON d.user_id = e.user_id\n"
+            f'  WHERE e."event_name" = \'{primary_esc}\'{numer_filter}\n'
+            f"  AND e.timestamp >= d.first_ts{gc_join}\n"
+            f")"
+        )
+        numer_cols = "\n".join(
+            f"  COUNT(DISTINCT CASE WHEN n.numer_ts <= d.first_ts + INTERVAL '{w}' DAY"
+            f" THEN n.user_id END) AS {numer_label}_users_{w}d,"
+            for w in windows
+        )
+        rate_cols = "\n".join(
+            f"  ROUND(COUNT(DISTINCT CASE WHEN n.numer_ts <= d.first_ts + INTERVAL '{w}' DAY"
+            f" THEN n.user_id END) * 100.0 / NULLIF(COUNT(DISTINCT d.user_id), 0), 1)"
+            f" AS {safe_label}_{w}d{',' if i < len(windows) - 1 else ''}"
+            for i, w in enumerate(windows)
+        )
+        return f"""WITH denom_cohort AS (
+  SELECT {denom_select}
+  FROM events
+  WHERE "event_name" = '{secondary_esc}' AND {tf}{gc}
+  GROUP BY user_id
+),
+{numer_cte}
+SELECT
+  d.cohort_{g}                                                                       AS {g},
+{bkd_select_col}  COUNT(DISTINCT d.user_id)                                                          AS {denom_label}_users,
+{numer_cols}
+{rate_cols}
+FROM denom_cohort d
+LEFT JOIN numer_events n ON d.user_id = n.user_id
+GROUP BY 1{bkd_group_n}
+ORDER BY 1{bkd_group_n}"""
+
+    # Single-window path.
     win = int(win_raw) if win_raw is not None else 30
     if win > 0:
         # Time-windowed: conversion must happen within N days of the anchor event.
@@ -1947,8 +1997,16 @@ def compile_query(qo: QueryObject, metrics: list[dict]) -> tuple[str, Optional[s
         bd_type = str((metric.get("builder_definition") or {}).get("builder_type") or "").lower()
         if "% of users" in bd_type or "pct of users" in bd_type:
             _metric_label = re.sub(r"[^a-z0-9]+", "_", (metric.get("name") or "pct").lower()).strip("_") or "pct"
-            gran_override = str(qo.time_granularity or "day") != "day"
-            if gran_override:
+            bd_windows = (metric.get("builder_definition") or {}).get("default_windows") or []
+            # Routing contract for % of users metrics:
+            #   cohort trend  → metric declares default_windows (D-day milestones)
+            #                   OR user explicitly requested a granularity (week/month)
+            #   scalar        → no default_windows AND user never stated a granularity preference
+            # Use time_granularity_source ("explicit"/"default") not the value itself.
+            # time_granularity="day" is the orchestrator fill-in, not a user scalar signal.
+            gran_explicit = getattr(qo, "time_granularity_source", "default") == "explicit"
+            use_cohort_trend = len(bd_windows) > 1 or gran_explicit
+            if use_cohort_trend:
                 cohort_sql = _compile_pct_users_metric_monthly(qo, metric, col_label=_metric_label)
             else:
                 cohort_sql = _compile_pct_users_metric_scalar(qo, metric, col_label=_metric_label)

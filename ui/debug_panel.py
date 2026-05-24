@@ -352,6 +352,7 @@ def _build_full_debug_signature(qo) -> dict:
     return {
         "user_prompt": getattr(qo, "_debug_user_prompt", None),
         "orchestrator_input": getattr(qo, "_debug_orchestrator_input", None),
+        "llm_reasoning": getattr(qo, "_llm_reasoning", None) or "",
         "component_flow": list(getattr(qo, "_debug_flow", None) or []),
         "_pre_override": pre,
         "clarify_ctx_injected": getattr(qo, "_clarify_ctx_injected_debug", False),
@@ -378,9 +379,12 @@ def _build_full_debug_signature(qo) -> dict:
         "date_to": getattr(qo, "date_to", None),
         "time_range_days": getattr(qo, "time_range_days", None),
         "time_granularity": getattr(qo, "time_granularity", None),
+        "time_granularity_source": getattr(qo, "time_granularity_source", "default"),
         "time_source": getattr(qo, "time_source", None),
         "retention_window_days": getattr(qo, "retention_window_days", None),
+        "activation_window_days_source": getattr(qo, "activation_window_days_source", "default"),
         "breakdown": getattr(qo, "breakdown", None),
+        "breakdown_source": getattr(qo, "breakdown_source", "default"),
         "funnel_steps": list(getattr(qo, "funnel_steps", None) or []),
         "metric_variant": getattr(qo, "metric_variant", None),
         "metric_value_col": getattr(qo, "metric_value_col", None),
@@ -771,7 +775,18 @@ def _render_debug_pipeline(
         _debug_kv("date_from", pre_datefrom, mono=True),
         _debug_kv("date_to", pre_dateto, mono=True),
     ]
-    steps_html.append(_debug_step_html(3, "Orchestrator output (pre-override)", "ok", rows))
+    reasoning_text = debug_sig.get("llm_reasoning") or ""
+    reasoning_extra = ""
+    if reasoning_text:
+        reasoning_extra = (
+            '<details style="margin-top:0.5rem">'
+            '<summary style="font-size:0.75rem;color:#3b82f6;cursor:pointer">'
+            "LLM reasoning (step-by-step scratchpad)</summary>"
+            f'<pre style="white-space:pre-wrap;word-break:break-word;font-size:0.74rem;'
+            f'color:#a5b4fc;margin:0.3rem 0 0;line-height:1.5">'
+            f"{_debug_html_escape(reasoning_text)}</pre></details>"
+        )
+    steps_html.append(_debug_step_html(3, "Orchestrator output (pre-override)", "ok", rows, extra_html=reasoning_extra))
 
     # ── Step 4 · Fixup changes ────────────────────────────────────────────────
     fixup_deltas = debug_sig.get("fixup_deltas") or []

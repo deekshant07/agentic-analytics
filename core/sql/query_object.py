@@ -85,12 +85,19 @@ class QueryObject:
     # --- retention ---
     event_b: Optional[str] = None               # return event (defaults to event if None)
     retention_window_days: int = 7              # D1=1, D7=7, D30=30
+    # Source tag: "explicit" when user said "D7", "14-day retention", "24hr retention".
+    # "default" when no window stated — compiler uses catalog default or scale rule.
+    retention_window_days_source: str = "default"
 
     # --- activation window ---
     # Days after the cohort event within which the conversion must happen.
     # None = lifetime (any time) — used for activation_rate and similar '% of users' metrics.
     # Set by orchestrator when user says "7-day activation", "D30 activation", etc.
     activation_window_days: Optional[int] = None
+    # Source tag: was this value explicitly stated by the user, or is it a default/inferred?
+    # "explicit" → user said "D7 activation", "24hr conversion", "within 30 days"
+    # "default"  → no window mentioned; compiler uses its own default_windows
+    activation_window_days_source: str = "default"
 
     # --- time granularity (shared) ---
     # Controls how the time axis is bucketed for trend/retention queries.
@@ -98,11 +105,19 @@ class QueryObject:
     # When set to "week" or "month", pre-built scalar sql_hints are bypassed
     # so the compiler generates the properly bucketed query instead.
     time_granularity: str = "day"               # "day" | "week" | "month"
+    # Source tag: "explicit" when user said "by month", "weekly", "MOM" etc.
+    # "default" means the LLM filled in the default — do NOT use as a scalar/trend signal.
+    time_granularity_source: str = "default"
     # Source of time window selection:
     # - "explicit": user explicitly asked a period/trend window
     # - "inherited": copied from previous turn context
     # - "default": system default (e.g., last 30 days)
     time_source: str = "default"
+
+    # --- breakdown source ---
+    # "explicit" when user said "by channel", "split by region", etc.
+    # "default"  when LLM inferred or no breakdown was requested.
+    breakdown_source: str = "default"
 
     # --- diagnose ---
     # Optional end date for the diagnose comparison window (YYYY-MM-DD).
@@ -153,10 +168,14 @@ class QueryObject:
             breakdown=_norm_opt_str(d.get("breakdown")),
             funnel_steps=list(d.get("funnel_steps") or []),
             event_b=_norm_opt_str(d.get("event_b")),
-            retention_window_days=int(d.get("retention_window_days") or 7),
-            activation_window_days=int(d["activation_window_days"]) if d.get("activation_window_days") and str(d["activation_window_days"]).isdigit() else None,
+            retention_window_days=int(d["retention_window_days"]) if d.get("retention_window_days") is not None and str(d["retention_window_days"]).lstrip("-").isdigit() else 7,
+            retention_window_days_source=_norm_opt_str(d.get("retention_window_days_source")) or "default",
+            activation_window_days=int(d["activation_window_days"]) if d.get("activation_window_days") is not None and str(d["activation_window_days"]).lstrip("-").isdigit() else None,
+            activation_window_days_source=_norm_opt_str(d.get("activation_window_days_source")) or "default",
             time_granularity=_norm_opt_str(d.get("time_granularity")) or "day",
+            time_granularity_source=_norm_opt_str(d.get("time_granularity_source")) or "default",
             time_source=_norm_opt_str(d.get("time_source")) or "default",
+            breakdown_source=_norm_opt_str(d.get("breakdown_source")) or "default",
             diagnose_period_end=_norm_opt_str(d.get("diagnose_period_end")),
             xyz_axis1=_norm_opt_str(d.get("xyz_axis1")),
             clarify_message=_norm_opt_str(d.get("clarify_message")),
@@ -189,10 +208,14 @@ class QueryObject:
             "breakdown":            self.breakdown,
             "funnel_steps":         self.funnel_steps,
             "event_b":               self.event_b,
-            "retention_window_days": self.retention_window_days,
-            "activation_window_days": self.activation_window_days,
-            "time_granularity":      self.time_granularity,
-            "time_source":          self.time_source,
+            "retention_window_days":        self.retention_window_days,
+            "retention_window_days_source": self.retention_window_days_source,
+            "activation_window_days":        self.activation_window_days,
+            "activation_window_days_source": self.activation_window_days_source,
+            "time_granularity":              self.time_granularity,
+            "time_granularity_source":       self.time_granularity_source,
+            "time_source":                   self.time_source,
+            "breakdown_source":              self.breakdown_source,
             "diagnose_period_end":  self.diagnose_period_end,
             "xyz_axis1":            self.xyz_axis1,
             "threshold":            self.threshold,
