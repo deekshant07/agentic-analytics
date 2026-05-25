@@ -1,0 +1,81 @@
+id: journey.pre_conversion_paths
+name: Pre-Conversion Path Analysis
+description: >
+  Discover what sequence of events or features users interact with BEFORE
+  completing a key conversion (purchase, activation, subscription). Identifies
+  the common paths that lead to success and the divergent paths that do not.
+  Answers "what did converting users do before converting?"
+
+intent_class: journey
+intent_confidence: high
+intent_phrases:
+  - "what did users do before converting"
+  - "path to conversion"
+  - "what leads to"
+  - "journey to purchase"
+  - "steps before checkout"
+  - "events before activation"
+  - "what do converting users do"
+  - "path to first transaction"
+  - "pre-conversion behaviour"
+
+match_signals:
+  keywords:
+    - before converting
+    - path to conversion
+    - journey to
+    - steps before
+    - prior to purchase
+    - what leads to
+    - converting users
+  anti_keywords:
+    - after
+    - post conversion
+    - churn
+    - retention
+
+orchestrator_hint:
+  preferred_analysis_type: journey
+  event_role: goal_event
+  suggested_time_range_days: 30
+
+tool_controls:
+  allowed_analysis_types:
+    - journey
+    - funnel
+    - behavioral_cohort
+
+investigations:
+  - sub_question: >
+      What are the most common sequences of events users perform in the
+      24-48 hours before completing the conversion — what is the typical path?
+    analysis_hint: journey
+    event_hint: goal/conversion event
+    rationale: >
+      The pre-conversion path reveals which features and content prime users
+      for conversion. Optimising these touchpoints lifts conversion rates.
+    priority: 1
+
+  - sub_question: >
+      How does the pre-conversion path differ between users who converted
+      quickly (within 1 day) vs those who took a week or more?
+    analysis_hint: time_between
+    rationale: >
+      Time-to-convert segmentation distinguishes impulsive from deliberate
+      buyers — each may need different nudges and messaging.
+    priority: 2
+
+  - sub_question: >
+      Which features or events appear exclusively (or far more often) in
+      the path of converted users vs non-converted users?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Differentiator events are the "activation moments" that should be
+      promoted to non-converters to pull them along the conversion path.
+    priority: 3
+
+narrative_requirements:
+  - "Name the top 3 events that appear most in the conversion path"
+  - "Identify the single biggest differentiator between converters and non-converters"
+  - "State the median time from first engagement to conversion"
+  - "Recommend one product change to shorten or smooth the path"

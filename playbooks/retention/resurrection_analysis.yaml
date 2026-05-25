@@ -6,6 +6,18 @@ description: >
   and whether resurrected users retain as well as never-churned users.
   Critical for sizing win-back campaign ROI.
 
+intent_class: behavioral_cohort
+intent_confidence: high
+intent_phrases:
+  - "users who came back after churning"
+  - "churned users returning"
+  - "resurrected users"
+  - "win-back campaign"
+  - "users who left and came back"
+orchestrator_hint:
+  preferred_analysis_type: behavioral_cohort
+  suggested_time_range_days: 90
+
 match_signals:
   keywords:
     - resurrection

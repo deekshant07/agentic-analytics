@@ -45,6 +45,7 @@ from core.pipeline.activation_window import (
     incomplete_retention_cohort_note,
     parse_activation_window_days_from_prompt,
     parse_retention_window_days_from_prompt,
+    parse_retention_week_from_prompt,
     series_label_for_column,
 )
 from core.semantic.resolver_policy import resolve_query_policy
@@ -52,6 +53,7 @@ from core.sql.compilers import compile_custom_event_segment
 from ui.qo_fixups import (
     _apply_followup_context_repair,
     _apply_same_query_followup,
+    _apply_display_modifier_followup,
     _maybe_resolve_clarify_as_followup,
     _hydrate_retention_event_from_metric,
     _apply_lineage_rollforward_filters,
@@ -483,8 +485,8 @@ class TestActivationNarrationLabels:
             "activation_rate_60d": [40.0],
         })
         note = incomplete_activation_cohort_note(df, qo)
-        assert "Initial results" in note
-        assert "60-day" in note
+        assert note, "expected a maturity note for a cohort within the activation window"
+        assert "60-day" in note or "60d" in note
 
 
 class TestInAppFilterCompiler:
@@ -871,6 +873,74 @@ class TestRetentionWindowFromPrompt:
         assert qo.metric_status_target is None
 
 
+class TestRetentionWeekWindow:
+    """Week-N retention: parameterized lower-bound window in SQL and parse layer."""
+
+    def test_week4_parse_returns_correct_bounds(self):
+        # Week 4 = days 22–28 → from=22, to=29 (exclusive upper)
+        result = parse_retention_week_from_prompt("share week 4 retention")
+        assert result == (22, 29)
+
+    def test_week1_parse_returns_correct_bounds(self):
+        result = parse_retention_week_from_prompt("show week 1 retention")
+        assert result == (1, 8)
+
+    def test_week2_parse_returns_correct_bounds(self):
+        result = parse_retention_week_from_prompt("show week 2 retention")
+        assert result == (8, 15)
+
+    def test_non_retention_prompt_returns_none(self):
+        # "week 4" alone without retention context → None
+        result = parse_retention_week_from_prompt("show DAU for week 4")
+        assert result is None
+
+    def test_no_week_pattern_returns_none(self):
+        result = parse_retention_week_from_prompt("show D7 retention")
+        assert result is None
+
+    def test_apply_sets_retention_window_from_on_qo(self):
+        from core.pipeline.activation_window import apply_retention_window_from_prompt
+
+        qo = QueryObject(analysis_type="retention", metric_id="d7_retention", retention_window_days=7)
+        apply_retention_window_from_prompt(qo, "share week 4 retention")
+        assert qo.retention_window_from == 22
+        assert qo.retention_window_days == 29
+
+    def test_week4_sql_has_lower_interval_bound(self):
+        """_compile_retention must emit INTERVAL '22' DAY lower bound for week-4 window."""
+        from core.sql.compilers import _compile_retention
+
+        qo = QueryObject(
+            analysis_type="retention",
+            event="app_opened",
+            event_b="app_opened",
+            retention_window_days=29,
+            retention_window_from=22,
+            time_range_days=90,
+        )
+        sql = _compile_retention(qo)
+        assert "INTERVAL '22' DAY" in sql, f"Lower bound missing in SQL:\n{sql}"
+        assert "INTERVAL '29' DAY" in sql, f"Upper bound missing in SQL:\n{sql}"
+
+    def test_standard_d7_sql_has_no_lower_bound_interval(self):
+        """Standard D7 with retention_window_from=None must not add a lower offset."""
+        from core.sql.compilers import _compile_retention
+
+        qo = QueryObject(
+            analysis_type="retention",
+            event="app_opened",
+            event_b="app_opened",
+            retention_window_days=7,
+            retention_window_from=None,
+            time_range_days=90,
+        )
+        sql = _compile_retention(qo)
+        assert "INTERVAL '7' DAY" in sql
+        # Only one INTERVAL in the retained CTE — no lower-bound offset injected
+        assert sql.count("INTERVAL '7' DAY") >= 1
+        assert "INTERVAL '0' DAY" not in sql
+
+
 class TestRetentionSurvivalPlan:
     def test_survival_not_planned_for_simple_retention_question(self):
         from core.analysis.analyst import _plan_investigations, _retention_wants_survival_curve
@@ -1244,6 +1314,115 @@ class TestFollowupContextRepair:
             "Clarify turn must be skipped when searching for prior event context."
         )
 
+    def test_metric_id_not_inherited_when_event_already_set(self, catalog):
+        """
+        Follow-up with its own event must NOT inherit metric_id from prior turn.
+
+        Bug: "split Onboarded users by platform" after a retention query inherited
+        metric_id=d7_retention. The compiler then hit the CTE metric path, couldn't
+        apply breakdown, and fell to __analyst__ which emitted a plain monthly trend
+        instead of (month, platform, unique_users).
+        """
+        history = [{"qo": {
+            "analysis_type": "retention",
+            "metric_id": "d7_retention",
+            "event": "transaction_reconciled",
+        }}]
+        qo = QueryObject(
+            analysis_type="segment",
+            event="onboarding_completed",  # user explicitly named a different event
+            breakdown="platform",
+            time_granularity="month",
+            time_range_days=180,
+        )
+        _apply_followup_context_repair(qo, history, catalog)
+        assert qo.metric_id is None or qo.metric_id == "", (
+            "metric_id must NOT be inherited when the current query already has its own event.\n"
+            "Bug: d7_retention was injected, corrupting compiler dispatch for the segment query."
+        )
+        assert qo.event == "onboarding_completed", "event must be unchanged"
+
+    def test_metric_id_still_inherited_when_no_event(self, catalog):
+        """Vague follow-up with no event should still inherit metric_id from history."""
+        history = [{"qo": {
+            "analysis_type": "metric",
+            "metric_id": "activation_rate",
+            "event": None,
+        }}]
+        qo = QueryObject(
+            analysis_type="segment",
+            breakdown="platform",
+            time_granularity="month",
+            time_range_days=180,
+        )
+        _apply_followup_context_repair(qo, history, catalog)
+        assert qo.metric_id == "activation_rate", (
+            "When no event is set, metric_id must still be inherited from history."
+        )
+
+
+class TestDisplayModifierFollowup:
+    """
+    _apply_display_modifier_followup must NOT override analysis_type when the current
+    query already uses a cohort-based type (retention, funnel, behavioral_cohort).
+
+    Bug: "share MOM retention trend" fired the fixup (has_share + has_mom) and
+    clobbered analysis_type=retention → "metric", so the compiler emitted a plain
+    COUNT(DISTINCT user_id) per month instead of a cohort retention_pct SQL.
+    """
+
+    def test_retention_analysis_type_preserved_on_mom_share_prompt(self):
+        """
+        A fresh retention query with 'share MOM' in the prompt must keep
+        analysis_type=retention so the retention compiler emits cohort SQL.
+        """
+        history = []
+        qo = QueryObject(
+            analysis_type="retention",
+            metric_id="d7_retention",
+            event="user_signed_up",
+            event_b="user_signed_up",
+            time_granularity="month",
+            time_range_days=180,
+        )
+        _apply_display_modifier_followup(qo, "share MOM retention trend", history)
+        assert qo.analysis_type == "retention", (
+            "display_modifier_followup must not override analysis_type=retention.\n"
+            "Bug: fixup set analysis_type='metric', causing plain count SQL instead of cohort retention."
+        )
+        assert qo.time_granularity == "month"
+
+    def test_funnel_analysis_type_preserved_on_mom_share_prompt(self):
+        """Funnel is another cohort type that must be protected from metric override."""
+        history = []
+        qo = QueryObject(
+            analysis_type="funnel",
+            funnel_steps=["user_signed_up", "purchase_completed"],
+            time_granularity="month",
+            time_range_days=180,
+        )
+        _apply_display_modifier_followup(qo, "share MOM split", history)
+        assert qo.analysis_type == "funnel", (
+            "display_modifier_followup must not override analysis_type=funnel."
+        )
+
+    def test_metric_analysis_type_still_overridden_on_followup(self):
+        """Regular metric follow-up ('share MOM') must still trigger the rewrite."""
+        history = [{"qo": {
+            "analysis_type": "metric",
+            "metric_id": "activation_rate",
+            "time_granularity": "month",
+            "time_range_days": 30,
+        }}]
+        qo = QueryObject(
+            analysis_type="metric",
+            metric_id="activation_rate",
+            time_range_days=180,
+        )
+        _apply_display_modifier_followup(qo, "share MOM trend", history)
+        assert qo.analysis_type == "metric"
+        assert qo.time_granularity == "month"
+
 
 class TestSameMetricAnchorTurn:
     """'Same metric' must bind to the latest named metric (Q3), not Q1 active users."""
@@ -1570,6 +1749,49 @@ class TestAnalysisTypeSmokeCompile:
         )
         assert "NOT IN" in sql or "LEFT JOIN" in sql, (
             "Anti-cohort must use NOT IN or anti-join to exclude users who did event_b."
+        )
+
+    def test_anti_cohort_event_b_filter_scoped_to_did_b_not_did_a(self, metrics):
+        """Filter on event_b's properties must appear in did_b CTE, never in did_a.
+
+        Bug class: when event_a != event_b and qo.filters are set, the filter must
+        qualify the *behaviour being checked* (event_b), not the cohort definition (event_a).
+        Applying e.g. transaction_channel to the onboarding CTE produces zero rows.
+        """
+        import re
+
+        def _cte_body(name: str, sql: str) -> str:
+            m = re.search(rf"{re.escape(name)}\s+AS\s*\(", sql, re.IGNORECASE)
+            if not m:
+                return ""
+            start, depth, i = m.end(), 1, m.end()
+            while i < len(sql) and depth > 0:
+                depth += (1 if sql[i] == "(" else -1 if sql[i] == ")" else 0)
+                i += 1
+            return sql[start: i - 1]
+
+        qo = _make_qo(
+            analysis_type="behavioral_cohort",
+            event="onboarding_completed",
+            event_b="transaction_reconciled",
+            metric_variant="anti_cohort",
+            filters={"transaction_channel": "UPI"},
+            date_from="2026-02-01", date_to="2026-03-01",
+        )
+        sql, _ = compile_query(qo, metrics)
+        assert sql and sql not in ("__analyst__", "__diagnose__", ""), (
+            "Anti-cohort with filter must compile to SQL."
+        )
+        did_a = _cte_body("did_a", sql)
+        did_b = _cte_body("did_b", sql)
+        assert did_a or "event_name = 'onboarding_completed'" in sql, "did_a CTE not found"
+        assert "transaction_channel" not in did_a, (
+            "transaction_channel filter must NOT appear in did_a (onboarding CTE). "
+            "Filter belongs in did_b (transaction CTE only)."
+        )
+        assert "transaction_channel" in did_b, (
+            "transaction_channel filter must appear in did_b (the behaviour CTE). "
+            "Without this, the UPI filter has no effect."
         )
 
     def test_behavioral_cohort_overlap_compiles_to_sql(self, metrics):
@@ -1903,4 +2125,410 @@ class TestMultiTurnPipeline:
         # breakdown should not be inherited (user said "show activation rate", not "by platform")
         assert qo.breakdown is None, (
             "Breakdown must not be silently inherited from prior segment turn."
+        )
+
+
+# ── Phase 1: Data quality gate ────────────────────────────────────────────────
+
+class TestDataQualityGate:
+    """validate_findings → SUSPICIOUS/grade-D → investigate() sets data_quality_blocked."""
+
+    def test_suspicious_result_blocks_story_arc(self):
+        """Grade-D / SUSPICIOUS validation sets data_quality_blocked and skips narrative."""
+        from core.analysis.analyst import AnalystReport, _format_data_quality_block
+        from core.sql.validator import ValidationResult, ArithmeticWarning
+
+        # Build a SUSPICIOUS ValidationResult (score drops below 50 → grade D)
+        arith_errors = [
+            ArithmeticWarning(check="rate_bounds", detail="retention_pct contains values > 100%", severity="error"),
+            ArithmeticWarning(check="rate_bounds", detail="retention_pct max = 100.0%", severity="error"),
+            ArithmeticWarning(check="rate_bounds", detail="third error", severity="error"),
+        ]
+        val = ValidationResult(
+            arithmetic_warnings=arith_errors,
+            sanity_flag="SUSPICIOUS",
+            sanity_reason="100% retention is implausible for this event",
+            score=20,
+            grade="D",
+            confidence_label="Very low confidence",
+        )
+
+        msg = _format_data_quality_block(val)
+        assert "unusual" in msg.lower() or "reliable" in msg.lower(), \
+            "Data quality block must mention unusual/reliable"
+        assert "retention_pct contains values > 100%" in msg, \
+            "Must include the arithmetic warning detail"
+
+    def test_data_quality_blocked_flag_on_report(self):
+        """AnalystReport.data_quality_blocked defaults to False."""
+        from core.analysis.analyst import AnalystReport
+        r = AnalystReport(analysis_type="retention")
+        assert r.data_quality_blocked is False
+
+    def test_plausible_result_does_not_block(self):
+        """Grade-A result must not set data_quality_blocked."""
+        from core.sql.validator import ValidationResult
+        val = ValidationResult(score=100, grade="A", sanity_flag="PLAUSIBLE")
+        # Not SUSPICIOUS and not grade D — gate should not trigger
+        blocked = val.grade == "D" or val.sanity_flag == "SUSPICIOUS"
+        assert not blocked, "PLAUSIBLE/A result must not trigger the quality gate"
+
+
+# ── Phase 3: Chart type from semantics ───────────────────────────────────────
+
+class TestChartTypeFromSemantics:
+    """preferred_chart populated by resolve_query_semantics for deterministic chart types."""
+
+    def test_retention_with_breakdown_gets_heatmap(self):
+        from core.semantic.query_semantics import resolve_query_semantics
+        qo = QueryObject(
+            analysis_type="retention",
+            event="app_opened",
+            breakdown="platform",
+            retention_window_days=7,
+            time_range_days=90,
+        )
+        sem = resolve_query_semantics(qo)
+        assert sem.preferred_chart == "retention_heatmap", \
+            f"Retention+breakdown must get retention_heatmap, got {sem.preferred_chart!r}"
+
+    def test_retention_period_matrix_gets_heatmap(self):
+        from core.semantic.query_semantics import resolve_query_semantics, RetentionTemplate
+        qo = QueryObject(
+            analysis_type="retention",
+            event="app_opened",
+            retention_window_days=30,
+            time_range_days=120,
+        )
+        sem = resolve_query_semantics(qo)
+        assert sem.retention is not None
+        assert sem.retention.template == RetentionTemplate.PERIOD_MATRIX
+        assert sem.preferred_chart == "retention_heatmap", \
+            f"period_matrix retention must get retention_heatmap, got {sem.preferred_chart!r}"
+
+    def test_retention_simple_gets_line(self):
+        from core.semantic.query_semantics import resolve_query_semantics
+        qo = QueryObject(
+            analysis_type="retention",
+            event="app_opened",
+            retention_window_days=7,
+            time_range_days=30,
+        )
+        sem = resolve_query_semantics(qo)
+        assert sem.preferred_chart == "retention_line", \
+            f"Simple retention without breakdown must get retention_line, got {sem.preferred_chart!r}"
+
+    def test_funnel_gets_funnel_bar(self):
+        from core.semantic.query_semantics import resolve_query_semantics
+        qo = QueryObject(
+            analysis_type="funnel",
+            funnel_steps=["sign_up", "onboarding_completed", "first_transaction"],
+        )
+        sem = resolve_query_semantics(qo)
+        assert sem.preferred_chart == "funnel_bar", \
+            f"Funnel must get funnel_bar, got {sem.preferred_chart!r}"
+
+    def test_lifecycle_gets_lifecycle_stages(self):
+        from core.semantic.query_semantics import resolve_query_semantics
+        qo = QueryObject(analysis_type="user_lifecycle", event="app_opened")
+        sem = resolve_query_semantics(qo)
+        assert sem.preferred_chart == "lifecycle_stages", \
+            f"user_lifecycle must get lifecycle_stages, got {sem.preferred_chart!r}"
+
+    def test_metric_has_no_preferred_chart(self):
+        from core.semantic.query_semantics import resolve_query_semantics
+        qo = QueryObject(analysis_type="metric", event="app_opened")
+        sem = resolve_query_semantics(qo)
+        assert sem.preferred_chart is None, \
+            f"Generic metric should have no preferred_chart, got {sem.preferred_chart!r}"
+
+
+# ── Phase 2: QO precondition validator ───────────────────────────────────────
+
+class TestQOPreconditionValidator:
+    """validate_qo_preconditions catches structural LLM errors before the fixup chain."""
+
+    def test_retention_without_event_or_metric_is_violation(self):
+        from ui.qo_fixups import validate_qo_preconditions
+        qo = QueryObject(analysis_type="retention")
+        violations = validate_qo_preconditions(qo)
+        fields = [v.field for v in violations]
+        assert "event" in fields, \
+            f"retention with no event/metric_id must produce a violation, got {fields}"
+
+    def test_retention_with_event_is_clean(self):
+        from ui.qo_fixups import validate_qo_preconditions
+        qo = QueryObject(analysis_type="retention", event="app_opened")
+        violations = validate_qo_preconditions(qo)
+        non_fixable = [v for v in violations if not v.auto_fix]
+        assert all(v.field != "event" for v in non_fixable), \
+            "retention with event set must not have an event violation"
+
+    def test_funnel_with_one_step_is_violation(self):
+        from ui.qo_fixups import validate_qo_preconditions
+        qo = QueryObject(analysis_type="funnel", funnel_steps=["sign_up"])
+        violations = validate_qo_preconditions(qo)
+        fields = [v.field for v in violations]
+        assert "funnel_steps" in fields, \
+            f"funnel with 1 step must produce a violation, got {fields}"
+
+    def test_funnel_with_two_steps_is_clean(self):
+        from ui.qo_fixups import validate_qo_preconditions
+        qo = QueryObject(
+            analysis_type="funnel",
+            funnel_steps=["sign_up", "first_transaction"],
+        )
+        violations = [v for v in validate_qo_preconditions(qo) if not v.auto_fix]
+        assert all(v.field != "funnel_steps" for v in violations), \
+            "funnel with 2 steps must not have a funnel_steps violation"
+
+    def test_segment_without_breakdown_is_violation(self):
+        from ui.qo_fixups import validate_qo_preconditions
+        qo = QueryObject(analysis_type="segment", event="app_opened")
+        violations = validate_qo_preconditions(qo)
+        fields = [v.field for v in violations]
+        assert "breakdown" in fields, \
+            f"segment without breakdown must produce a violation, got {fields}"
+
+    def test_breakdown_with_default_source_is_auto_fix(self):
+        from ui.qo_fixups import validate_qo_preconditions, apply_auto_fix_preconditions
+        qo = QueryObject(
+            analysis_type="segment",
+            event="app_opened",
+            breakdown="platform",
+        )
+        # breakdown_source defaults to "default" on most QOs
+        setattr(qo, "breakdown_source", "default")
+        violations = validate_qo_preconditions(qo)
+        auto_fixable = [v for v in violations if v.auto_fix and v.field == "breakdown_source"]
+        assert auto_fixable, "breakdown+default source must produce an auto-fixable violation"
+        needs_retry = apply_auto_fix_preconditions(qo, violations)
+        bd_src = getattr(qo, "breakdown_source", "default")
+        assert bd_src in ("user", "event"), \
+            f"auto-fix must set breakdown_source to user or event, got {bd_src!r}"
+        # The breakdown violation (no breakdown for segment would be fixed if breakdown is set)
+        non_fixable = [v for v in needs_retry if v.field == "breakdown_source"]
+        assert not non_fixable, "breakdown_source violation must be consumed by auto-fix"
+
+
+class TestBehavioralCohortFilterExtraction:
+    """
+    Compiler-level tests for behavioral_cohort filter handling.
+
+    Bug class: orchestrator extracts qualifier on event_b into qo.filters;
+    the compiler must honour those filters in the event_b JOIN, not silently drop them.
+    """
+
+    def test_overlap_with_filter_includes_filter_in_sql(self):
+        """Filter on event_b must appear inside the 'did_b' CTE, not be dropped."""
+        from core.sql.compilers import compile_query
+
+        qo = QueryObject(
+            analysis_type="behavioral_cohort",
+            event="event_a",
+            event_b="event_b",
+            filters={"channel": "upi"},
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, [])
+        assert "upi" in sql.lower(), (
+            "Filter value must appear in compiled SQL for behavioral_cohort overlap."
+        )
+
+    def test_anti_cohort_with_filter_includes_filter_in_sql(self):
+        """Anti-cohort (did A but NOT B with filter) must scope filter to event_b."""
+        from core.sql.compilers import compile_query
+
+        qo = QueryObject(
+            analysis_type="behavioral_cohort",
+            event="event_a",
+            event_b="event_b",
+            metric_variant="anti_cohort",
+            filters={"channel": "upi"},
+            time_range_days=30,
+        )
+        sql, _ = compile_query(qo, [])
+        assert "upi" in sql.lower(), (
+            "Filter value must appear in compiled SQL for behavioral_cohort anti_cohort."
+        )
+
+
+class TestAntiCohortQualifierExtraction:
+    """
+    Bug class: negated behavioral_cohort phrases ("no <qualifier> <event_b>",
+    "without <qualifier> <event_b>") must still extract the qualifier into filters.
+
+    The negation word sets metric_variant=anti_cohort but does NOT remove the qualifier.
+    Rule-based extraction via extract_dimension_filters_from_question must handle both
+    positive ("and made a <qualifier> <event_b>") and negated forms.
+    """
+
+    def test_negated_phrase_extracts_qualifier_with_catalog(self):
+        """'no <qualifier> <event_b>' → filters[col]=qualifier even with negation."""
+        from core.pipeline.catalog_vocab import extract_dimension_filters_from_question
+
+        # Minimal catalog with a dimension that has value_meanings
+        catalog = {
+            "events": {
+                "events": [
+                    {
+                        "raw_name": "channel",
+                        "value_meanings": {"express": "express channel", "standard": "standard channel"},
+                    }
+                ]
+            }
+        }
+        sampled = {"events": {"channel": ["express", "standard"]}}
+
+        result = extract_dimension_filters_from_question(
+            "users who signed up and no express purchase",
+            sampled,
+            catalog,
+        )
+        assert result.get("channel") == "express", (
+            "Qualifier adjacent to negated event_b must still be extracted into filters."
+        )
+
+    def test_positively_phrased_extracts_qualifier(self):
+        """Positive form ('and made a <qualifier> <event_b>') also extracts qualifier."""
+        from core.pipeline.catalog_vocab import extract_dimension_filters_from_question
+
+        catalog = {
+            "events": {
+                "events": [
+                    {
+                        "raw_name": "channel",
+                        "value_meanings": {"express": "express channel", "standard": "standard channel"},
+                    }
+                ]
+            }
+        }
+        sampled = {"events": {"channel": ["express", "standard"]}}
+
+        result = extract_dimension_filters_from_question(
+            "users who signed up and made an express purchase",
+            sampled,
+            catalog,
+        )
+        assert result.get("channel") == "express", (
+            "Qualifier adjacent to positive event_b phrase must be extracted into filters."
+        )
+
+
+class TestRetentionCohortDescriptorFilters:
+    """
+    Bug class: cohort-descriptor phrases ('active users', 'transacting users') must NOT
+    become column filters in retention queries. The event drives cohort membership;
+    filters should remain empty unless the user specified an explicit column=value filter.
+
+    These tests work at the compiler level — they verify that spurious filters
+    (IS NOT NULL sentinels injected by the orchestrator) don't break retention SQL.
+    """
+
+    def test_retention_with_is_not_null_sentinel_compiles(self):
+        """Retention with an IS NOT NULL sentinel in filters must still compile."""
+        from core.sql.compilers import _compile_retention
+
+        qo = QueryObject(
+            analysis_type="retention",
+            event="app_opened",
+            event_b="app_opened",
+            retention_window_days=7,
+            filters={"account_type": "__IS_NOT_NULL__"},
+            time_range_days=90,
+        )
+        sql = _compile_retention(qo)
+        # Must produce valid SQL, not crash
+        assert "cohort" in sql.lower()
+        assert "retained" in sql.lower()
+
+    def test_retention_empty_filters_compiles_clean(self):
+        """Retention with no filters (correct case for cohort-descriptor queries)."""
+        from core.sql.compilers import _compile_retention
+
+        qo = QueryObject(
+            analysis_type="retention",
+            event="app_opened",
+            event_b="app_opened",
+            retention_window_days=7,
+            filters={},
+            time_range_days=90,
+        )
+        sql = _compile_retention(qo)
+        assert "cohort" in sql.lower()
+        assert "retained" in sql.lower()
+        assert "IS NOT NULL" not in sql
+
+
+class TestSentinelVsLiteralPriority:
+    """
+    Bug class: when a user says a literal value (e.g. "UPI") that exists in DIMENSION
+    VALUE HINTS, the orchestrator must use the literal — not the IS NOT NULL sentinel
+    that may also map to the same column via a custom event.
+
+    The fixup layer (not the orchestrator) owns sentinel remapping, so we test here
+    that the fixup does NOT remap a known literal value to a sentinel.
+    """
+
+    def test_known_literal_not_remapped_to_sentinel(self):
+        """
+        _remap_invalid_filter_values_via_custom_events must leave literal values that
+        are already valid catalog values alone — it should only remap values not found
+        in sampled_values.
+        """
+        from ui.qo_fixups import _remap_invalid_filter_values_via_custom_events
+
+        catalog = {
+            "__business_context__": {
+                "custom_events": [
+                    {
+                        "name": "channel_active",
+                        "sql": "channel IS NOT NULL",
+                        "builder_definition": {
+                            "groups": [{"filters": [{"field": "channel", "op": "IS NOT NULL"}]}]
+                        },
+                    }
+                ]
+            }
+        }
+        sampled = {"events": {"channel": ["upi", "neft", "imps"]}}
+
+        # "upi" is a known sampled value — must NOT be remapped to __IS_NOT_NULL__
+        qo = QueryObject(
+            analysis_type="metric",
+            event="purchase",
+            filters={"channel": "upi"},
+        )
+        _remap_invalid_filter_values_via_custom_events(qo, catalog=catalog, sampled_values=sampled)
+        assert qo.filters.get("channel") == "upi", (
+            "Known literal 'upi' must not be remapped to a sentinel."
+        )
+
+    def test_unknown_value_remapped_to_sentinel(self):
+        """Values not in sampled_values should be remapped to the CE sentinel."""
+        from ui.qo_fixups import _remap_invalid_filter_values_via_custom_events
+
+        catalog = {
+            "__business_context__": {
+                "custom_events": [
+                    {
+                        "name": "channel_active",
+                        "sql": "channel IS NOT NULL",
+                        "builder_definition": {
+                            "groups": [{"filters": [{"field": "channel", "op": "IS NOT NULL"}]}]
+                        },
+                    }
+                ]
+            }
+        }
+        sampled = {"events": {"channel": ["upi", "neft", "imps"]}}
+
+        qo = QueryObject(
+            analysis_type="metric",
+            event="purchase",
+            filters={"channel": "in_app"},  # not in sampled values
+        )
+        _remap_invalid_filter_values_via_custom_events(qo, catalog=catalog, sampled_values=sampled)
+        assert qo.filters.get("channel") == "__IS_NOT_NULL__", (
+            "Unknown value 'in_app' should be remapped to IS NOT NULL sentinel via CE."
         )

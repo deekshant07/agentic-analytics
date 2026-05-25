@@ -6,6 +6,23 @@ description: >
   and identifying the cohorts at highest churn risk. Works for any product
   with repeat-usage mechanics.
 
+intent_class: retention
+intent_confidence: high
+intent_phrases:
+  - "why are users not returning"
+  - "why are users leaving"
+  - "users dropping off after"
+  - "users not coming back"
+  - "losing users"
+  - "retention cliff"
+  - "retention dropping"
+orchestrator_hint:
+  preferred_analysis_type: retention
+  event_role: trigger_event
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+  suggested_breakdown: platform
+
 match_signals:
   keywords:
     - churn

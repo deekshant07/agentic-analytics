@@ -6,6 +6,18 @@ description: >
   whether funnel drop-off is uniform or concentrated in a specific segment —
   enabling surgical fixes rather than blanket redesigns.
 
+intent_class: funnel
+intent_confidence: high
+intent_phrases:
+  - "who is dropping off the funnel"
+  - "funnel drop by platform"
+  - "which segment drops off"
+  - "funnel drop breakdown"
+orchestrator_hint:
+  preferred_analysis_type: funnel
+  suggested_breakdown: platform
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - why do users drop at step

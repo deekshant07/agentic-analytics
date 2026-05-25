@@ -6,6 +6,20 @@ description: >
   acquisition channel to identify which user groups are slow to activate and
   what interventions can close the gap.
 
+intent_class: time_between
+intent_confidence: high
+intent_phrases:
+  - "time to activate"
+  - "how quickly do users activate"
+  - "time to first value"
+  - "activation speed"
+  - "time from signup to first action"
+  - "how long to activate"
+orchestrator_hint:
+  preferred_analysis_type: time_between
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - activation speed

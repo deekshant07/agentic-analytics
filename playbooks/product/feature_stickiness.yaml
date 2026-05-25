@@ -6,6 +6,20 @@ description: >
   stickiness should be promoted in onboarding; low-stickiness features may
   need redesign or removal.
 
+intent_class: stickiness
+intent_confidence: high
+intent_phrases:
+  - "feature stickiness"
+  - "which features bring users back"
+  - "most used feature"
+  - "habit forming feature"
+  - "features with highest dau mau"
+  - "sticky features"
+orchestrator_hint:
+  preferred_analysis_type: stickiness
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - feature stickiness

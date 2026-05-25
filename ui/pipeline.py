@@ -68,6 +68,9 @@ from ui.qo_fixups import (
     _strip_redundant_calendar_day_filter,
     _extract_clarify_context,
     validate_qo_postconditions,
+    validate_qo_preconditions,
+    apply_auto_fix_preconditions,
+    format_precondition_violations,
 )
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -643,6 +646,7 @@ def get_sql(
     prompt: str,
     *,
     hypothesis_doc=None,
+    playbook_hint: Optional[str] = None,
 ) -> tuple[str, Optional[str], Optional[str], object]:
     """
     Full pipeline: NL question → (sql, metric_name, clarify_msg, qo).
@@ -674,7 +678,29 @@ def get_sql(
         hypothesis_doc=hypothesis_doc,
         corrections=([{"question": prompt, "previous_answer": clarify_ctx}]
                      if clarify_ctx else None),
+        playbook_hint=playbook_hint,
     )
+
+    # Precondition validation + single retry for non-auto-fixable structural violations
+    _pre_violations = validate_qo_preconditions(qo)
+    if _pre_violations:
+        _auto_fixed = apply_auto_fix_preconditions(qo, _pre_violations)
+        _needs_retry = [v for v in _pre_violations if not v.auto_fix]
+        if _needs_retry:
+            _hint = format_precondition_violations(_needs_retry)
+            qo = orchestrate(
+                question=prompt,
+                catalog=catalog,
+                sampled_values=sampled,
+                openai_api_key=None,
+                history=history,
+                hypothesis_doc=hypothesis_doc,
+                corrections=([{"question": prompt, "previous_answer": clarify_ctx}]
+                             if clarify_ctx else None),
+                playbook_hint=playbook_hint,
+                correction_hint=_hint,
+            )
+            setattr(qo, "_precondition_retry_debug", _hint)
 
     # Attach debug metadata used by debug_panel.py
     setattr(qo, "_debug_user_prompt",         prompt)

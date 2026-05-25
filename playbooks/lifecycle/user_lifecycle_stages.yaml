@@ -6,6 +6,19 @@ description: >
   core action. Answers "where are our users in their product journey?" and
   surfaces which stages are growing or shrinking.
 
+intent_class: user_lifecycle
+intent_confidence: high
+intent_phrases:
+  - "user lifecycle stages"
+  - "where are users in their journey"
+  - "new vs engaged vs churned"
+  - "lifecycle stage distribution"
+  - "power users vs casual users vs at risk"
+  - "how many users in each stage"
+orchestrator_hint:
+  preferred_analysis_type: user_lifecycle
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - lifecycle

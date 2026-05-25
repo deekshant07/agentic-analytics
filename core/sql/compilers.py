@@ -433,9 +433,12 @@ def _compile_pct_users_metric_monthly(
         rate_cols = "\n".join(
             f"  ROUND(COUNT(DISTINCT CASE WHEN n.numer_ts <= d.first_ts + INTERVAL '{w}' DAY"
             f" THEN n.user_id END) * 100.0 / NULLIF(COUNT(DISTINCT d.user_id), 0), 1)"
-            f" AS {safe_label}_{w}d{',' if i < len(windows) - 1 else ''}"
-            for i, w in enumerate(windows)
+            f" AS {safe_label}_{w}d,"
+            for w in windows
         )
+        # cohort_age_days: days since cohort period start — lets downstream layers flag
+        # which windows haven't had enough time to mature (window is open if age < W + span).
+        age_col = f"  (CURRENT_DATE - d.cohort_{g})::INTEGER                                                AS cohort_age_days"
         return f"""WITH denom_cohort AS (
   SELECT {denom_select}
   FROM events
@@ -448,6 +451,7 @@ SELECT
 {bkd_select_col}  COUNT(DISTINCT d.user_id)                                                          AS {denom_label}_users,
 {numer_cols}
 {rate_cols}
+{age_col}
 FROM denom_cohort d
 LEFT JOIN numer_events n ON d.user_id = n.user_id
 GROUP BY 1{bkd_group_n}
@@ -1099,16 +1103,21 @@ def _compile_retention_nday_scalar(
     gc_e: str,
     caf: str,
 ) -> str:
+    win_from = int(getattr(qo, "retention_window_from", None) or 0)
     cohort_block = _retention_cohort_ctes(
         qo, event=event, truncate=truncate, fc=fc, gc=gc, caf=caf,
+    )
+    lower_bound = (
+        f"\n    AND e.timestamp >= c.{cohort_col}::TIMESTAMP + INTERVAL '{win_from}' DAY"
+        if win_from > 0 else
+        f"\n    AND e.timestamp >= c.{cohort_col}::TIMESTAMP"
     )
     return f"""WITH {cohort_block},
 retained AS (
   SELECT DISTINCT c.user_id, c.{cohort_col}
   FROM cohort c
   JOIN events e ON c.user_id = e.user_id
-  WHERE e.event_name = '{event_b}'{fc_e}
-    AND e.timestamp >= c.{cohort_col}::TIMESTAMP
+  WHERE e.event_name = '{event_b}'{fc_e}{lower_bound}
     AND e.timestamp <  c.{cohort_col}::TIMESTAMP + INTERVAL '{win}' DAY{gc_e}
 )
 SELECT
@@ -1164,7 +1173,7 @@ cohort AS (
   INNER JOIN events e
     ON e.user_id = uf.user_id
    AND e.timestamp = uf.first_ts
-   AND e.event_name = '{event}'{fc}{gc}
+   AND e.event_name = '{event}'{fc_e}{gc_e}
   WHERE {caf}
 ),
 retained AS (
@@ -1999,13 +2008,14 @@ def compile_query(qo: QueryObject, metrics: list[dict]) -> tuple[str, Optional[s
             _metric_label = re.sub(r"[^a-z0-9]+", "_", (metric.get("name") or "pct").lower()).strip("_") or "pct"
             bd_windows = (metric.get("builder_definition") or {}).get("default_windows") or []
             # Routing contract for % of users metrics:
-            #   cohort trend  → metric declares default_windows (D-day milestones)
-            #                   OR user explicitly requested a granularity (week/month)
-            #   scalar        → no default_windows AND user never stated a granularity preference
-            # Use time_granularity_source ("explicit"/"default") not the value itself.
-            # time_granularity="day" is the orchestrator fill-in, not a user scalar signal.
+            #   cohort trend  → user explicitly requested a non-day granularity (week/month)
+            #                   OR time_granularity_source="explicit" (even for day trends)
+            #   scalar        → granularity is "day"/unset (default fill-in, not user intent)
+            # _compile_pct_users_metric_scalar handles multi-window internally when
+            # default_windows has >1 entry — do NOT use len(bd_windows) to force trend routing.
             gran_explicit = getattr(qo, "time_granularity_source", "default") == "explicit"
-            use_cohort_trend = len(bd_windows) > 1 or gran_explicit
+            gran_non_day = str(qo.time_granularity or "day").lower() not in ("", "day")
+            use_cohort_trend = gran_explicit or gran_non_day
             if use_cohort_trend:
                 cohort_sql = _compile_pct_users_metric_monthly(qo, metric, col_label=_metric_label)
             else:

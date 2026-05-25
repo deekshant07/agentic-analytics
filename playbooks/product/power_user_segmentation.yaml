@@ -6,6 +6,21 @@ description: >
   one-time users, and what drives power-user behaviour. Works for any product
   with repeat-use mechanics.
 
+intent_class: behavioral_cohort
+intent_confidence: high
+intent_phrases:
+  - "who are my power users"
+  - "most engaged users"
+  - "heavy users"
+  - "top users"
+  - "users who use most"
+  - "power user segment"
+  - "users doing more than"
+orchestrator_hint:
+  preferred_analysis_type: behavioral_cohort
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - power users

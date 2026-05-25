@@ -1,0 +1,93 @@
+id: growth.experiment_impact
+name: Experiment / Feature Launch Impact
+description: >
+  Measure the causal impact of a product experiment, feature rollout, or
+  marketing campaign on key metrics. Compares control vs treatment cohorts
+  (A/B test) or before vs after periods (pre-post analysis). Works for any
+  product change where a treatment and comparison group can be defined.
+
+intent_class: segment
+intent_confidence: high
+intent_phrases:
+  - "did the experiment work"
+  - "what was the impact of the rollout"
+  - "compare control vs treatment"
+  - "before and after the launch"
+  - "experiment results"
+  - "did the test win"
+  - "variant a vs variant b"
+  - "test group vs control group"
+  - "feature rollout impact"
+
+match_signals:
+  keywords:
+    - experiment
+    - a/b test
+    - control group
+    - treatment group
+    - rollout
+    - variant
+    - before and after
+    - feature launch impact
+    - test results
+  anti_keywords:
+    - churn
+    - retention matrix
+    - cohort ltv
+
+orchestrator_hint:
+  preferred_analysis_type: segment
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
+tool_controls:
+  allowed_analysis_types:
+    - segment
+    - metric
+    - funnel
+    - behavioral_cohort
+
+investigations:
+  - sub_question: >
+      How did the primary success metric (conversion rate, engagement, revenue)
+      differ between the experiment group and the control/baseline period?
+    analysis_hint: segment
+    rationale: >
+      The headline metric comparison is the primary experiment readout.
+      Statistical direction (up/down/flat) and magnitude are the key outputs.
+    priority: 1
+
+  - sub_question: >
+      Did the experiment affect different user segments (platform, cohort,
+      user type) differently — are there subgroup winners or losers?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Heterogeneous treatment effects are common. An experiment that "wins"
+      on aggregate may harm a valuable subgroup.
+    priority: 2
+
+  - sub_question: >
+      Were there any guardrail metric regressions — did the experiment
+      improve one metric while degrading another (e.g. DAU up, retention down)?
+    analysis_hint: metric
+    rationale: >
+      Guardrail checks prevent shipping experiments that trade long-term
+      health for short-term gains.
+    priority: 3
+
+  - sub_question: >
+      How long did it take for the treatment effect to stabilise — was there
+      a novelty spike that faded, or sustained improvement?
+    analysis_hint: metric
+    rationale: >
+      Novelty effects inflate short-run experiment results. A sustained
+      trend confirmation is needed before shipping at scale.
+    priority: 4
+
+narrative_requirements:
+  - "State the headline metric movement (direction + magnitude) for control vs treatment"
+  - "Identify any subgroup where the experiment had opposite effects"
+  - "Flag any guardrail metric that degraded during the experiment"
+  - "State whether the effect appears sustained or a novelty spike"
+  - "Give a ship / no-ship recommendation with the primary evidence"

@@ -5,6 +5,21 @@ description: >
   discovering it, who is using it repeatedly, and who is not. Works for
   any product feature rollout, A/B test follow-up, or feature health check.
 
+intent_class: metric
+intent_confidence: high
+intent_phrases:
+  - "how many users have tried"
+  - "feature adoption rate"
+  - "who is using the feature"
+  - "percentage of users who used"
+  - "feature usage over time"
+  - "how widely adopted is"
+orchestrator_hint:
+  preferred_analysis_type: metric
+  event_role: trigger_event
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
 match_signals:
   keywords:
     - feature adoption

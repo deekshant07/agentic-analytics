@@ -6,6 +6,21 @@ description: >
   >25% DAU/MAU = strong habit, 10-25% = casual usage, <10% = utility/episodic.
   Answers "is this product forming habits?" and "who are the power users?"
 
+intent_class: stickiness
+intent_confidence: high
+intent_phrases:
+  - "dau mau ratio"
+  - "how sticky is"
+  - "daily active users over monthly"
+  - "how often do users come back"
+  - "usage frequency"
+  - "power users"
+  - "habit forming"
+orchestrator_hint:
+  preferred_analysis_type: stickiness
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
 match_signals:
   keywords:
     - stickiness

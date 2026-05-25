@@ -6,6 +6,19 @@ description: >
   Answers "what kind of users do X?" and surfaces demographic or behavioural
   patterns that drive or block key actions.
 
+intent_class: segment
+intent_confidence: high
+intent_phrases:
+  - "what kind of users do"
+  - "show me x by property"
+  - "break down by user type"
+  - "which users are doing"
+  - "who is doing"
+  - "user demographics for"
+orchestrator_hint:
+  preferred_analysis_type: segment
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - which users do X

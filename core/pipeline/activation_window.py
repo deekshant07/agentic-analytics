@@ -92,6 +92,34 @@ def parse_retention_window_days_from_prompt(prompt: str) -> Optional[int]:
     return None
 
 
+_WEEK_RE = re.compile(r"\bweek\s*(\d+)\b", re.IGNORECASE)
+
+
+def parse_retention_week_from_prompt(prompt: str) -> Optional[tuple[int, int]]:
+    """
+    Detect "week N" retention phrasing and return (from_days, to_days) exclusive.
+
+    Week N covers days (N-1)*7+1 through N*7 inclusive:
+      Week 1 → (1, 8),  Week 2 → (8, 15),  Week 3 → (15, 22),  Week 4 → (22, 29)
+
+    Returns None when no week-N pattern is found.
+    """
+    if not prompt:
+        return None
+    pl = prompt.lower()
+    if "retention" not in pl and "retained" not in pl:
+        return None
+    m = _WEEK_RE.search(pl)
+    if not m:
+        return None
+    n = int(m.group(1))
+    if n < 1:
+        return None
+    from_days = (n - 1) * 7 + 1
+    to_days = n * 7 + 1  # exclusive upper bound → covers days from_days..to_days-1
+    return from_days, to_days
+
+
 def apply_retention_window_from_prompt(
     qo: Any,
     prompt: Optional[str],
@@ -99,14 +127,25 @@ def apply_retention_window_from_prompt(
     catalog: Optional[dict] = None,
 ) -> None:
     """
-    Set ``qo.retention_window_days`` from the user prompt for retention queries.
+    Set ``qo.retention_window_days`` (and optionally ``qo.retention_window_from``)
+    from the user prompt for retention queries.
 
-    Runs after metric hydration so an explicit "for 14 days" overrides catalog D7.
+    Week-N phrasing is resolved first; explicit D-N / N-day overrides follow.
+    Runs after metric hydration so an explicit window overrides catalog defaults.
     """
     if not qo or not prompt:
         return
     if getattr(qo, "analysis_type", "") != "retention":
         return
+
+    week_bounds = parse_retention_week_from_prompt(prompt)
+    if week_bounds is not None:
+        from_days, to_days = week_bounds
+        qo.retention_window_from = from_days
+        qo.retention_window_days = to_days
+        setattr(qo, "_retention_window_explicit", True)
+        return
+
     days = parse_retention_window_days_from_prompt(prompt)
     if days is not None:
         qo.retention_window_days = days
@@ -228,48 +267,104 @@ def series_label_for_column(col: str, qo: Any = None) -> str:
 
 def incomplete_activation_cohort_note(df: pd.DataFrame, qo: Any) -> str:
     """
-    Note when recent cohort months have not had the full activation window to mature.
+    Note when recent cohort periods have not had the full activation window to mature.
+
+    Handles two modes:
+    - Single window: qo.activation_window_days is set (or inferred from columns)
+    - Multi-window: columns have _Nd suffixes (e.g. activation_rate_7d, activation_rate_30d)
+      → reports per-window which cohorts are still maturing, highest window first.
+
+    Works for both weekly (time_col='week') and monthly (time_col='month') granularities.
+    For weekly cohorts, adds 6 days to the maturity threshold because users can join
+    any day within the cohort week.
     """
     if df is None or df.empty or not qo:
         return ""
-    win = getattr(qo, "activation_window_days", None)
-    if not win or int(win) <= 0:
-        return ""
-    win = int(win)
 
-    month_col = next(
-        (c for c in df.columns if str(c).lower() in ("month", "cohort_month", "date")),
+    time_col = next(
+        (c for c in df.columns if str(c).lower() in ("week", "month", "cohort_week", "cohort_month", "date")),
         None,
     )
-    if not month_col:
+    if not time_col:
         return ""
+
+    is_weekly = str(time_col).lower() in ("week", "cohort_week") or (
+        getattr(qo, "time_granularity", "day") or "day"
+    ).lower() == "week"
+    # Users can join any day within a cohort period; add the period span to the threshold
+    cohort_span_days = 6 if is_weekly else calendar.monthrange(
+        date.today().year, date.today().month
+    )[1] - 1
+
+    # Detect windows: from qo or from column _Nd suffixes (multi-window case)
+    win_raw = getattr(qo, "activation_window_days", None)
+    if win_raw and int(win_raw) > 0:
+        windows = [int(win_raw)]
+    else:
+        windows = sorted(set(
+            int(m.group(1))
+            for c in df.columns
+            for m in [_COL_WINDOW_SUFFIX_RE.search(str(c))]
+            if m
+        ))
+        if not windows:
+            return ""
 
     today = date.today()
-    immature: list[str] = []
-    for raw in df[month_col].dropna().unique():
-        dt = pd.to_datetime(raw, errors="coerce")
-        if pd.isna(dt):
+    period_label = "week" if is_weekly else "month"
+    date_fmt = "%b %d" if is_weekly else "%b %Y"
+
+    if len(windows) == 1:
+        win = windows[0]
+        immature: list[str] = []
+        for raw in df[time_col].dropna().unique():
+            dt = pd.to_datetime(raw, errors="coerce")
+            if pd.isna(dt):
+                continue
+            cohort_start = dt.date()
+            if cohort_start + timedelta(days=cohort_span_days + win) > today:
+                immature.append(dt.strftime(date_fmt))
+        if not immature:
+            return ""
+        immature = sorted(set(immature), key=lambda x: pd.to_datetime(x))
+        cohorts = (
+            immature[0] if len(immature) == 1
+            else ", ".join(immature) if len(immature) <= 3
+            else f"{immature[0]}, …, {immature[-1]} ({len(immature)} {period_label}s)"
+        )
+        return (
+            f"**Maturing cohorts:** {cohorts} — the **{win}-day** activation window has "
+            f"not fully elapsed; rates will increase as more users convert."
+        )
+
+    # Multi-window: report per window which cohorts are still open
+    notes: list[str] = []
+    for win in sorted(windows, reverse=True):
+        immature_dates: list[date] = []
+        for raw in df[time_col].dropna().unique():
+            dt = pd.to_datetime(raw, errors="coerce")
+            if pd.isna(dt):
+                continue
+            cohort_start = dt.date()
+            if cohort_start + timedelta(days=cohort_span_days + win) > today:
+                immature_dates.append(cohort_start)
+        if not immature_dates:
             continue
-        y, mo = int(dt.year), int(dt.month)
-        last_dom = calendar.monthrange(y, mo)[1]
-        cohort_end = date(y, mo, last_dom)
-        if cohort_end + timedelta(days=win) > today:
-            immature.append(dt.strftime("%b %Y"))
+        immature_dates = sorted(set(immature_dates))
+        n = len(immature_dates)
+        first_fmt = immature_dates[0].strftime(date_fmt)
+        if n == 1:
+            notes.append(f"**{win}d window**: {first_fmt} still maturing")
+        else:
+            notes.append(f"**{win}d window**: last {n} {period_label}s (from {first_fmt}) still maturing")
 
-    if not immature:
+    if not notes:
         return ""
-    immature = sorted(set(immature), key=lambda x: pd.to_datetime(x))
-    if len(immature) == 1:
-        cohorts = immature[0]
-    elif len(immature) <= 3:
-        cohorts = ", ".join(immature)
-    else:
-        cohorts = f"{immature[0]}, …, {immature[-1]} ({len(immature)} months)"
-
     return (
-        f"**Initial results:** {cohorts} — the **{win}-day** activation window has "
-        f"not fully elapsed for every user in these cohorts; rates may increase as "
-        f"more users convert."
+        f"**⚠️ Cohort maturity — rates below are not directly comparable:**\n"
+        + "\n".join(f"- {n}" for n in notes)
+        + f"\n\nRecent {period_label}s haven't had the full window to convert. "
+        f"Compare only mature cohorts for a valid trend."
     )
 
 

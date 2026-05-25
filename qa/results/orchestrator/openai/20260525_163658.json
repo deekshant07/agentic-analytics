@@ -1,0 +1,2946 @@
+{
+  "component": "orchestrator",
+  "generated_at": "2026-05-25T16:53:01.352012+00:00",
+  "n_cases": 89,
+  "pass_count": 82,
+  "pass_rate": 0.921,
+  "avg_composite_score": 0.96,
+  "dim_accuracy": {
+    "ambiguity": 1.0,
+    "breakdown": 0.941,
+    "filters": 0.871,
+    "intent": 0.964,
+    "metric": 1.0,
+    "time_range": 0.923
+  },
+  "cases": [
+    {
+      "query": "what is activation rate",
+      "tags": [
+        "activation",
+        "scalar"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 22065
+    },
+    {
+      "query": "what is UPI activation rate",
+      "tags": [
+        "activation",
+        "scalar",
+        "filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "transaction_channel": "UPI"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "transaction_channel": "UPI"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 11545
+    },
+    {
+      "query": "show activation rate MOM for last 6 months",
+      "tags": [
+        "activation",
+        "trend",
+        "monthly"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": null,
+      "gold_time_range_days": 180,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 180,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 10093
+    },
+    {
+      "query": "show activation rate by platform",
+      "tags": [
+        "activation",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8335
+    },
+    {
+      "query": "show 48 hour UPI activation",
+      "tags": [
+        "activation",
+        "filter",
+        "hours_window"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "transaction_channel": "UPI"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "transaction_channel": "UPI"
+      },
+      "got_time_range_days": 2,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8514
+    },
+    {
+      "query": "show activation rate for Jan",
+      "tags": [
+        "activation",
+        "calendar_filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": "2026-01-01",
+      "gold_date_to": "2026-02-01",
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 31,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-02-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8436
+    },
+    {
+      "query": "what is Android activation rate",
+      "tags": [
+        "activation",
+        "scalar",
+        "filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "platform": "android"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "platform": "android"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8732
+    },
+    {
+      "query": "show activation rate trend last quarter",
+      "tags": [
+        "activation",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": null,
+      "gold_time_range_days": 90,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 90,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-04-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8589
+    },
+    {
+      "query": "activation rate by city",
+      "tags": [
+        "activation",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "city",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "city",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7010
+    },
+    {
+      "query": "show activation rate for savings account users",
+      "tags": [
+        "activation",
+        "filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "account_type": "savings"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "account_type": "savings"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8160
+    },
+    {
+      "query": "show activation rate for pro account users",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "account_type": "pro"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "account_type": "pro"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9672
+    },
+    {
+      "query": "show activation rate for salary account users",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "account_type": "salary"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "account_type": "salary"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8742
+    },
+    {
+      "query": "show activation rate for students",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "occupation": "student"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "occupation": "student"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 11379
+    },
+    {
+      "query": "show activation rate for iOS users in Jan",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision",
+        "calendar_filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": {
+        "platform": "ios"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": "2026-01-01",
+      "gold_date_to": "2026-02-01",
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {
+        "platform": "ios"
+      },
+      "got_time_range_days": 31,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-02-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 11458
+    },
+    {
+      "query": "show overall activation rate",
+      "tags": [
+        "activation",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "activation_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 10662
+    },
+    {
+      "query": "show DAU for last month",
+      "tags": [
+        "dau",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": 30,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": "2026-04-01",
+      "got_date_to": "2026-05-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 10947
+    },
+    {
+      "query": "what is DAU",
+      "tags": [
+        "dau",
+        "scalar"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 10433
+    },
+    {
+      "query": "show MAU trend",
+      "tags": [
+        "mau",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "mau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "mau",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 0.0
+      },
+      "composite_score": 0.867,
+      "pass": true,
+      "latency_ms": 9067
+    },
+    {
+      "query": "DAU for Android last week",
+      "tags": [
+        "dau",
+        "filter",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": {
+        "platform": "android"
+      },
+      "gold_time_range_days": 7,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {
+        "platform": "android"
+      },
+      "got_time_range_days": 7,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9322
+    },
+    {
+      "query": "show DAU by platform",
+      "tags": [
+        "dau",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8747
+    },
+    {
+      "query": "what is DAU/MAU ratio",
+      "tags": [
+        "dau_mau_ratio",
+        "scalar"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau_mau_ratio",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau_mau_ratio",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 20480
+    },
+    {
+      "query": "show weekly active users trend",
+      "tags": [
+        "wau",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "wau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "wau",
+      "got_filters": {},
+      "got_time_range_days": 7,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 13529
+    },
+    {
+      "query": "DAU trend last quarter",
+      "tags": [
+        "dau",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": 90,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 90,
+      "got_date_from": "2026-02-01",
+      "got_date_to": "2026-05-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9242
+    },
+    {
+      "query": "show DAU for web platform",
+      "tags": [
+        "dau",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": {
+        "platform": "web"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {
+        "platform": "web"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8389
+    },
+    {
+      "query": "show MAU for Android users",
+      "tags": [
+        "mau",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "mau",
+      "gold_filters": {
+        "platform": "android"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "mau",
+      "got_filters": {
+        "platform": "android"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8661
+    },
+    {
+      "query": "show DAU by city for Android users",
+      "tags": [
+        "dau",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "dau",
+      "gold_filters": {
+        "platform": "android"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "city",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "dau",
+      "got_filters": {
+        "platform": "android"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "city",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7777
+    },
+    {
+      "query": "show total DAU",
+      "tags": [
+        "dau",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 7,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8585
+    },
+    {
+      "query": "show DAU split by platform",
+      "tags": [
+        "dau",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9631
+    },
+    {
+      "query": "show MAU across all account types",
+      "tags": [
+        "mau",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "mau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "account_type",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "mau",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "account_type",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 0.0,
+        "metric": 1.0,
+        "filters": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 0.529,
+      "pass": false,
+      "latency_ms": 8255
+    },
+    {
+      "query": "show D7 retention",
+      "tags": [
+        "retention",
+        "scalar"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 14494
+    },
+    {
+      "query": "show D30 retention",
+      "tags": [
+        "retention",
+        "scalar"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d30_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d30_retention",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6818
+    },
+    {
+      "query": "share week 4 retention",
+      "tags": [
+        "retention",
+        "scalar",
+        "natural_language",
+        "week_window"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8251
+    },
+    {
+      "query": "show D7 retention by platform",
+      "tags": [
+        "retention",
+        "breakdown"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7510
+    },
+    {
+      "query": "share MOM retention",
+      "tags": [
+        "retention",
+        "trend",
+        "monthly"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 180,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8930
+    },
+    {
+      "query": "show D7 retention MOM for last 6 months",
+      "tags": [
+        "retention",
+        "trend",
+        "monthly"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": 180,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 180,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7512
+    },
+    {
+      "query": "retention trend of active users",
+      "tags": [
+        "retention",
+        "trend",
+        "cohort_filter"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9451
+    },
+    {
+      "query": "share retention trend of transacting users",
+      "tags": [
+        "retention",
+        "trend",
+        "cohort_filter"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 11090
+    },
+    {
+      "query": "show D1 retention",
+      "tags": [
+        "retention",
+        "scalar"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d1_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d1_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7338
+    },
+    {
+      "query": "show 30 day retention by account type",
+      "tags": [
+        "retention",
+        "breakdown"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d30_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "account_type",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d30_retention",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "account_type",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 18337
+    },
+    {
+      "query": "show D7 retention for iOS users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": {
+        "platform": "ios"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "platform": "ios",
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 15245
+    },
+    {
+      "query": "show D30 retention for Android users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d30_retention",
+      "gold_filters": {
+        "platform": "android"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d30_retention",
+      "got_filters": {
+        "platform": "android"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7617
+    },
+    {
+      "query": "show D7 retention for savings account users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": {
+        "account_type": "savings"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "account_type": "savings",
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7797
+    },
+    {
+      "query": "show retention for referral users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": {
+        "acquisition_cohort": "referral_friend"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "acquisition_cohort": "referral_friend",
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7211
+    },
+    {
+      "query": "show retention for all users",
+      "tags": [
+        "retention",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "retention",
+      "got_metric_id": "d7_retention",
+      "got_filters": {
+        "transaction_status": "SUCCESS"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 0.0
+      },
+      "composite_score": 0.765,
+      "pass": false,
+      "latency_ms": 7701
+    },
+    {
+      "query": "show retention trend overall",
+      "tags": [
+        "retention",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "retention",
+      "gold_metric_id": "d7_retention",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "d7_retention",
+      "got_filters": {},
+      "got_time_range_days": 180,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7905
+    },
+    {
+      "query": "show new users for last month",
+      "tags": [
+        "new_users",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "new_users",
+      "gold_filters": null,
+      "gold_time_range_days": 30,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "new_users",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": "2026-04-01",
+      "got_date_to": "2026-05-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6467
+    },
+    {
+      "query": "what is churn rate",
+      "tags": [
+        "churn",
+        "scalar"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "churn_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "churn_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 5889
+    },
+    {
+      "query": "show churn rate by platform",
+      "tags": [
+        "churn",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "churn_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "churn_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7393
+    },
+    {
+      "query": "show new users by acquisition channel",
+      "tags": [
+        "new_users",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "new_users",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "acquisition_cohort",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "new_users",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 0.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9107
+    },
+    {
+      "query": "new users trend last quarter",
+      "tags": [
+        "new_users",
+        "trend"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "new_users",
+      "gold_filters": null,
+      "gold_time_range_days": 90,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "new_users",
+      "got_filters": {},
+      "got_time_range_days": 90,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-04-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 16475
+    },
+    {
+      "query": "show new users from Google Ads",
+      "tags": [
+        "new_users",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "new_users",
+      "gold_filters": {
+        "acquisition_cohort": "google_ads"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "new_users",
+      "got_filters": {
+        "acquisition_cohort": "google_ads"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6672
+    },
+    {
+      "query": "show new users from Facebook Ads",
+      "tags": [
+        "new_users",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "new_users",
+      "gold_filters": {
+        "acquisition_cohort": "facebook_ads"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "new_users",
+      "got_filters": {
+        "acquisition_cohort": "facebook_ads"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 10724
+    },
+    {
+      "query": "show churn rate for Android users",
+      "tags": [
+        "churn",
+        "filter",
+        "filter_precision"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "churn_rate",
+      "gold_filters": {
+        "platform": "android"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "churn_rate",
+      "got_filters": {
+        "platform": "android"
+      },
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9951
+    },
+    {
+      "query": "show total new users this quarter",
+      "tags": [
+        "new_users",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "new_users",
+      "gold_filters": null,
+      "gold_time_range_days": 90,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "new_users",
+      "got_filters": {},
+      "got_time_range_days": 61,
+      "got_date_from": "2026-04-01",
+      "got_date_to": "2026-06-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0,
+        "time_range": 0.0
+      },
+      "composite_score": 0.895,
+      "pass": true,
+      "latency_ms": 9172
+    },
+    {
+      "query": "show overall churn rate",
+      "tags": [
+        "churn",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "churn_rate",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "churn_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "filters": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8907
+    },
+    {
+      "query": "show transacting users by platform for Jan",
+      "tags": [
+        "segment",
+        "breakdown",
+        "calendar_filter"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": "2026-01-01",
+      "gold_date_to": "2026-02-01",
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "ce_transacting_user",
+      "got_filters": {},
+      "got_time_range_days": 31,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-02-01",
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 5946
+    },
+    {
+      "query": "show transacting users by city",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "city",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "ce_transacting_user",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "city",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 5807
+    },
+    {
+      "query": "show onboarding completions by platform",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7654
+    },
+    {
+      "query": "show active users by account type",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "account_type",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "account_type",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7185
+    },
+    {
+      "query": "show transacting users by channel",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "transaction_channel",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "ce_transacting_user",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "transaction_channel",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6363
+    },
+    {
+      "query": "show onboarding funnel",
+      "tags": [
+        "funnel"
+      ],
+      "gold_analysis_type": "funnel",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "out_of_scope",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 0.0
+      },
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 7994
+    },
+    {
+      "query": "show onboarding funnel for Jan",
+      "tags": [
+        "funnel",
+        "calendar_filter"
+      ],
+      "gold_analysis_type": "funnel",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": "2026-01-01",
+      "gold_date_to": "2026-02-01",
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "funnel",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 31,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-02-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7148
+    },
+    {
+      "query": "what does the activation funnel look like",
+      "tags": [
+        "funnel"
+      ],
+      "gold_analysis_type": "funnel",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7856
+    },
+    {
+      "query": "show payment funnel last month",
+      "tags": [
+        "funnel"
+      ],
+      "gold_analysis_type": "funnel",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": 30,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "funnel",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": "2026-04-01",
+      "got_date_to": "2026-05-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9243
+    },
+    {
+      "query": "show complete onboarding funnel",
+      "tags": [
+        "funnel",
+        "filter_precision",
+        "no_filter"
+      ],
+      "gold_analysis_type": "funnel",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "out_of_scope",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 0.0,
+        "filters": 1.0
+      },
+      "composite_score": 0.333,
+      "pass": false,
+      "latency_ms": 7261
+    },
+    {
+      "query": "How many users did onboarding and UPI transactions in Feb",
+      "tags": [
+        "behavioral_cohort",
+        "filter"
+      ],
+      "gold_analysis_type": "behavioral_cohort",
+      "gold_metric_id": null,
+      "gold_filters": {
+        "transaction_channel": "UPI"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": "2026-02-01",
+      "gold_date_to": "2026-03-01",
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "behavioral_cohort",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 28,
+      "got_date_from": "2026-02-01",
+      "got_date_to": "2026-03-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "filters": 0.0,
+        "time_range": 1.0
+      },
+      "composite_score": 0.714,
+      "pass": false,
+      "latency_ms": 7658
+    },
+    {
+      "query": "How many users did onboarding and no UPI transactions in Feb",
+      "tags": [
+        "behavioral_cohort",
+        "anti_cohort"
+      ],
+      "gold_analysis_type": "behavioral_cohort",
+      "gold_metric_id": null,
+      "gold_filters": {
+        "transaction_channel": "UPI"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": "2026-02-01",
+      "gold_date_to": "2026-03-01",
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "behavioral_cohort",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 28,
+      "got_date_from": "2026-02-01",
+      "got_date_to": "2026-03-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "filters": 0.0,
+        "time_range": 1.0
+      },
+      "composite_score": 0.714,
+      "pass": false,
+      "latency_ms": 7646
+    },
+    {
+      "query": "users who onboarded but did not transact last month",
+      "tags": [
+        "behavioral_cohort",
+        "anti_cohort"
+      ],
+      "gold_analysis_type": "behavioral_cohort",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": 30,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "behavioral_cohort",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": "2026-04-01",
+      "got_date_to": "2026-05-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6968
+    },
+    {
+      "query": "how many users completed KYC and made a UPI transaction",
+      "tags": [
+        "behavioral_cohort"
+      ],
+      "gold_analysis_type": "behavioral_cohort",
+      "gold_metric_id": null,
+      "gold_filters": {
+        "transaction_channel": "UPI"
+      },
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "behavioral_cohort",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "filters": 0.0
+      },
+      "composite_score": 0.667,
+      "pass": false,
+      "latency_ms": 11315
+    },
+    {
+      "query": "overlap between onboarded and transacting users last quarter",
+      "tags": [
+        "behavioral_cohort"
+      ],
+      "gold_analysis_type": "behavioral_cohort",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": 90,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "behavioral_cohort",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 90,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-04-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6997
+    },
+    {
+      "query": "why did transacting users drop last month",
+      "tags": [
+        "diagnose"
+      ],
+      "gold_analysis_type": "diagnose",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": 60,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "diagnose",
+      "got_metric_id": "ce_transacting_user",
+      "got_filters": {},
+      "got_time_range_days": 60,
+      "got_date_from": "2026-04-01",
+      "got_date_to": "2026-05-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": "2026-05-01",
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 25455
+    },
+    {
+      "query": "why did DAU spike last week",
+      "tags": [
+        "diagnose"
+      ],
+      "gold_analysis_type": "diagnose",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": 14,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "diagnose",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 14,
+      "got_date_from": "2026-05-11",
+      "got_date_to": "2026-05-25",
+      "got_breakdown": null,
+      "got_diagnose_period_end": "2026-05-25",
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 24179
+    },
+    {
+      "query": "what caused the activation rate drop in Jan",
+      "tags": [
+        "diagnose",
+        "calendar_filter"
+      ],
+      "gold_analysis_type": "diagnose",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": 60,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": "2026-01-31",
+      "should_clarify": false,
+      "got_analysis_type": "diagnose",
+      "got_metric_id": "activation_rate",
+      "got_filters": {},
+      "got_time_range_days": 60,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-02-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": "2026-01-31",
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 16359
+    },
+    {
+      "query": "investigate the retention decline",
+      "tags": [
+        "diagnose"
+      ],
+      "gold_analysis_type": "diagnose",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "diagnose",
+      "got_metric_id": "d7_retention",
+      "got_filters": {},
+      "got_time_range_days": 60,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 9620
+    },
+    {
+      "query": "why is churn increasing",
+      "tags": [
+        "diagnose"
+      ],
+      "gold_analysis_type": "diagnose",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "diagnose",
+      "got_metric_id": "churn_rate",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": "2026-05-25",
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6123
+    },
+    {
+      "query": "show user lifecycle stages",
+      "tags": [
+        "user_lifecycle"
+      ],
+      "gold_analysis_type": "user_lifecycle",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "user_lifecycle",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 17125
+    },
+    {
+      "query": "show user lifecycle by platform",
+      "tags": [
+        "user_lifecycle",
+        "breakdown"
+      ],
+      "gold_analysis_type": "user_lifecycle",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "user_lifecycle",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 19494
+    },
+    {
+      "query": "how sticky is our product",
+      "tags": [
+        "stickiness"
+      ],
+      "gold_analysis_type": "stickiness",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "stickiness",
+      "got_metric_id": "dau_mau_ratio",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 17967
+    },
+    {
+      "query": "show user journey",
+      "tags": [
+        "journey"
+      ],
+      "gold_analysis_type": "journey",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "journey",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 11311
+    },
+    {
+      "query": "time between onboarding completed and transaction reconciled",
+      "tags": [
+        "time_between"
+      ],
+      "gold_analysis_type": "time_between",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "time_between",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 8585
+    },
+    {
+      "query": "show me users",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "gold_analysis_type": null,
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": true,
+      "got_analysis_type": "out_of_scope",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "ambiguity": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6747
+    },
+    {
+      "query": "what happened last month",
+      "tags": [
+        "adversarial",
+        "underspecified"
+      ],
+      "gold_analysis_type": null,
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": true,
+      "got_analysis_type": "clarify",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "ambiguity": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6071
+    },
+    {
+      "query": "show metrics",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "gold_analysis_type": null,
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": true,
+      "got_analysis_type": "clarify",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "ambiguity": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6559
+    },
+    {
+      "query": "how many users",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "gold_analysis_type": null,
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": true,
+      "got_analysis_type": "clarify",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "ambiguity": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 7775
+    },
+    {
+      "query": "compare performance",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "gold_analysis_type": null,
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": true,
+      "got_analysis_type": "clarify",
+      "got_metric_id": null,
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "ambiguity": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6777
+    },
+    {
+      "query": "shw dau lst week",
+      "tags": [
+        "adversarial",
+        "typo"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": 7,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 7,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 10899
+    },
+    {
+      "query": "onboarding completion rate for non-referral users in Jan",
+      "tags": [
+        "adversarial",
+        "negation_filter"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": null,
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": "2026-01-01",
+      "gold_date_to": "2026-02-01",
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "Conversion Rate",
+      "got_filters": {},
+      "got_time_range_days": 31,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-02-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6733
+    },
+    {
+      "query": "last quarter DAU trend",
+      "tags": [
+        "adversarial",
+        "relative_time"
+      ],
+      "gold_analysis_type": "metric",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": 90,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": null,
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "metric",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 90,
+      "got_date_from": "2026-01-01",
+      "got_date_to": "2026-04-01",
+      "got_breakdown": null,
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "time_range": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 6709
+    },
+    {
+      "query": "show iOS and Android DAU split",
+      "tags": [
+        "adversarial",
+        "multi_filter"
+      ],
+      "gold_analysis_type": "segment",
+      "gold_metric_id": "dau",
+      "gold_filters": null,
+      "gold_time_range_days": null,
+      "gold_date_from": null,
+      "gold_date_to": null,
+      "gold_breakdown": "platform",
+      "gold_diagnose_period_end": null,
+      "should_clarify": false,
+      "got_analysis_type": "segment",
+      "got_metric_id": "dau",
+      "got_filters": {},
+      "got_time_range_days": 30,
+      "got_date_from": null,
+      "got_date_to": null,
+      "got_breakdown": "platform",
+      "got_diagnose_period_end": null,
+      "dim_scores": {
+        "intent": 1.0,
+        "metric": 1.0,
+        "breakdown": 1.0
+      },
+      "composite_score": 1.0,
+      "pass": true,
+      "latency_ms": 5825
+    }
+  ],
+  "model": "openai/gpt-4o-mini"
+}

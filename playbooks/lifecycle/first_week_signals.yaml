@@ -6,6 +6,20 @@ description: >
   users who stay from users who churn, and measure how quickly activating
   users reach it.
 
+intent_class: retention
+intent_confidence: high
+intent_phrases:
+  - "first week behaviour"
+  - "what predicts retention"
+  - "aha moment analysis"
+  - "actions in first 7 days"
+  - "what do retained users do first"
+  - "first week actions that predict"
+orchestrator_hint:
+  preferred_analysis_type: retention
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - first week

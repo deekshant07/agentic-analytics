@@ -6,6 +6,20 @@ description: >
   document upload, video verification, etc. Works across fintech, healthcare,
   and any regulated or identity-sensitive product.
 
+intent_class: funnel
+intent_confidence: high
+intent_phrases:
+  - "verification drop off"
+  - "kyc friction"
+  - "otp verification failing"
+  - "users stuck in verification"
+  - "identity verification funnel"
+  - "users failing verification"
+orchestrator_hint:
+  preferred_analysis_type: funnel
+  event_role: trigger_event
+  suggested_time_range_days: 14
+
 match_signals:
   keywords:
     - verification

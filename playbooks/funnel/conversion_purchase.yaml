@@ -7,6 +7,20 @@ description: >
   Covers e-commerce, fintech payments, SaaS upgrade flows, and any
   monetisation funnel. LLM maps angles to catalog's actual conversion events.
 
+intent_class: funnel
+intent_confidence: high
+intent_phrases:
+  - "where are users dropping off in checkout"
+  - "why aren't users buying"
+  - "purchase funnel drop"
+  - "checkout drop off"
+  - "payment drop off"
+  - "conversion funnel analysis"
+orchestrator_hint:
+  preferred_analysis_type: funnel
+  event_role: goal_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - checkout

@@ -6,6 +6,20 @@ description: >
   first meaningful feature use). This is the "leaky bucket" between acquisition
   and activation. Works for any product.
 
+intent_class: behavioral_cohort
+intent_confidence: high
+intent_phrases:
+  - "signed up but never"
+  - "installed but never used"
+  - "registered but never acted"
+  - "users who never completed"
+  - "leaky bucket"
+  - "never activated"
+orchestrator_hint:
+  preferred_analysis_type: behavioral_cohort
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - signed up but never

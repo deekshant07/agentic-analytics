@@ -1,0 +1,85 @@
+id: retention.nday_retention
+name: N-Day Retention (D1 / D7 / D30)
+description: >
+  Canonical N-day retention analysis: of users who first performed the core
+  action on day 0, what percentage returned on day N? The single most
+  important leading indicator of product-market fit for any consumer or
+  SaaS product. Covers D1 (habit signal), D7 (weekly habit), D30 (sticky habit).
+
+intent_class: retention
+intent_confidence: high
+intent_phrases:
+  - "d1 d7 d30 retention"
+  - "day 1 retention"
+  - "day 7 retention"
+  - "day 30 retention"
+  - "n-day retention"
+  - "how many users returned on day"
+  - "retention curve"
+  - "cohort retention curve"
+  - "returning users by day"
+
+match_signals:
+  keywords:
+    - d1 retention
+    - d7 retention
+    - d30 retention
+    - day 1
+    - day 7
+    - day 30
+    - n-day
+    - retention curve
+    - cohort retention
+    - returning users
+  anti_keywords:
+    - acquisition
+    - onboarding funnel
+    - conversion funnel
+
+orchestrator_hint:
+  preferred_analysis_type: retention
+  event_role: trigger_event
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
+tool_controls:
+  allowed_analysis_types:
+    - retention
+    - metric
+
+investigations:
+  - sub_question: >
+      What are the D1, D7, and D30 retention rates for users who first
+      performed the core action — and how do they benchmark against
+      industry standards (D1 >25%, D7 >15%, D30 >10%)?
+    analysis_hint: retention
+    rationale: >
+      These three windows tell different stories: D1 = first session quality,
+      D7 = weekly habit formation, D30 = long-term value habit.
+    priority: 1
+
+  - sub_question: >
+      Is the retention curve getting better or worse across monthly cohorts —
+      are users acquired more recently retaining better or worse?
+    analysis_hint: retention
+    rationale: >
+      Cohort-over-cohort improvement or decline reveals whether product and
+      onboarding changes are having their intended effect on retention.
+    priority: 2
+
+  - sub_question: >
+      Which user segments — by platform, acquisition channel, or first-action
+      type — show the best and worst retention at D7?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Segment-level retention identifies whether a retention problem is
+      universal or concentrated in a specific cohort to fix.
+    priority: 3
+
+narrative_requirements:
+  - "State D1, D7, D30 retention rates as percentages"
+  - "Identify which day window shows the steepest cliff"
+  - "State whether retention is improving, stable, or declining over recent cohorts"
+  - "Name the segment with the single worst D7 retention"
+  - "Suggest one concrete intervention based on the biggest cliff found"

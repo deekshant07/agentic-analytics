@@ -6,6 +6,20 @@ description: >
   Works for any product where an event volume drops unexpectedly without a clear
   business reason.
 
+intent_class: metric
+intent_confidence: high
+intent_phrases:
+  - "feature stopped working"
+  - "sudden drop in usage"
+  - "event count fell off a cliff"
+  - "technical regression"
+  - "feature usage dropped suddenly"
+  - "something broke"
+orchestrator_hint:
+  preferred_analysis_type: metric
+  suggested_time_range_days: 14
+  suggested_time_granularity: day
+
 match_signals:
   keywords:
     - error

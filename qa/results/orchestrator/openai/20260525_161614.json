@@ -1,0 +1,1014 @@
+{
+  "component": "orchestrator",
+  "generated_at": "2026-05-25T16:17:43.937897+00:00",
+  "n_cases": 89,
+  "pass_count": 0,
+  "pass_rate": 0.0,
+  "avg_composite_score": 0.0,
+  "dim_accuracy": {},
+  "cases": [
+    {
+      "query": "what is activation rate",
+      "tags": [
+        "activation",
+        "scalar"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 18
+    },
+    {
+      "query": "what is UPI activation rate",
+      "tags": [
+        "activation",
+        "scalar",
+        "filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show activation rate MOM for last 6 months",
+      "tags": [
+        "activation",
+        "trend",
+        "monthly"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "show activation rate by platform",
+      "tags": [
+        "activation",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show 48 hour UPI activation",
+      "tags": [
+        "activation",
+        "filter",
+        "hours_window"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "show activation rate for Jan",
+      "tags": [
+        "activation",
+        "calendar_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 13
+    },
+    {
+      "query": "what is Android activation rate",
+      "tags": [
+        "activation",
+        "scalar",
+        "filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show activation rate trend last quarter",
+      "tags": [
+        "activation",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "activation rate by city",
+      "tags": [
+        "activation",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "show activation rate for savings account users",
+      "tags": [
+        "activation",
+        "filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show activation rate for pro account users",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 14
+    },
+    {
+      "query": "show activation rate for salary account users",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show activation rate for students",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 19
+    },
+    {
+      "query": "show activation rate for iOS users in Jan",
+      "tags": [
+        "activation",
+        "filter",
+        "filter_precision",
+        "calendar_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show overall activation rate",
+      "tags": [
+        "activation",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show DAU for last month",
+      "tags": [
+        "dau",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "what is DAU",
+      "tags": [
+        "dau",
+        "scalar"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "show MAU trend",
+      "tags": [
+        "mau",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "DAU for Android last week",
+      "tags": [
+        "dau",
+        "filter",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show DAU by platform",
+      "tags": [
+        "dau",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "what is DAU/MAU ratio",
+      "tags": [
+        "dau_mau_ratio",
+        "scalar"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show weekly active users trend",
+      "tags": [
+        "wau",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "DAU trend last quarter",
+      "tags": [
+        "dau",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show DAU for web platform",
+      "tags": [
+        "dau",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show MAU for Android users",
+      "tags": [
+        "mau",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "show DAU by city for Android users",
+      "tags": [
+        "dau",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "show total DAU",
+      "tags": [
+        "dau",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show DAU split by platform",
+      "tags": [
+        "dau",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 5
+    },
+    {
+      "query": "show MAU across all account types",
+      "tags": [
+        "mau",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 6
+    },
+    {
+      "query": "show D7 retention",
+      "tags": [
+        "retention",
+        "scalar"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 7
+    },
+    {
+      "query": "show D30 retention",
+      "tags": [
+        "retention",
+        "scalar"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "share week 4 retention",
+      "tags": [
+        "retention",
+        "scalar",
+        "natural_language",
+        "week_window"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show D7 retention by platform",
+      "tags": [
+        "retention",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "share MOM retention",
+      "tags": [
+        "retention",
+        "trend",
+        "monthly"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show D7 retention MOM for last 6 months",
+      "tags": [
+        "retention",
+        "trend",
+        "monthly"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "retention trend of active users",
+      "tags": [
+        "retention",
+        "trend",
+        "cohort_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "share retention trend of transacting users",
+      "tags": [
+        "retention",
+        "trend",
+        "cohort_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show D1 retention",
+      "tags": [
+        "retention",
+        "scalar"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show 30 day retention by account type",
+      "tags": [
+        "retention",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show D7 retention for iOS users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "show D30 retention for Android users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show D7 retention for savings account users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show retention for referral users",
+      "tags": [
+        "retention",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show retention for all users",
+      "tags": [
+        "retention",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "show retention trend overall",
+      "tags": [
+        "retention",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 7
+    },
+    {
+      "query": "show new users for last month",
+      "tags": [
+        "new_users",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "what is churn rate",
+      "tags": [
+        "churn",
+        "scalar"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show churn rate by platform",
+      "tags": [
+        "churn",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show new users by acquisition channel",
+      "tags": [
+        "new_users",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "new users trend last quarter",
+      "tags": [
+        "new_users",
+        "trend"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show new users from Google Ads",
+      "tags": [
+        "new_users",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "show new users from Facebook Ads",
+      "tags": [
+        "new_users",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show churn rate for Android users",
+      "tags": [
+        "churn",
+        "filter",
+        "filter_precision"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show total new users this quarter",
+      "tags": [
+        "new_users",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show overall churn rate",
+      "tags": [
+        "churn",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show transacting users by platform for Jan",
+      "tags": [
+        "segment",
+        "breakdown",
+        "calendar_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 18
+    },
+    {
+      "query": "show transacting users by city",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show onboarding completions by platform",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show active users by account type",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "show transacting users by channel",
+      "tags": [
+        "segment",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show onboarding funnel",
+      "tags": [
+        "funnel"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "show onboarding funnel for Jan",
+      "tags": [
+        "funnel",
+        "calendar_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "what does the activation funnel look like",
+      "tags": [
+        "funnel"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show payment funnel last month",
+      "tags": [
+        "funnel"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show complete onboarding funnel",
+      "tags": [
+        "funnel",
+        "filter_precision",
+        "no_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 18
+    },
+    {
+      "query": "How many users did onboarding and UPI transactions in Feb",
+      "tags": [
+        "behavioral_cohort",
+        "filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "How many users did onboarding and no UPI transactions in Feb",
+      "tags": [
+        "behavioral_cohort",
+        "anti_cohort"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "users who onboarded but did not transact last month",
+      "tags": [
+        "behavioral_cohort",
+        "anti_cohort"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "how many users completed KYC and made a UPI transaction",
+      "tags": [
+        "behavioral_cohort"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "overlap between onboarded and transacting users last quarter",
+      "tags": [
+        "behavioral_cohort"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "why did transacting users drop last month",
+      "tags": [
+        "diagnose"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "why did DAU spike last week",
+      "tags": [
+        "diagnose"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "what caused the activation rate drop in Jan",
+      "tags": [
+        "diagnose",
+        "calendar_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "investigate the retention decline",
+      "tags": [
+        "diagnose"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "why is churn increasing",
+      "tags": [
+        "diagnose"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "show user lifecycle stages",
+      "tags": [
+        "user_lifecycle"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show user lifecycle by platform",
+      "tags": [
+        "user_lifecycle",
+        "breakdown"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    },
+    {
+      "query": "how sticky is our product",
+      "tags": [
+        "stickiness"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "show user journey",
+      "tags": [
+        "journey"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "time between onboarding completed and transaction reconciled",
+      "tags": [
+        "time_between"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show me users",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 11
+    },
+    {
+      "query": "what happened last month",
+      "tags": [
+        "adversarial",
+        "underspecified"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "show metrics",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "how many users",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 9
+    },
+    {
+      "query": "compare performance",
+      "tags": [
+        "adversarial",
+        "ambiguous"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 10
+    },
+    {
+      "query": "shw dau lst week",
+      "tags": [
+        "adversarial",
+        "typo"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 13
+    },
+    {
+      "query": "onboarding completion rate for non-referral users in Jan",
+      "tags": [
+        "adversarial",
+        "negation_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "last quarter DAU trend",
+      "tags": [
+        "adversarial",
+        "relative_time"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 12
+    },
+    {
+      "query": "show iOS and Android DAU split",
+      "tags": [
+        "adversarial",
+        "multi_filter"
+      ],
+      "error": "KeyError: 'transaction_status'",
+      "composite_score": 0.0,
+      "pass": false,
+      "latency_ms": 8
+    }
+  ],
+  "model": "openai/gpt-4o-mini"
+}

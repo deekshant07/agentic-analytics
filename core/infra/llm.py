@@ -144,7 +144,7 @@ def resolve_model(tier: str = "strong", provider: str | None = None) -> str:
 
     Env overrides:
         LLM_STRONG_MODEL / LLM_MEDIUM_MODEL / LLM_FAST_MODEL — default provider only
-        EVAL_STRONG_MODEL — overrides strong model when an explicit eval provider is set
+        EVAL_STRONG_MODEL — overrides strong model for any provider (eval pinning)
     """
     p = _get_provider(provider)
     if provider is None:
@@ -157,9 +157,8 @@ def resolve_model(tier: str = "strong", provider: str | None = None) -> str:
         override = os.environ.get(env_map.get(tier, ""))
         if override:
             return override
-    elif tier == "strong":
-        # EVAL_STRONG_MODEL lets you pin e.g. gpt-4o-mini for eval runs without
-        # affecting the main app's strong model.
+    # EVAL_STRONG_MODEL pins the strong model regardless of which provider is used.
+    if tier == "strong":
         eval_override = os.environ.get("EVAL_STRONG_MODEL", "").strip()
         if eval_override:
             return eval_override
@@ -193,6 +192,9 @@ def make_llm_client(api_key: str | None = None, provider: str | None = None) -> 
     if api_key is None:
         env_var = p.get("api_key_env")
         api_key = os.environ.get(env_var, "") if env_var else "ollama"
+        # Accept GEMINI_API_KEY as alias for GOOGLE_API_KEY
+        if not api_key and env_var == "GOOGLE_API_KEY":
+            api_key = os.environ.get("GEMINI_API_KEY", "")
     kwargs: dict[str, Any] = {"api_key": api_key}
     if p["base_url"]:
         kwargs["base_url"] = p["base_url"]

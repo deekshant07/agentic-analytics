@@ -7,6 +7,20 @@ description: >
   driven by new users entering the funnel differently or existing users
   converting less (mix-shift check).
 
+intent_class: funnel
+intent_confidence: high
+intent_phrases:
+  - "why did conversion drop"
+  - "conversion rate declining"
+  - "conversion rate fell"
+  - "conversion rate is down"
+  - "fewer users converting"
+orchestrator_hint:
+  preferred_analysis_type: funnel
+  event_role: goal_event
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
 match_signals:
   keywords:
     - conversion rate

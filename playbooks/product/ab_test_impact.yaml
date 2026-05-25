@@ -5,6 +5,21 @@ description: >
   or UI redesign on key metrics. Answers "did this change move the needle?"
   by comparing behaviour before and after the change.
 
+intent_class: segment
+intent_confidence: high
+intent_phrases:
+  - "did the change move the needle"
+  - "impact of the launch"
+  - "before and after the feature"
+  - "a/b test results"
+  - "experiment impact"
+  - "feature launch impact"
+  - "did it improve"
+orchestrator_hint:
+  preferred_analysis_type: segment
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
 match_signals:
   keywords:
     - a/b test

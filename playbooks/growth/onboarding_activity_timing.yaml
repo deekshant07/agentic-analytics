@@ -10,6 +10,17 @@ description: >
   (1) a modeled onboarding date on the users table; (2) first onboarding_completed (or similar)
   from the events stream — the quick compiler uses (2) until (1) is exposed in the semantic layer.
 
+intent_class: same_month_anchor
+intent_confidence: high
+intent_phrases:
+  - "onboarded in the same month"
+  - "onboarding vs first transaction"
+  - "users who onboarded and transacted same month"
+  - "time from onboarding to first action"
+orchestrator_hint:
+  preferred_analysis_type: same_month_anchor
+  suggested_time_range_days: 90
+
 match_signals:
   keywords:
     - onboarded in the same month

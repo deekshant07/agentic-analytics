@@ -312,9 +312,12 @@ _ANALYSIS_TYPES: dict[str, dict] = {
         "rules": '- For funnel_property_drilldown: set funnel_steps to the 2+ steps; set breakdown to the property column to diagnose (e.g. "platform", "city"). Use when user asks "why does the funnel drop" + mentions a dimension.',
     },
     "journey": {
-        "description": '- "journey"           → **path + flow**: after an anchor event, what users do next within 7 days (e.g. "what happens after signup", "user journey from purchase"). Set event=anchor; optional event_b=goal next event.',
-        "keywords": ["journey", "path", "what happens after", "what do users do", "user paths", "flow after", "next steps after"],
-        "rules": '- If the user asks for **paths / journey / what happens after** an event, use analysis_type="journey" with event=the anchor; set event_b only when they name a specific "goal" next event.',
+        "description": '- "journey"           → **path + flow**: after an anchor event, what users do next within 7 days (e.g. "what happens after signup", "user journey from purchase", "show user journey"). Set event=anchor; optional event_b=goal next event.',
+        "keywords": ["journey", "path", "what happens after", "what do users do", "user paths", "flow after", "next steps after", "show user journey", "user journey"],
+        "rules": (
+            '- If the user asks for **paths / journey / what happens after** an event, use analysis_type="journey" with event=the anchor; set event_b only when they name a specific "goal" next event.\n'
+            '- "show user journey" / "user journey" with no anchor named → use analysis_type="journey" and set event to the most representative core-action event from AVAILABLE EVENTS. Do NOT return clarify — pick the best-fit event.'
+        ),
     },
     "retention": {
         "description": '- "retention"         → cohort return rate with D1/D7/D30 survival curve (e.g. "D7 retention", "how many users come back", "show survival curve")',
@@ -325,10 +328,13 @@ _ANALYSIS_TYPES: dict[str, dict] = {
             'retention_window_days is ALWAYS in whole days — convert hours before setting: '
             '"24hr retention"→1, "48hr retention"→2, sub-day→1 (same rule as activation). '
             'When the user says "for 14 days", "first 14 days", or "14 day retention", set retention_window_days=14. '
-            'For "MOM"/"month over month" retention with an explicit N-day window: analysis_type=retention, '
-            'time_granularity=month, time_range_days≈180, retention_window_days=N (one retention_pct per cohort month). '
+            'For "MOM"/"month over month"/"monthly retention"/"retention MOM"/"retention trend" — '
+            'ALWAYS use analysis_type=retention (NOT metric), time_granularity=month, time_range_days=180. '
+            'An explicit N-day window is NOT required for MOM retention; default retention_window_days=7 when no N is stated. '
             'Scale defaults when no explicit N: time_range_days ≤ 14 → 1, ≤ 60 → 7, > 60 → 30. '
             'When the user names "D1"/"Day 1" use 1; "D7"/"Day 7" use 7; "D30"/"Day 30" use 30; "D0"/"Day 0" use 0.\n'
+            '- RETENTION DEFAULT METRIC: when no specific D-N or metric_id is named, default metric_id to the D7 retention metric from PRE-BUILT METRICS (the one with "d7" or "day 7" in its id/name). Do NOT pick D1 or D30 when the user did not ask for them.\n'
+            '- COHORT DESCRIPTORS vs FILTERS: phrases like "of active users", "of transacting users", "of engaged users" in a retention question describe the cohort conceptually — they are NOT column filter values. Do not map these to IS NOT NULL / IS NULL conditions. Leave filters={} and rely on the event to define the cohort.\n'
             '- For activation rate with an explicit window ("7-day activation", "D30 activation", "activate within 1 day", "24hr conversion", "48hr conversion"): '
             'set metric_id=<activation metric> AND activation_window_days=<N in whole days> — ALWAYS convert hours to days first (24hr→1, 48hr→2, sub-day→1). '
             'Use activation_window_days for "7 day activation", "D7 activation", "7-day activation", hour-based windows — NOT retention_window_days. '
@@ -340,12 +346,27 @@ _ANALYSIS_TYPES: dict[str, dict] = {
         ),
     },
     "behavioral_cohort": {
-        "description": '- "behavioral_cohort" → users who did event_a but NOT event_b (e.g. "signed up but never converted", "registered but never completed setup")',
-        "keywords": ["but not", "without transact", "never converted", "signed up but", "registered but", "overlap", "who also", "and also did"],
+        "description": '- "behavioral_cohort" → count users at the intersection of two behaviors: who did event_a AND event_b (overlap), OR who did event_a but NOT event_b (anti-cohort). Examples: "users who signed up and transacted", "onboarded but never converted", "how many did X and Y", "overlap between users who did A and B".',
+        "keywords": [
+            "but not", "but did not", "but never", "without transact", "never converted",
+            "signed up but", "registered but", "overlap", "who also", "and also did",
+            "how many users did", "users who did", "users who completed", "and made",
+            "users who onboarded", "onboarded and", "completed and", "onboarded but",
+        ],
         "rules": (
             '- For behavioral_cohort (single window): event = activity they DID, event_b = the second activity to check.\n'
-            '  - metric_variant=null (default): user wants overlap count — "how many did A AND also did B".\n'
+            '  - metric_variant=null (default): user wants overlap count — "how many did A AND also did B", "users who did X and Y".\n'
             '  - metric_variant="anti_cohort": user says "not/no/without/never/excluding B" → ONLY users who did A but NOT B.\n'
+            '- IMPORTANT: "how many users did [event_a] and [event_b]" is behavioral_cohort with metric_variant=null, NOT clarify.\n'
+            '- EVENT_B QUALIFIERS → filters (MANDATORY — do not skip, applies to BOTH overlap AND anti_cohort):\n'
+            '  When the event_b clause contains a qualifier word adjacent to event_b, regardless of negation:\n'
+            '  Positive: "and made a <qualifier> <event_b>", "and completed a <qualifier> <event_b>"\n'
+            '  Negated: "no <qualifier> <event_b>", "without <qualifier> <event_b>", "never a <qualifier> <event_b>"\n'
+            '  The negation word (no/without/never) sets metric_variant=anti_cohort. It does NOT remove the qualifier.\n'
+            '  Step 1: Scan every word in the event_b clause (ignore the negation word itself).\n'
+            '  Step 2: For each word, look it up in DIMENSION VALUE HINTS.\n'
+            '  Step 3: If found → set filters[matching_column]=that_word. Do NOT leave filters={}.\n'
+            '  Apply this lookup to EVERY behavioral_cohort query — positive and negated alike.\n'
             '- For behavioral_cohort **cross-period overlap** (same event, two calendar periods): e.g. "Of users who transacted in March, how many also transacted in February?" → '
             'set event and event_b to the same event; date_from/date_to = the cohort window (March); secondary_date_from/secondary_date_to = the other window (February).\n'
             '- TWO COHORTS / POPULATIONS (not calendar periods): When the question compares two named user populations using "vs", "versus", "compare … vs …": '
@@ -386,10 +407,14 @@ _ANALYSIS_TYPES: dict[str, dict] = {
         ),
     },
     "diagnose": {
-        "description": '- "diagnose"          → why did metric X drop or spike (e.g. "why did DAU drop", "what caused the spike in transactions")',
-        "keywords": ["why did", "why has", "what caused", "root cause", "explain the decline", "explain the growth", "went down", "went up", "decreased", "increased unexpectedly", "cause of"],
+        "description": '- "diagnose"          → why did metric X drop or spike, or investigate an anomaly (e.g. "why did DAU drop", "what caused the spike in transactions", "investigate the decline")',
+        "keywords": ["why did", "why has", "what caused", "root cause", "explain the decline", "explain the growth", "went down", "went up", "decreased", "increased unexpectedly", "cause of", "investigate", "investigate the", "sudden drop", "sudden spike"],
         "rules": (
-            '- For diagnose: set event to the base metric event and time_range_days=60. '
+            '- For diagnose: set event to the base metric event. '
+            'time_range_days adapts to the granularity of the period mentioned:\n'
+            '  • "last week" / "past week" / "this week" → time_range_days=14 (two 7-day halves for comparison)\n'
+            '  • "last month" / named month / no time reference → time_range_days=60 (two 30-day halves)\n'
+            '  • "last quarter" / "past 3 months" → time_range_days=180 (two 90-day halves)\n'
             'IMPORTANT: if follow-up that does NOT name a new event, inherit the event from the most recent turn.\n'
             '- For diagnose asking about a SPECIFIC MONTH (e.g. "in March", "last month", "why did X increase in February"): '
             'set diagnose_period_end to the last day of that month as YYYY-MM-DD, and time_range_days=60.\n'
@@ -428,7 +453,9 @@ _ANALYSIS_TYPES: dict[str, dict] = {
     "multi_intent": {
         "description": (
             '- "multi_intent"      → the user asks to compare or simultaneously display TWO OR MORE distinct named catalog metrics or rates (e.g. "compare activation rate and churn rate", "show DAU and retention together"). '
-            'Use ONLY when two separate pre-built metric names both appear in the question. Do NOT use for user cohort comparisons like "active users vs paying users" — those are custom_split.'
+            'Use ONLY when two separate pre-built metric names both appear in the question. '
+            'NEVER use for: (a) a single pre-built composite metric whose name contains a "/" or ratio (e.g. "DAU/MAU ratio" → metric_id=dau_mau_ratio, analysis_type=metric); '
+            '(b) user cohort comparisons like "active users vs paying users" — those are custom_split.'
         ),
         "keywords": [],
         "rules": None,
@@ -500,6 +527,7 @@ structured QueryObject. Use ONLY the vocabulary provided below — never invent 
 names, column names, or values.
 
 {hypothesis_block}
+{playbook_hint_block}
 
 TODAY'S DATE: {today}
 
@@ -536,10 +564,18 @@ METRIC_ID MATCHING RULES — be conservative:
     ✗ "count of signups" → event="<signup event>", metric_id=null
     NOTE: "how many activations" is NOT in this list — activation has a pre-built metric; always use metric_id.
 - If in doubt, leave metric_id null and fill event instead.
-- QUALIFIER DECOMPOSITION (mandatory before clarify/out_of_scope):
-  Step A: If a word in the question exactly matches a value under DIMENSION VALUE HINTS, set filters[col]=that value.
+- QUALIFIER DECOMPOSITION (mandatory for every query — not only before clarify):
+  Step A: For every word in the question, check DIMENSION VALUE HINTS. If a word exactly matches a value under any column, set filters[col]=that_word.
   Step B: Match a PRE-BUILT METRICS id/name token (activation, retention, churn, DAU, …).
   Step C: Never treat "[qualifier] [metric]" as one unknown phrase when A and B succeed.
+  Step D: Apply Steps A–C to EVERY clause in the question, including both positive and negated event_b clauses:
+    - Positive:  "and <qualifier> <event_b>"     → event_b + filters[col]=qualifier
+    - Negated:   "no <qualifier> <event_b>"       → event_b + anti_cohort + filters[col]=qualifier
+    - Negated:   "without <qualifier> <event_b>"  → event_b + anti_cohort + filters[col]=qualifier
+    The negation word (no/without/never) ONLY controls metric_variant=anti_cohort.
+    It does NOT remove the qualifier. The qualifier still goes into filters.
+    WRONG:  "no <qualifier> <event_b>" → event_b=<event>, metric_variant=anti_cohort, filters={{}}
+    CORRECT: "no <qualifier> <event_b>" → event_b=<event>, metric_variant=anti_cohort, filters={{<col>: <qualifier>}}
   Informal words ("numbers", "stats", "data", "figures", "share") still mean "show that metric".
   Patterns (any industry):
     "[qualifier] activation [informal]" → analysis_type=metric, metric_id=<activation metric>, filters=<qualifier>.
@@ -569,7 +605,11 @@ DIMENSION VALUE HINTS (for disambiguation):
 
 CUSTOM EVENT COLUMN CONDITIONS — some user phrases map to IS NOT NULL / IS NULL conditions via catalog custom events. These are NOT literal sampled values. Use the sentinel value shown to represent the condition:
 {ce_column_conditions_block}
-SENTINEL USAGE: when a qualifier phrase matches a concept above, set filters[col] = the sentinel value shown ("__IS_NOT_NULL__" or "__IS_NULL__"). The compiler renders these as `col IS NOT NULL` or `col IS NULL` in SQL. Example: "in app activation rate" → filters: {{"transaction_channel": "__IS_NOT_NULL__"}} (do NOT use "IMPS", "in_app", or any sampled value).
+SENTINEL USAGE — PRIORITY ORDER (critical):
+  1. If the qualifier appears **as a literal value** in DIMENSION VALUE HINTS for the relevant column → use that exact literal value in filters. NEVER use a sentinel when a literal match exists.
+  2. Only if no literal match exists in sampled values → check CE concepts and use the sentinel.
+  Example: "UPI activation" → "UPI" matches DIMENSION VALUE HINTS for transaction_channel → filters: {{"transaction_channel": "UPI"}} (NOT __IS_NOT_NULL__).
+  Example: "in-app activation" → "in-app" has NO exact literal match → use sentinel: filters: {{"transaction_channel": "__IS_NOT_NULL__"}}.
 
 TIME GRANULARITY — how to bucket the time axis:
 - "day"   → default, daily trend
@@ -623,6 +663,7 @@ Think step by step in the "_reasoning" field before filling any other slot:
 
 Rules:
 - FILTER SEMANTICS: Map the user's words to **columns and values that appear above** in FILTERABLE COLUMNS / DIMENSION VALUE HINTS. Use **exact** strings from the samples (case/spelling as listed). If the user names a category (region, channel, tier, product, outcome word, etc.), find the catalog column whose sampled values include that meaning and set filters[col]=value. Never invent columns or values not supported by the vocabulary.
+- METRIC-INTERNAL FILTERS: Pre-built metric definitions (shown in PRE-BUILT METRICS) already embed their required filters inside their SQL. **Do NOT copy those internal filters into QO filters** — the compiler reads them directly from the metric definition. Only put filters into `filters` or `filter_excludes` when the **user explicitly asked** for that constraint. Example: a retention metric whose SQL contains `status = 'SUCCESS'` — do NOT add that status filter to QO filters unless the user explicitly asked for successful transactions only.
 - EXCLUSION FILTERS: When the user says "excluding X", "except X", "not X", "without X", "non-X users" — use **filter_excludes[col]=value** instead of filters. The compiler renders this as `AND col != 'value'` (or `NOT IN` for lists). Do not guess the positive inverse (e.g. do not set filters[platform]=ios to mean "excluding android" — use filter_excludes[platform]=android). Use exact catalog vocabulary same as filters. Example: "show DAU excluding android users for Feb" → {{"metric_id": "dau", "filter_excludes": {{"platform": "android"}}, "date_from": "2026-02-01", "date_to": "2026-03-01"}}
 - QUALIFIERS vs RATE SLOTS: Any **categorical slice** of the population (geography, channel, plan, department, etc.) belongs in **filters** on the appropriate catalog column. Reserve **metric_status_col** / **metric_status_target** only for **status_rate** (ratio of one outcome vs all outcomes on a single outcome column). Do not stuff arbitrary dimensions into metric_status_*.
 - Named **channel or instrument slices** in the user's question (a specific payment method, acquisition channel, platform tier, product type, etc.) belong in **filters** on the appropriate catalog column, **metric_variant=null**, and clear **metric_status_*** unless the user truly asked for a **rate** on that column.
@@ -756,9 +797,9 @@ Q: "show me D7 and D30 activation"
    [multiple windows requested → null lets the compiler emit all catalog default_windows]
 
 Q: "why did activation drop last week"
-→ analysis_type=diagnose, metric_id=<activation metric>,
+→ analysis_type=diagnose, metric_id=<activation metric>, time_range_days=14,
    time_source=explicit, depth=deep
-   [investigative root-cause question → diagnose + deep, not segment or metric]
+   ["last week" → two 7-day halves → time_range_days=14; investigative → diagnose + deep]
 
 Q: "funnel from signup to first purchase"
 → analysis_type=funnel, funnel_steps=[<signup event>, <purchase event>],
@@ -769,6 +810,37 @@ Q: "MOM activation by cohort"
 → analysis_type=metric, metric_id=<activation metric>, activation_window_days=null,
    time_granularity=month, time_range_days=180, time_source=explicit
    [MOM = time_granularity=month; time_range_days≥90 to get multiple cohort months]
+
+Q: "how many users signed up and also made a purchase"
+→ analysis_type=behavioral_cohort, event=<signup event>, event_b=<purchase event>,
+   metric_variant=null
+   [AND pattern = overlap; never clarify for "did A and B" phrasing]
+
+Q: "users who signed up but never made a purchase last month"
+→ analysis_type=behavioral_cohort, event=<signup event>, event_b=<purchase event>,
+   metric_variant="anti_cohort", time_range_days=30
+   [but NOT / never pattern = anti_cohort]
+
+Q: "how many users signed up and no <qualifier> purchase"
+→ analysis_type=behavioral_cohort, event=<signup event>, event_b=<purchase event>,
+   metric_variant="anti_cohort", filters={{<qualifier_col>: <qualifier_val>}}
+   ["no" → anti_cohort; "<qualifier>" adjacent to event_b → DIMENSION VALUE HINTS lookup → filters; BOTH apply]
+
+Q: "what is DAU/MAU ratio"
+→ analysis_type=metric, metric_id=dau_mau_ratio
+   [single pre-built composite metric containing "/" — never multi_intent]
+
+Q: "show user journey"
+→ analysis_type=journey, event=<core-action event from catalog>
+   [no anchor named → choose best-fit core event; do not clarify]
+
+Q: "investigate the retention decline"
+→ analysis_type=diagnose, metric_id=<retention metric>, depth=deep
+   [investigative / "investigate" keyword → diagnose]
+
+Q: "time between <event_a> and <event_b>"
+→ analysis_type=time_between, event=<event_a>, event_b=<event_b>
+   [duration / "time between" pattern → time_between, never clarify when both events named]
 """
 
 
@@ -1182,16 +1254,20 @@ def orchestrate(
     corrections: Optional[list[dict]] = None,
     eval_provider: Optional[str] = None,
     temperature: float = 0.0,
+    playbook_hint: Optional[str] = None,
+    correction_hint: Optional[str] = None,
 ) -> QueryObject:
     """
     Parse a natural language question into a QueryObject.
     Never writes SQL — only fills typed slots from catalog vocabulary.
 
-    history:        last 3 turns as [{"question": str, "qo": dict}, ...]
-                    enables follow-up questions that refine filters or dimensions
-    hypothesis_doc: HypothesisDoc from hypothesis_agent.generate_hypotheses
-                    steers analysis_type and event toward testing hypotheses
-    eval_provider:  Override the LLM provider for this call (used by eval benchmark).
+    history:         last 3 turns as [{"question": str, "qo": dict}, ...]
+                     enables follow-up questions that refine filters or dimensions
+    hypothesis_doc:  HypothesisDoc from hypothesis_agent.generate_hypotheses
+                     steers analysis_type and event toward testing hypotheses
+    eval_provider:   Override the LLM provider for this call (used by eval benchmark).
+    correction_hint: Short description of invariant violations from the previous attempt.
+                     Appended to the system prompt as a CORRECTION NEEDED block.
     """
     client = make_llm_client(openai_api_key, provider=eval_provider)
 
@@ -1224,6 +1300,7 @@ def orchestrate(
 
     system = _SYSTEM.format(
         hypothesis_block=_format_hypothesis_context(hypothesis_doc),
+        playbook_hint_block=playbook_hint or "",
         today=date.today().isoformat(),
         glossary_json=json.dumps(vocab.get("glossary") or [], indent=2),
         conventions_json=json.dumps(vocab.get("conventions") or [], indent=2),
@@ -1239,6 +1316,9 @@ def orchestrate(
         corrections_block=_format_corrections_block(corrections or []),
         history_block=_format_history(history or []),
     )
+
+    if correction_hint:
+        system = system + f"\n\nCORRECTION NEEDED: {correction_hint}. Fix only these fields in your response."
 
     _messages = [
         {"role": "system", "content": system},
@@ -1281,6 +1361,7 @@ def orchestrate(
                            clarify_message="I couldn't parse that question. Could you rephrase it?")
 
     _reasoning = data.pop("_reasoning", None)  # scratchpad — never leaks into QueryObject slots
+    _llm_time_source = (data.get("time_source") or "default").lower()  # LLM intent before regex override
     qo = QueryObject.from_dict(data)
     qo._llm_reasoning = _reasoning or ""  # preserved for debug panel only
     qo.time_source = "explicit" if _question_has_time(question) else "default"
@@ -1352,7 +1433,7 @@ def orchestrate(
     #   1) first turn with fixed calendar dates, else
     #   2) first turn with a non-default rolling window (week/month bucket,
     #      time_range_days ≠ 30, or time_source explicit/inherited).
-    if history and not _question_has_time(question):
+    if history and not _question_has_time(question) and _llm_time_source != "explicit":
         if not qo.date_from and not qo.date_to:
             inherited_fixed = False
             for turn in reversed(history):

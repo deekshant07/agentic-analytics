@@ -1,0 +1,85 @@
+id: insights.event_trend
+name: Event Trend Over Time
+description: >
+  Show how the count or rate of any event has changed over a time period.
+  The most common analytics question — "show me X over time" — answered as
+  a time series broken down by week or month. Works for any event in the catalog.
+
+intent_class: metric
+intent_confidence: high
+intent_phrases:
+  - "show me over time"
+  - "trend over the last"
+  - "how has x changed"
+  - "week over week"
+  - "month over month"
+  - "daily trend"
+  - "weekly trend"
+  - "monthly trend"
+  - "how is x trending"
+  - "is x increasing or decreasing"
+
+match_signals:
+  keywords:
+    - trend
+    - over time
+    - wow
+    - mom
+    - week over week
+    - month over month
+    - daily
+    - weekly
+    - monthly
+    - growing
+    - declining
+  anti_keywords:
+    - funnel
+    - retention
+    - cohort
+    - churn
+
+orchestrator_hint:
+  preferred_analysis_type: metric
+  event_role: trigger_event
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
+tool_controls:
+  allowed_analysis_types:
+    - metric
+    - segment
+
+investigations:
+  - sub_question: >
+      How has the volume of the core event trended week over week for
+      the last 8 weeks — and is the trend improving, declining, or flat?
+    analysis_hint: metric
+    rationale: >
+      Trend baseline is the first thing every stakeholder asks. Week-over-week
+      smooths day-of-week noise while staying granular enough to spot regressions.
+    priority: 1
+
+  - sub_question: >
+      Is the trend uniform across platforms, channels, or user segments —
+      or is one segment driving the overall movement?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Overall trends can mask a strong segment carrying weak ones. A breakdown
+      reveals whether to act broadly or surgically.
+    priority: 2
+
+  - sub_question: >
+      Did any external event (promotion, app release, holiday, outage) explain
+      the most significant inflection point in the trend?
+    analysis_hint: metric
+    rationale: >
+      Attributing inflection points to causes prevents mis-diagnosing organic
+      growth as product improvement or organic decline as a product problem.
+    priority: 3
+
+narrative_requirements:
+  - "State the current trend direction (up/down/flat) and the magnitude (% change WoW)"
+  - "Identify the single biggest inflection point and its approximate date"
+  - "Name the segment that is most responsible for the overall trend movement"
+  - "Distinguish seasonal/cyclical patterns from structural changes"

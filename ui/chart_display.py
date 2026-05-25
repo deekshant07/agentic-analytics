@@ -22,6 +22,7 @@ def display_evidence_chart(
     *,
     chart_title: str | None = None,
     key: str | None = None,
+    qo_semantics=None,
 ) -> bool:
     """
     Render a metric / breakdown / time-series frame as an interactive chart.
@@ -42,7 +43,9 @@ def display_evidence_chart(
         from core.viz.charts_plotly import evidence_chart_plotly
 
         fig = evidence_chart_plotly(
-            inv_name, df, chart_title=chart_title or (inv_name.strip() or None)
+            inv_name, df,
+            chart_title=chart_title or (inv_name.strip() or None),
+            qo_semantics=qo_semantics,
         )
     except ImportError:
         pass

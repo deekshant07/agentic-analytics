@@ -6,6 +6,19 @@ description: >
   product with a defined "lapsed" window — typically 30, 60, or 90 days of
   no activity.
 
+intent_class: behavioral_cohort
+intent_confidence: high
+intent_phrases:
+  - "users who stopped using"
+  - "dormant users"
+  - "lapsed users"
+  - "inactive users who came back"
+  - "win back users"
+  - "users who haven't returned"
+orchestrator_hint:
+  preferred_analysis_type: behavioral_cohort
+  suggested_time_range_days: 90
+
 match_signals:
   keywords:
     - lapsed

@@ -1,0 +1,85 @@
+id: insights.property_breakdown
+name: Event or Metric Breakdown by Property
+description: >
+  Show how any event or metric is distributed across a user property or
+  dimension — platform, city, channel, user type, plan, etc. The classic
+  "show me X by Y" Mixpanel Insights query. Answers "which segment drives
+  the most of X?" or "where is X concentrated?"
+
+intent_class: segment
+intent_confidence: high
+intent_phrases:
+  - "show me x by y"
+  - "break it down by"
+  - "split by platform"
+  - "split by channel"
+  - "by country"
+  - "by user type"
+  - "across different"
+  - "which city has the most"
+  - "which platform has"
+  - "breakdown by"
+  - "distributed across"
+
+match_signals:
+  keywords:
+    - breakdown
+    - by platform
+    - by channel
+    - by city
+    - by country
+    - by type
+    - by segment
+    - split by
+    - distributed
+    - distribution
+    - across
+  anti_keywords:
+    - funnel
+    - retention
+    - trend over time
+
+orchestrator_hint:
+  preferred_analysis_type: segment
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
+tool_controls:
+  allowed_analysis_types:
+    - segment
+    - metric
+
+investigations:
+  - sub_question: >
+      Which segments (platform, geography, user type, or acquisition channel)
+      account for the largest share of this event or metric?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      Concentration analysis reveals whether a metric is broadly distributed
+      or driven by one segment — informing where to invest or fix.
+    priority: 1
+
+  - sub_question: >
+      Has the segment mix shifted over the last 4-8 weeks — is one segment
+      growing as a share of the total while others shrink?
+    analysis_hint: segment
+    rationale: >
+      Mix shift can inflate or deflate aggregates. A rising share of a
+      high-value segment can make flat numbers look better than they are.
+    priority: 2
+
+  - sub_question: >
+      Are there any outlier segments with significantly above or below
+      average rates that warrant specific investigation?
+    analysis_hint: segment
+    rationale: >
+      Outliers surface actionable insights — a segment that overperforms
+      can be scaled; one that underperforms signals a specific problem.
+    priority: 3
+
+narrative_requirements:
+  - "Name the top 3 segments by volume and their share of the total"
+  - "Identify the fastest-growing segment in share terms"
+  - "Flag any segment with a strikingly different rate vs the average"
+  - "State whether the distribution is concentrating or diversifying over time"

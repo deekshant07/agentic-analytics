@@ -417,15 +417,35 @@ def build_story_arc(
     if qo.analysis_type == "metric" and ("activation" in _mid or "pct_users" in _mid):
         from core.pipeline.activation_window import effective_activation_window_days
         _act_win = effective_activation_window_days(qo)
-        framing = (
-            f"FRAME: **Activation / conversion rate ({_act_win}-day conversion window)** — "
-            f"values are percentages (0–100). "
-            f"ALWAYS format the rate as X% (with the percent symbol). "
-            f"ALWAYS state the {_act_win}-day conversion window explicitly in the narrative "
-            f"(e.g. 'within {_act_win} days of onboarding/signup'). "
-            f"ALWAYS state the lookback period (how many cohort months/days are included). "
-            f"Do NOT describe this metric as a raw count."
-        )
+        _act_win_raw = getattr(qo, "activation_window_days", None)
+        _is_multi_window = not _act_win_raw or int(_act_win_raw) == 0
+        _gran = (getattr(qo, "time_granularity", "day") or "day").lower()
+        if _is_multi_window:
+            framing = (
+                f"FRAME: **Activation rate — multi-window cohort view** — "
+                f"each row is a cohort {_gran}; columns show 1d/7d/14d/30d conversion rates. "
+                f"Values are percentages (0–100). ALWAYS format rates as X%. "
+                f"**CRITICAL: recent cohorts are immature** — a cohort from last week has "
+                f"not had 30 days to convert, so its 30d rate is artificially low and NOT "
+                f"evidence of a trend decline. "
+                f"ALWAYS note which windows are still open for the most recent cohorts. "
+                f"NEVER describe declining rates in recent cohorts as a crisis or trend "
+                f"without explicitly stating those cohorts are still maturing. "
+                f"For trend analysis, compare only cohorts where the window has fully elapsed."
+            )
+        else:
+            framing = (
+                f"FRAME: **Activation / conversion rate ({_act_win}-day conversion window)** — "
+                f"values are percentages (0–100). "
+                f"ALWAYS format the rate as X% (with the percent symbol). "
+                f"ALWAYS state the {_act_win}-day conversion window explicitly in the narrative "
+                f"(e.g. 'within {_act_win} days of onboarding/signup'). "
+                f"ALWAYS state the lookback period (how many cohort {_gran}s are included). "
+                f"**Recent cohorts may be immature** — the {_act_win}-day window may not have "
+                f"elapsed for the most recent {_gran}s; do not cite low rates there as a decline "
+                f"without noting the window is still open. "
+                f"Do NOT describe this metric as a raw count."
+            )
     elif qo.analysis_type == "behavioral_cohort":
         framing = (
             "FRAME: **Behavioral anti-cohort** — each period counts users who did the primary event "
@@ -439,30 +459,57 @@ def build_story_arc(
         inv_names = [getattr(i, "name", "") for i in (plan or [])]
         gran = (getattr(qo, "time_granularity", None) or "day").lower()
         bd = str(getattr(qo, "breakdown", None) or "").strip()
+        # Compute exact immature-cohort cutoff so LLM can't guess wrong
+        from datetime import date as _date, timedelta as _td
+        import calendar as _cal
+        _today = _date.today()
+        _lc = _today - _td(days=win)
+        _lcy, _lcm = _lc.year, _lc.month
+        if _cal.monthrange(_lcy, _lcm)[1] <= _lc.day:
+            _mature_thru = f"{_lcy}-{_lcm:02d}"
+        elif _lcm == 1:
+            _mature_thru = f"{_lcy - 1}-12"
+        else:
+            _mature_thru = f"{_lcy}-{_lcm - 1:02d}"
+        _immature_note = (
+            f" **IMMATURE COHORTS — CRITICAL**: as of {_today.strftime('%Y-%m-%d')}, "
+            f"only cohort months through **{_mature_thru}** have a complete D{win} window. "
+            f"Any cohort month after {_mature_thru} is still collecting returns — its "
+            f"retention_pct will be 0% or artificially low and MUST NOT be compared to "
+            f"mature cohorts or cited as a trend signal."
+        )
         if bd and gran == "month":
             framing = (
-                f"FRAME: **Month-over-month {win}-day retention by {bd.replace('_', ' ')}** — "
+                f"FRAME: **Month-over-month D{win} retention by {bd.replace('_', ' ')}** — "
                 f"each row is cohort month × {bd}; **retention_pct** is the share who returned "
                 f"in the **first {win} days** (dimension taken from each user's first event). "
-                f"Do NOT describe user counts as retention — only **retention_pct**. "
-                f"**Recent cohort months may be immature** — do not call low rates a crisis "
-                f"without noting the {win}-day window has not finished."
+                f"Open your response by stating this is D{win} retention data. "
+                f"Do NOT describe user counts as retention — only **retention_pct**."
+                f"{_immature_note}"
+            )
+        elif bd:
+            framing = (
+                f"FRAME: **D{win} retention by {bd.replace('_', ' ')} (first {win} days)** — "
+                f"each row is cohort week × {bd}; **retention_pct** is the share who returned "
+                f"in the **first {win} days** after cohort entry. "
+                f"Open your response by stating this is D{win} (first {win} days) retention data. "
+                f"Do NOT describe user counts as retention — only **retention_pct**."
             )
         elif gran == "month":
             framing = (
-                f"FRAME: **Month-over-month {win}-day retention** — each row is one cohort month; "
+                f"FRAME: **Month-over-month D{win} retention** — each row is one cohort month; "
                 f"**retention_pct** = share who returned in the **first {win} days** after that "
                 f"month's cohort entry. This is NOT an m1/m2/m3 period matrix. "
-                f"**Recent calendar months may be immature** (the {win}-day window has not "
-                f"finished) — never describe low or 0% rates there as a product crisis without "
-                f"saying the cohort is still maturing."
+                f"Open your response by stating this is D{win} retention data."
+                f"{_immature_note}"
             )
         else:
             framing = (
-                f"FRAME: **{win}-day retention (first {win} days)** — retention_pct is the share "
+                f"FRAME: **D{win} retention (first {win} days)** — retention_pct is the share "
                 f"of cohort users who returned at least once in the **first {win} days** after "
-                f"cohort entry (not days {win}–{win * 2}). Do NOT mention other windows "
-                f"unless retention_survival_curve appears in the investigation list below."
+                f"cohort entry (not days {win}–{win * 2}). "
+                f"Open your response by stating this is D{win} retention data. "
+                f"Do NOT mention other windows unless retention_survival_curve appears in the investigation list below."
             )
         if "retention_survival_curve" not in inv_names:
             framing += " Survival/multi-window data was not run — never reference other day windows."

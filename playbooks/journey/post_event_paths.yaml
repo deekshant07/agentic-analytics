@@ -1,0 +1,82 @@
+id: journey.post_event_paths
+name: Post-Event User Path / Flow Analysis
+description: >
+  Discover what users do AFTER a specific event — the natural next steps,
+  branch points, and dead ends in the user journey. The Mixpanel Flows /
+  Amplitude Pathfinder equivalent. Answers "what do users do after X?" and
+  exposes unexpected exit paths or strong next-step patterns.
+
+intent_class: journey
+intent_confidence: high
+intent_phrases:
+  - "what do users do after"
+  - "next steps after"
+  - "path after"
+  - "flow after"
+  - "what happens after"
+  - "where do users go after"
+  - "user journey after"
+  - "after completing"
+  - "post event paths"
+
+match_signals:
+  keywords:
+    - after
+    - next step
+    - user journey
+    - user path
+    - flow
+    - paths
+    - what happens after
+    - where do users go
+  anti_keywords:
+    - funnel
+    - before
+    - prior to
+    - churn
+
+orchestrator_hint:
+  preferred_analysis_type: journey
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
+tool_controls:
+  allowed_analysis_types:
+    - journey
+    - funnel
+
+investigations:
+  - sub_question: >
+      What are the top 5 next events users perform immediately after the
+      triggering event — and what share of users takes each path?
+    analysis_hint: journey
+    event_hint: next event after trigger
+    rationale: >
+      First-hop paths reveal the intended vs actual user flow. If users
+      are going somewhere unexpected, it signals UX confusion or an unmet need.
+    priority: 1
+
+  - sub_question: >
+      What percentage of users who performed the trigger event exit (no further
+      recorded action) within the session — and does this vary by platform?
+    analysis_hint: segment
+    breakdown_hint: platform
+    rationale: >
+      High exit rate after a specific event signals it is a dead end — either
+      a success state (task complete) or a frustration point.
+    priority: 2
+
+  - sub_question: >
+      Of users who continued past the trigger event, how many reached the
+      desired downstream goal within 7 days?
+    analysis_hint: behavioral_cohort
+    rationale: >
+      Downstream conversion from a journey event connects exploratory path
+      analysis to outcome metrics — preventing activity-for-activity's-sake.
+    priority: 3
+
+narrative_requirements:
+  - "List the top 3 next events by frequency with their share of users"
+  - "State the exit rate immediately after the trigger event"
+  - "Flag any unexpected path that suggests user confusion"
+  - "Connect the path findings to a downstream outcome (conversion, retention)"

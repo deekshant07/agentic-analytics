@@ -88,6 +88,9 @@ class QueryObject:
     # Source tag: "explicit" when user said "D7", "14-day retention", "24hr retention".
     # "default" when no window stated — compiler uses catalog default or scale rule.
     retention_window_days_source: str = "default"
+    # Lower bound for the retention window in days (inclusive). None = 0 (cohort start).
+    # Set when user asks "week 4 retention" (from=22) or "days 14–21 retention".
+    retention_window_from: Optional[int] = None
 
     # --- activation window ---
     # Days after the cohort event within which the conversion must happen.

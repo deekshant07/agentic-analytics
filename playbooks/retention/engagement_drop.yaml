@@ -5,6 +5,20 @@ description: >
   feature interactions, or any measure of how actively users use the product.
   Works for any product with an engagement/activity signal.
 
+intent_class: metric
+intent_confidence: high
+intent_phrases:
+  - "engagement is dropping"
+  - "dau is declining"
+  - "why did dau drop"
+  - "active users declining"
+  - "engagement fell"
+  - "sessions dropping"
+orchestrator_hint:
+  preferred_analysis_type: metric
+  suggested_time_range_days: 30
+  suggested_time_granularity: week
+
 match_signals:
   keywords:
     - engagement

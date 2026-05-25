@@ -282,8 +282,7 @@ def refine_chips_to_json(chips: list[tuple[str, str]]) -> list[dict[str, str]]:
 
 
 def render_refine_chips(chips: list[tuple[str, str]], *, key_prefix: str) -> None:
-    if not chips:
-        return
+    return  # hidden temporarily
     st.markdown(
         '<div style="font-size:0.72rem;font-weight:600;color:#64748b;'
         'text-transform:uppercase;letter-spacing:0.06em;margin:0.75rem 0 0.4rem">'

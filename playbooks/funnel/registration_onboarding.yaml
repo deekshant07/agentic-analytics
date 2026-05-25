@@ -5,6 +5,20 @@ description: >
   flow. Works for any product — app, web, fintech, SaaS, e-commerce, etc.
   The LLM maps these investigation angles to the actual onboarding events in the catalog.
 
+intent_class: funnel
+intent_confidence: high
+intent_phrases:
+  - "onboarding funnel"
+  - "signup funnel"
+  - "registration drop off"
+  - "where do users drop during onboarding"
+  - "users not completing signup"
+  - "onboarding drop"
+orchestrator_hint:
+  preferred_analysis_type: funnel
+  event_role: trigger_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - onboarding

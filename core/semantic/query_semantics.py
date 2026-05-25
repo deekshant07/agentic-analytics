@@ -68,6 +68,7 @@ class ResolvedQuerySemantics:
     maturity_window_days: Optional[int] = None
     narration_frame: Optional[str] = None
     extra: dict[str, Any] = field(default_factory=dict)
+    preferred_chart: Optional[str] = None
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
@@ -124,10 +125,18 @@ def resolve_query_semantics(qo: QueryObject) -> ResolvedQuerySemantics:
         frame = ret.narration_frame
         bd = str(getattr(qo, "breakdown", None) or "").strip()
         if bd:
+            grain = "month" if ret.template.value in ("mom_nday",) else "week"
+            period_label = "cohort month" if grain == "month" else "cohort week"
             frame = (
-                f"Month-over-month {ret.return_window_days}-day retention by "
-                f"{bd.replace('_', ' ')} (retention_pct per cohort month × {bd})"
+                f"D{ret.return_window_days} retention by {bd.replace('_', ' ')} "
+                f"(retention_pct per {period_label} × {bd})"
             )
+        if bd:
+            preferred_chart = "retention_heatmap"
+        elif ret.template == RetentionTemplate.PERIOD_MATRIX:
+            preferred_chart = "retention_heatmap"
+        else:
+            preferred_chart = "retention_line"
         return ResolvedQuerySemantics(
             analysis_type=at,
             retention=ret,
@@ -136,6 +145,7 @@ def resolve_query_semantics(qo: QueryObject) -> ResolvedQuerySemantics:
             maturity_window_days=ret.maturity_window_days,
             narration_frame=frame,
             extra={"breakdown": bd} if bd else {},
+            preferred_chart=preferred_chart,
         )
 
     mid = (getattr(qo, "metric_id", None) or "").lower()
@@ -152,6 +162,12 @@ def resolve_query_semantics(qo: QueryObject) -> ResolvedQuerySemantics:
                 else "Activation rate by cohort month"
             ),
         )
+
+    if at == "funnel":
+        return ResolvedQuerySemantics(analysis_type=at, preferred_chart="funnel_bar")
+
+    if at == "user_lifecycle":
+        return ResolvedQuerySemantics(analysis_type=at, preferred_chart="lifecycle_stages")
 
     return ResolvedQuerySemantics(analysis_type=at)
 

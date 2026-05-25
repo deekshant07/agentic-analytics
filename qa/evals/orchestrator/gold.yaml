@@ -1,0 +1,645 @@
+# qa/gold_queries.yaml — Gold-labeled query dataset for Query Understanding eval.
+#
+# Each entry is a natural-language query + expected orchestrator output.
+# The eval scores 5 dimensions per query:
+#   intent      → analysis_type
+#   metric      → metric_id
+#   filters     → filters dict (all keys must match)
+#   time_range  → time_range_days OR date_from/date_to
+#   ambiguity   → clarify when should_clarify: true
+#
+# Add more entries to expand coverage — the eval loads this file automatically.
+# Dimension fields are all optional; unset fields are skipped in scoring.
+
+
+# ── GROUP 1: Activation rate ─────────────────────────────────────────────────
+
+- query: "what is activation rate"
+  analysis_type: metric
+  intent: scalar
+  metric_id: activation_rate
+  tags: [activation, scalar]
+
+- query: "what is UPI activation rate"
+  analysis_type: metric
+  intent: scalar
+  metric_id: activation_rate
+  filters:
+    transaction_channel: UPI
+  tags: [activation, scalar, filter]
+
+- query: "show activation rate MOM for last 6 months"
+  analysis_type: metric
+  intent: trend
+  metric_id: activation_rate
+  time_granularity: month
+  time_range_days: 180
+  tags: [activation, trend, monthly]
+
+- query: "show activation rate by platform"
+  analysis_type: segment
+  intent: breakdown
+  metric_id: activation_rate
+  breakdown: platform
+  tags: [activation, breakdown]
+
+- query: "show 48 hour UPI activation"
+  analysis_type: metric
+  intent: scalar
+  metric_id: activation_rate
+  filters:
+    transaction_channel: UPI
+  tags: [activation, filter, hours_window]
+
+- query: "show activation rate for Jan"
+  analysis_type: metric
+  intent: scalar
+  metric_id: activation_rate
+  date_from: "2026-01-01"
+  date_to: "2026-02-01"
+  tags: [activation, calendar_filter]
+
+- query: "what is Android activation rate"
+  analysis_type: metric
+  intent: scalar
+  metric_id: activation_rate
+  filters:
+    platform: android
+  tags: [activation, scalar, filter]
+
+- query: "show activation rate trend last quarter"
+  analysis_type: metric
+  intent: trend
+  metric_id: activation_rate
+  time_range_days: 90
+  tags: [activation, trend]
+
+- query: "activation rate by city"
+  analysis_type: segment
+  intent: breakdown
+  metric_id: activation_rate
+  breakdown: city
+  tags: [activation, breakdown]
+
+- query: "show activation rate for savings account users"
+  analysis_type: metric
+  intent: scalar
+  metric_id: activation_rate
+  filters:
+    account_type: savings
+  tags: [activation, filter]
+
+- query: "show activation rate for pro account users"
+  analysis_type: metric
+  metric_id: activation_rate
+  filters:
+    account_type: pro
+  tags: [activation, filter, filter_precision]
+
+- query: "show activation rate for salary account users"
+  analysis_type: metric
+  metric_id: activation_rate
+  filters:
+    account_type: salary
+  tags: [activation, filter, filter_precision]
+
+- query: "show activation rate for students"
+  analysis_type: metric
+  metric_id: activation_rate
+  filters:
+    occupation: student
+  tags: [activation, filter, filter_precision]
+
+- query: "show activation rate for iOS users in Jan"
+  analysis_type: metric
+  metric_id: activation_rate
+  filters:
+    platform: ios
+  date_from: "2026-01-01"
+  date_to: "2026-02-01"
+  tags: [activation, filter, filter_precision, calendar_filter]
+
+- query: "show overall activation rate"
+  analysis_type: metric
+  metric_id: activation_rate
+  no_filters: true
+  tags: [activation, filter_precision, no_filter]
+
+
+# ── GROUP 2: DAU / MAU / WAU ──────────────────────────────────────────────────
+
+- query: "show DAU for last month"
+  analysis_type: metric
+  intent: trend
+  metric_id: dau
+  time_range_days: 30
+  tags: [dau, trend]
+
+- query: "what is DAU"
+  analysis_type: metric
+  intent: scalar
+  metric_id: dau
+  tags: [dau, scalar]
+
+- query: "show MAU trend"
+  analysis_type: metric
+  intent: trend
+  metric_id: mau
+  time_granularity: month
+  tags: [mau, trend]
+
+- query: "DAU for Android last week"
+  analysis_type: metric
+  intent: trend
+  metric_id: dau
+  filters:
+    platform: android
+  time_range_days: 7
+  tags: [dau, filter, trend]
+
+- query: "show DAU by platform"
+  analysis_type: segment
+  intent: breakdown
+  metric_id: dau
+  breakdown: platform
+  tags: [dau, breakdown]
+
+- query: "what is DAU/MAU ratio"
+  analysis_type: metric
+  intent: scalar
+  metric_id: dau_mau_ratio
+  tags: [dau_mau_ratio, scalar]
+
+- query: "show weekly active users trend"
+  analysis_type: metric
+  intent: trend
+  metric_id: wau
+  tags: [wau, trend]
+
+- query: "DAU trend last quarter"
+  analysis_type: metric
+  intent: trend
+  metric_id: dau
+  time_range_days: 90
+  tags: [dau, trend]
+
+- query: "show DAU for web platform"
+  analysis_type: metric
+  metric_id: dau
+  filters:
+    platform: web
+  tags: [dau, filter, filter_precision]
+
+- query: "show MAU for Android users"
+  analysis_type: metric
+  metric_id: mau
+  filters:
+    platform: android
+  tags: [mau, filter, filter_precision]
+
+- query: "show DAU by city for Android users"
+  analysis_type: segment
+  metric_id: dau
+  filters:
+    platform: android
+  breakdown: city
+  tags: [dau, filter, filter_precision]
+
+- query: "show total DAU"
+  analysis_type: metric
+  metric_id: dau
+  no_filters: true
+  tags: [dau, filter_precision, no_filter]
+
+- query: "show DAU split by platform"
+  analysis_type: segment
+  metric_id: dau
+  breakdown: platform
+  no_filters: true
+  tags: [dau, filter_precision, no_filter]
+
+- query: "show MAU across all account types"
+  analysis_type: segment
+  metric_id: mau
+  breakdown: account_type
+  no_filters: true
+  tags: [mau, filter_precision, no_filter]
+
+
+# ── GROUP 3: Retention ────────────────────────────────────────────────────────
+
+- query: "show D7 retention"
+  analysis_type: retention
+  intent: scalar
+  metric_id: d7_retention
+  tags: [retention, scalar]
+
+- query: "show D30 retention"
+  analysis_type: retention
+  intent: scalar
+  metric_id: d30_retention
+  tags: [retention, scalar]
+
+- query: "share week 4 retention"
+  analysis_type: retention
+  intent: scalar
+  # Week 4 = days 22–28 (weekly window). System resolves via reference metric + window bounds.
+  # retention_window_from=22, retention_window_days=29 (exclusive upper bound).
+  tags: [retention, scalar, natural_language, week_window]
+
+- query: "show D7 retention by platform"
+  analysis_type: retention
+  intent: breakdown
+  metric_id: d7_retention
+  breakdown: platform
+  tags: [retention, breakdown]
+
+- query: "share MOM retention"
+  analysis_type: retention
+  intent: trend
+  metric_id: d7_retention
+  time_granularity: month
+  tags: [retention, trend, monthly]
+
+- query: "show D7 retention MOM for last 6 months"
+  analysis_type: retention
+  intent: trend
+  metric_id: d7_retention
+  time_granularity: month
+  time_range_days: 180
+  tags: [retention, trend, monthly]
+
+- query: "retention trend of active users"
+  analysis_type: retention
+  intent: trend
+  metric_id: d7_retention
+  tags: [retention, trend, cohort_filter]
+
+- query: "share retention trend of transacting users"
+  analysis_type: retention
+  intent: trend
+  metric_id: d7_retention
+  tags: [retention, trend, cohort_filter]
+
+- query: "show D1 retention"
+  analysis_type: retention
+  intent: scalar
+  metric_id: d1_retention
+  tags: [retention, scalar]
+
+- query: "show 30 day retention by account type"
+  analysis_type: retention
+  intent: breakdown
+  metric_id: d30_retention
+  breakdown: account_type
+  tags: [retention, breakdown]
+
+- query: "show D7 retention for iOS users"
+  analysis_type: retention
+  metric_id: d7_retention
+  filters:
+    platform: ios
+  tags: [retention, filter, filter_precision]
+
+- query: "show D30 retention for Android users"
+  analysis_type: retention
+  metric_id: d30_retention
+  filters:
+    platform: android
+  tags: [retention, filter, filter_precision]
+
+- query: "show D7 retention for savings account users"
+  analysis_type: retention
+  metric_id: d7_retention
+  filters:
+    account_type: savings
+  tags: [retention, filter, filter_precision]
+
+- query: "show retention for referral users"
+  analysis_type: retention
+  metric_id: d7_retention
+  filters:
+    acquisition_cohort: referral_friend
+  tags: [retention, filter, filter_precision]
+
+- query: "show retention for all users"
+  analysis_type: retention
+  metric_id: d7_retention
+  no_filters: true
+  tags: [retention, filter_precision, no_filter]
+
+- query: "show retention trend overall"
+  analysis_type: retention
+  metric_id: d7_retention
+  no_filters: true
+  tags: [retention, filter_precision, no_filter]
+
+
+# ── GROUP 4: New users / churn ────────────────────────────────────────────────
+
+- query: "show new users for last month"
+  analysis_type: metric
+  intent: trend
+  metric_id: new_users
+  time_range_days: 30
+  tags: [new_users, trend]
+
+- query: "what is churn rate"
+  analysis_type: metric
+  intent: scalar
+  metric_id: churn_rate
+  tags: [churn, scalar]
+
+- query: "show churn rate by platform"
+  analysis_type: segment
+  intent: breakdown
+  metric_id: churn_rate
+  breakdown: platform
+  tags: [churn, breakdown]
+
+- query: "show new users by acquisition channel"
+  analysis_type: segment
+  intent: breakdown
+  metric_id: new_users
+  breakdown: acquisition_cohort
+  tags: [new_users, breakdown]
+
+- query: "new users trend last quarter"
+  analysis_type: metric
+  intent: trend
+  metric_id: new_users
+  time_range_days: 90
+  tags: [new_users, trend]
+
+- query: "show new users from Google Ads"
+  analysis_type: metric
+  metric_id: new_users
+  filters:
+    acquisition_cohort: google_ads
+  tags: [new_users, filter, filter_precision]
+
+- query: "show new users from Facebook Ads"
+  analysis_type: metric
+  metric_id: new_users
+  filters:
+    acquisition_cohort: facebook_ads
+  tags: [new_users, filter, filter_precision]
+
+- query: "show churn rate for Android users"
+  analysis_type: metric
+  metric_id: churn_rate
+  filters:
+    platform: android
+  tags: [churn, filter, filter_precision]
+
+- query: "show total new users this quarter"
+  analysis_type: metric
+  metric_id: new_users
+  no_filters: true
+  time_range_days: 90
+  tags: [new_users, filter_precision, no_filter]
+
+- query: "show overall churn rate"
+  analysis_type: metric
+  metric_id: churn_rate
+  no_filters: true
+  tags: [churn, filter_precision, no_filter]
+
+
+# ── GROUP 5: Segment / breakdown ──────────────────────────────────────────────
+
+- query: "show transacting users by platform for Jan"
+  analysis_type: segment
+  intent: breakdown
+  event: transaction_reconciled
+  breakdown: platform
+  date_from: "2026-01-01"
+  date_to: "2026-02-01"
+  tags: [segment, breakdown, calendar_filter]
+
+- query: "show transacting users by city"
+  analysis_type: segment
+  intent: breakdown
+  event: transaction_reconciled
+  breakdown: city
+  tags: [segment, breakdown]
+
+- query: "show onboarding completions by platform"
+  analysis_type: segment
+  intent: breakdown
+  event: onboarding_completed
+  breakdown: platform
+  tags: [segment, breakdown]
+
+- query: "show active users by account type"
+  analysis_type: segment
+  intent: breakdown
+  breakdown: account_type
+  tags: [segment, breakdown]
+
+- query: "show transacting users by channel"
+  analysis_type: segment
+  intent: breakdown
+  event: transaction_reconciled
+  breakdown: transaction_channel
+  tags: [segment, breakdown]
+
+
+# ── GROUP 6: Funnel ───────────────────────────────────────────────────────────
+
+- query: "show onboarding funnel"
+  analysis_type: funnel
+  intent: funnel
+  event: onboarding_completed
+  tags: [funnel]
+
+- query: "show onboarding funnel for Jan"
+  analysis_type: funnel
+  intent: funnel
+  event: onboarding_completed
+  date_from: "2026-01-01"
+  date_to: "2026-02-01"
+  tags: [funnel, calendar_filter]
+
+- query: "what does the activation funnel look like"
+  analysis_type: funnel
+  intent: funnel
+  tags: [funnel]
+
+- query: "show payment funnel last month"
+  analysis_type: funnel
+  intent: funnel
+  time_range_days: 30
+  tags: [funnel]
+
+- query: "show complete onboarding funnel"
+  analysis_type: funnel
+  no_filters: true
+  tags: [funnel, filter_precision, no_filter]
+
+
+# ── GROUP 7: Behavioral cohort ────────────────────────────────────────────────
+
+- query: "How many users did onboarding and UPI transactions in Feb"
+  analysis_type: behavioral_cohort
+  intent: cohort_overlap
+  event: onboarding_completed
+  event_b: transaction_reconciled
+  filters:
+    transaction_channel: UPI
+  date_from: "2026-02-01"
+  date_to: "2026-03-01"
+  tags: [behavioral_cohort, filter]
+
+- query: "How many users did onboarding and no UPI transactions in Feb"
+  analysis_type: behavioral_cohort
+  intent: cohort_anti
+  event: onboarding_completed
+  event_b: transaction_reconciled
+  metric_variant: anti_cohort
+  filters:
+    transaction_channel: UPI
+  date_from: "2026-02-01"
+  date_to: "2026-03-01"
+  tags: [behavioral_cohort, anti_cohort]
+
+- query: "users who onboarded but did not transact last month"
+  analysis_type: behavioral_cohort
+  intent: cohort_anti
+  event: onboarding_completed
+  event_b: transaction_reconciled
+  metric_variant: anti_cohort
+  time_range_days: 30
+  tags: [behavioral_cohort, anti_cohort]
+
+- query: "how many users completed KYC and made a UPI transaction"
+  analysis_type: behavioral_cohort
+  intent: cohort_overlap
+  filters:
+    transaction_channel: UPI
+  tags: [behavioral_cohort]
+
+- query: "overlap between onboarded and transacting users last quarter"
+  analysis_type: behavioral_cohort
+  intent: cohort_overlap
+  event: onboarding_completed
+  event_b: transaction_reconciled
+  time_range_days: 90
+  tags: [behavioral_cohort]
+
+
+# ── GROUP 8: Diagnose / root cause ────────────────────────────────────────────
+
+- query: "why did transacting users drop last month"
+  analysis_type: diagnose
+  intent: root_cause
+  time_range_days: 60
+  tags: [diagnose]
+
+- query: "why did DAU spike last week"
+  analysis_type: diagnose
+  intent: root_cause
+  time_range_days: 14
+  tags: [diagnose]
+
+- query: "what caused the activation rate drop in Jan"
+  analysis_type: diagnose
+  intent: root_cause
+  time_range_days: 60
+  diagnose_period_end: "2026-01-31"
+  tags: [diagnose, calendar_filter]
+
+- query: "investigate the retention decline"
+  analysis_type: diagnose
+  intent: root_cause
+  tags: [diagnose]
+
+- query: "why is churn increasing"
+  analysis_type: diagnose
+  intent: root_cause
+  tags: [diagnose]
+
+
+# ── GROUP 9: User lifecycle / stickiness / journey / time-between ─────────────
+
+- query: "show user lifecycle stages"
+  analysis_type: user_lifecycle
+  intent: lifecycle
+  tags: [user_lifecycle]
+
+- query: "show user lifecycle by platform"
+  analysis_type: user_lifecycle
+  intent: lifecycle
+  breakdown: platform
+  tags: [user_lifecycle, breakdown]
+
+- query: "how sticky is our product"
+  analysis_type: stickiness
+  intent: stickiness
+  tags: [stickiness]
+
+- query: "show user journey"
+  analysis_type: journey
+  intent: journey
+  tags: [journey]
+
+- query: "time between onboarding completed and transaction reconciled"
+  analysis_type: time_between
+  intent: time_between
+  event: onboarding_completed
+  event_b: transaction_reconciled
+  tags: [time_between]
+
+
+# ── GROUP 10: Ambiguous — should return clarify ───────────────────────────────
+
+- query: "show me users"
+  should_clarify: true
+  tags: [adversarial, ambiguous]
+
+- query: "what happened last month"
+  should_clarify: true
+  tags: [adversarial, underspecified]
+
+- query: "show metrics"
+  should_clarify: true
+  tags: [adversarial, ambiguous]
+
+- query: "how many users"
+  should_clarify: true
+  tags: [adversarial, ambiguous]
+
+- query: "compare performance"
+  should_clarify: true
+  tags: [adversarial, ambiguous]
+
+
+# ── GROUP 11: Adversarial edge cases ──────────────────────────────────────────
+
+- query: "shw dau lst week"
+  analysis_type: metric
+  intent: trend
+  metric_id: dau
+  time_range_days: 7
+  tags: [adversarial, typo]
+
+- query: "onboarding completion rate for non-referral users in Jan"
+  analysis_type: metric
+  intent: scalar
+  date_from: "2026-01-01"
+  date_to: "2026-02-01"
+  tags: [adversarial, negation_filter]
+
+- query: "last quarter DAU trend"
+  analysis_type: metric
+  intent: trend
+  metric_id: dau
+  time_range_days: 90
+  tags: [adversarial, relative_time]
+
+- query: "show iOS and Android DAU split"
+  analysis_type: segment
+  intent: breakdown
+  metric_id: dau
+  breakdown: platform
+  tags: [adversarial, multi_filter]

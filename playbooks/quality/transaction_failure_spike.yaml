@@ -5,6 +5,20 @@ description: >
   Works for fintech payments, e-commerce checkouts, SaaS billing, or any
   success-rate metric. The LLM maps these angles to catalog status/failure columns.
 
+intent_class: metric
+intent_confidence: high
+intent_phrases:
+  - "transaction failure spike"
+  - "payment failure rate"
+  - "why are transactions failing"
+  - "error rate increasing"
+  - "failure rate jumped"
+  - "payment errors"
+orchestrator_hint:
+  preferred_analysis_type: metric
+  suggested_time_range_days: 14
+  suggested_time_granularity: day
+
 match_signals:
   keywords:
     - transaction failure

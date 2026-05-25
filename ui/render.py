@@ -348,7 +348,8 @@ def _render_investigation(
                     unsafe_allow_html=True,
                 )
             ck = chart_key or f"inv_{inv_name or 'chart'}_{id(inv)}"
-            if not display_evidence_chart(df, inv_name, key=ck):
+            _qo_sem = getattr(inv_qo, "_query_semantics", None) if inv_qo is not None else None
+            if not display_evidence_chart(df, inv_name, key=ck, qo_semantics=_qo_sem):
                 st.dataframe(
                     format_rate_columns_for_display(df, pres),
                     use_container_width=True,
@@ -558,6 +559,11 @@ def _render_analyst_report(
       3. "Investigate further" chips
       4. SQL queries (collapsible)
     """
+    if getattr(report, "data_quality_blocked", False):
+        st.warning(report.narrative or "Data quality issue detected — results may not be reliable.")
+        assistant_msg["content"] = report.narrative or report.executive_summary
+        return
+
     valid = [inv for inv in report.investigations if not inv.error and not inv.df.empty]
     if not valid:
         st.warning("Investigations returned no data.")

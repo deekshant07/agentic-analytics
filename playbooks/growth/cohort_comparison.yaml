@@ -6,6 +6,19 @@ description: >
   Answers "are newer cohorts better or worse than older ones?" and "which
   user group performs best?"
 
+intent_class: same_month_anchor
+intent_confidence: high
+intent_phrases:
+  - "are newer cohorts better"
+  - "cohort comparison"
+  - "how do cohorts compare"
+  - "cohort quality over time"
+  - "january cohort vs february cohort"
+orchestrator_hint:
+  preferred_analysis_type: same_month_anchor
+  suggested_time_range_days: 90
+  suggested_time_granularity: month
+
 match_signals:
   keywords:
     - cohort

@@ -722,6 +722,13 @@ if prompt:
                 )
                 sql, metric_name, clarify_msg, qo = "__diagnose__", None, None, _dqo
             else:
+                # ── Pre-match playbook before orchestration so hint reaches the LLM ─
+                _matched_playbook = PLAYBOOK_REGISTRY.find(prompt)
+                _playbook_hint = (
+                    _matched_playbook.to_orchestrator_hint_block()
+                    if _matched_playbook else None
+                )
+
                 show_step("🔍", "Understanding your question...")
                 try:
                     if should_generate_hypotheses(prompt):
@@ -736,11 +743,23 @@ if prompt:
                         hypothesis_doc = None
                 except Exception:
                     hypothesis_doc = None
-                sql, metric_name, clarify_msg, qo = get_sql(prompt, hypothesis_doc=hypothesis_doc)
+                sql, metric_name, clarify_msg, qo = get_sql(
+                    prompt,
+                    hypothesis_doc=hypothesis_doc,
+                    playbook_hint=_playbook_hint,
+                )
+
+            # ── Post-orchestration playbook re-confirmation ───────────────────
+            # find() ran pre-orchestration for the LLM hint; now that analysis_type
+            # is resolved, re-select with confirm() so the binding below always gets
+            # a playbook whose intent_class actually matches what the orchestrator decided.
+            if qo and not drill_ctx:
+                at_resolved = (getattr(qo, "analysis_type", "") or "").strip().lower()
+                if at_resolved and at_resolved not in ("clarify", "out_of_scope"):
+                    _matched_playbook = PLAYBOOK_REGISTRY.confirm(prompt, at_resolved)
 
             # ── Cookbook / Recipe context binding (playbook-backed, backward compatible) ─
             if qo and not drill_ctx:
-                _matched_playbook = PLAYBOOK_REGISTRY.find(prompt)
                 if _matched_playbook:
                     setattr(qo, "_active_recipe_validation_rules", _matched_playbook.validation_rules or {})
                     setattr(qo, "_active_recipe_tool_controls", _matched_playbook.tool_controls or {})
@@ -779,11 +798,18 @@ if prompt:
                                 "I wasn’t confident enough to run that as-is.\n\n" + tip
                             )
                         else:
-                            clarify_msg = (
-                                f"This playbook (*{pb_label}*) is set up for: {types_txt}. "
-                                f"I interpreted this as `{at}`. "
-                                "Try rephrasing as one of those, or name the event/metric explicitly."
-                            )
+                            # confirm() should prevent reaching here; drop as safety net.
+                            _matched_playbook = None
+                            assistant_msg.pop("active_recipe", None)
+                            turn.pop("cookbook_id", None)
+                            turn.pop("recipe_id", None)
+                            turn.pop("playbook_id", None)
+                            for _attr in ("_active_recipe_id", "_active_cookbook_id",
+                                          "_active_recipe_validation_rules", "_active_recipe_tool_controls"):
+                                try:
+                                    delattr(qo, _attr)
+                                except AttributeError:
+                                    pass
 
             # ── Deep Analysis — explicit by default (predictable control flow) ─
             # With DEEP_ANALYSIS_AUTO=true, orchestrator depth can auto-enable it.

@@ -6,6 +6,20 @@ description: >
   retain best and worst, and whether differences are structural or driven by
   onboarding / product quality variations.
 
+intent_class: retention
+intent_confidence: high
+intent_phrases:
+  - "retention by platform"
+  - "retention by channel"
+  - "which segment retains best"
+  - "compare retention across"
+  - "retention breakdown by"
+orchestrator_hint:
+  preferred_analysis_type: retention
+  event_role: trigger_event
+  suggested_time_range_days: 30
+  suggested_breakdown: platform
+
 match_signals:
   keywords:
     - retention by platform

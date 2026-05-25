@@ -87,12 +87,16 @@ def extract_dimension_filters_from_question(
     q_lower = question.lower()
     found: dict[str, str] = {}
 
+    # Min 3 chars: short tokens (2-char country/state codes, etc.) produce too many
+    # false positives when they coincide with common prepositions or abbreviations.
+    _MIN_LEN = 3
+
     if catalog:
         _, hints, _ = merge_filter_vocab(catalog, sampled_values or {})
         for col, vals in hints.items():
             for val in vals:
                 vs = str(val).strip()
-                if len(vs) < 2:
+                if len(vs) < _MIN_LEN:
                     continue
                 if re.search(r"\b" + re.escape(vs.lower()) + r"\b", q_lower):
                     found[str(col)] = vs
@@ -104,7 +108,7 @@ def extract_dimension_filters_from_question(
         for col, vals in table_vals.items():
             for raw in vals or []:
                 val = str(raw).strip()
-                if len(val) < 2:
+                if len(val) < _MIN_LEN:
                     continue
                 if re.search(r"\b" + re.escape(val.lower()) + r"\b", q_lower):
                     found[str(col)] = val

@@ -5,6 +5,20 @@ description: >
   a specific feature. Works for any "aha moment" analysis — the funnel from
   account creation to the first value-delivering action.
 
+intent_class: funnel
+intent_confidence: high
+intent_phrases:
+  - "feature activation funnel"
+  - "path to first use"
+  - "aha moment funnel"
+  - "signup to first action"
+  - "activation drop off"
+  - "users who activated"
+orchestrator_hint:
+  preferred_analysis_type: funnel
+  event_role: goal_event
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - activation

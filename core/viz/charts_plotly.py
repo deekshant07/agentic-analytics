@@ -667,6 +667,145 @@ def _plotly_survival_curves(df: pd.DataFrame) -> Optional[go.Figure]:
     return _apply_base_layout(fig, title="Survival Curves (D1 / D7 / D30)", hovermode="x unified")
 
 
+def _plotly_retention_heatmap(df: pd.DataFrame) -> Optional[go.Figure]:
+    """
+    Retention heatmap: cohort period (y-axis) × breakdown dimension (x-axis) × retention_pct (color).
+    Expects columns: cohort_week|cohort_month, <dim_col>, retention_pct.
+    """
+    if "retention_pct" not in df.columns:
+        return None
+    cols = list(df.columns)
+    time_col = next((c for c in cols if "cohort" in c.lower()), None)
+    if not time_col:
+        return None
+    dim_cols = [c for c in cols if c not in (time_col, "retention_pct", "cohort_size", "retained_users")
+                and not pd.api.types.is_numeric_dtype(df[c])]
+    if not dim_cols:
+        return None
+    dim_col = dim_cols[0]
+
+    d = df[[time_col, dim_col, "retention_pct"]].copy()
+    try:
+        d[time_col] = pd.to_datetime(d[time_col], errors="coerce")
+    except Exception:
+        pass
+    d = d.dropna(subset=[time_col]).sort_values(time_col)
+    if d.empty:
+        return None
+
+    pivot = d.pivot_table(index=time_col, columns=dim_col, values="retention_pct", aggfunc="mean")
+    pivot = pivot.sort_index(ascending=False)
+    y_labels = [str(r)[:10] if hasattr(r, "strftime") else str(r)[:10] for r in pivot.index]
+
+    z_text = [[f"{v:.1f}%" if pd.notna(v) else "—" for v in row] for row in pivot.values.tolist()]
+
+    fig = go.Figure(go.Heatmap(
+        z=pivot.values.tolist(),
+        x=[str(c).replace("_", " ").title() for c in pivot.columns],
+        y=y_labels,
+        text=z_text,
+        texttemplate="%{text}",
+        colorscale="RdYlGn",
+        zmin=0,
+        zmax=100,
+        hovertemplate="Cohort: %{y}<br>%{x}<br>Retention: %{z:.1f}%<extra></extra>",
+        colorbar=dict(title="Retention %", titleside="right", ticksuffix="%"),
+    ))
+    time_label = "Cohort Week" if "week" in time_col.lower() else "Cohort Month"
+    fig.update_xaxes(title=dim_col.replace("_", " ").title())
+    fig.update_yaxes(title=time_label)
+    return _apply_base_layout(
+        fig,
+        title=f"Retention by {dim_col.replace('_', ' ').title()} × {time_label}",
+        hovermode="closest",
+    )
+
+
+def _plotly_cohort_retention_simple_heatmap(
+    df: pd.DataFrame, win: Optional[int] = None
+) -> Optional[go.Figure]:
+    """
+    Single-column retention heatmap for simple cohort retention (no breakdown dimension).
+    Y-axis = cohort month/week ordered newest-first, color = retention_pct.
+    Immature cohorts (retention_pct == 0 in the most-recent rows) are greyed out.
+    """
+    if "retention_pct" not in df.columns:
+        return None
+    time_col = next((c for c in df.columns if "cohort" in c.lower()), None)
+    if not time_col:
+        return None
+
+    d = df[[time_col, "retention_pct"]].copy()
+    try:
+        d[time_col] = pd.to_datetime(d[time_col], errors="coerce")
+    except Exception:
+        pass
+    d = d.dropna(subset=[time_col]).sort_values(time_col)
+    if d.empty:
+        return None
+
+    from datetime import date, timedelta
+    today = date.today()
+    _win = win or 7
+
+    def _is_immature(cohort_dt) -> bool:
+        if pd.isna(cohort_dt):
+            return False
+        try:
+            import calendar
+            y, m = cohort_dt.year, cohort_dt.month
+            last_day = date(y, m, calendar.monthrange(y, m)[1])
+            return (last_day + timedelta(days=_win)) > today
+        except Exception:
+            return False
+
+    d["_immature"] = d[time_col].apply(_is_immature)
+
+    y_labels = []
+    for r in d[time_col]:
+        try:
+            y_labels.append(r.strftime("%b %Y"))
+        except Exception:
+            y_labels.append(str(r)[:10])
+
+    z_vals = d["retention_pct"].tolist()
+    z_text = []
+    for v, imm in zip(z_vals, d["_immature"]):
+        if imm:
+            z_text.append("pending")
+        elif pd.isna(v):
+            z_text.append("—")
+        else:
+            z_text.append(f"{v:.1f}%")
+
+    # Grey out immature cohorts by masking their z value for colour
+    z_display = [None if imm else v for v, imm in zip(z_vals, d["_immature"])]
+
+    col_label = f"D{_win} Retention" if win else "Retention"
+    fig = go.Figure(go.Heatmap(
+        z=[[v] for v in z_display],
+        x=[col_label],
+        y=y_labels,
+        text=[[t] for t in z_text],
+        texttemplate="%{text}",
+        colorscale="RdYlGn",
+        zmin=0,
+        zmax=100,
+        hovertemplate="Cohort: %{y}<br>Retention: %{text}<extra></extra>",
+        colorbar=dict(title="Retention %", titleside="right", ticksuffix="%"),
+    ))
+
+    time_label = "Week" if "week" in time_col.lower() else "Month"
+    fig.update_yaxes(title=f"Cohort {time_label}", autorange="reversed")
+    fig.update_xaxes(title="")
+    title_win = f"D{_win} " if win else ""
+    return _apply_base_layout(
+        fig,
+        title=f"{title_win}Retention by Cohort {time_label}",
+        hovermode="closest",
+    )
+
+
 def _plotly_xyz_heatmap(df: pd.DataFrame) -> Optional[go.Figure]:
     """
     XYZ matrix heatmap: cohort_month (y-axis) × dimension (x-axis) × users (color).
@@ -831,11 +970,35 @@ def _plotly_funnel_drilldown(df: pd.DataFrame) -> Optional[go.Figure]:
     )
 
 
+def _route_by_semantic_chart_type(
+    chart_type: str, df: pd.DataFrame, qo_semantics=None
+) -> Optional[go.Figure]:
+    """Dispatch to a specific chart builder from a preferred_chart token."""
+    if chart_type == "retention_heatmap":
+        fig = _plotly_retention_heatmap(df)
+        if fig is not None:
+            return fig
+        _win = None
+        if qo_semantics is not None:
+            _ret = getattr(getattr(qo_semantics, "retention", None), "return_window_days", None)
+            _win = int(_ret) if _ret else None
+        return _plotly_cohort_retention_simple_heatmap(df, win=_win)
+    if chart_type == "retention_line":
+        # Fall through to _plotly_auto which handles retention_pct time series
+        return None
+    if chart_type == "funnel_bar":
+        return _plotly_funnel(df)
+    if chart_type == "lifecycle_stages":
+        return _plotly_lifecycle_stages(df)
+    return None
+
+
 def evidence_chart_plotly(
     inv_name: str,
     df: pd.DataFrame,
     *,
     chart_title: str | None = None,
+    qo_semantics=None,
 ) -> Optional[go.Figure]:
     """
     Build a Plotly figure for query / investigation evidence.
@@ -843,6 +1006,14 @@ def evidence_chart_plotly(
     """
     if df is None or df.empty or len(df.columns) < 2:
         return None
+
+    # Semantics-driven chart routing takes priority over column-name heuristics
+    if qo_semantics is not None:
+        pref = getattr(qo_semantics, "preferred_chart", None)
+        if pref:
+            fig = _route_by_semantic_chart_type(pref, df, qo_semantics=qo_semantics)
+            if fig is not None:
+                return fig
 
     name = (inv_name or "").lower()
     if name == "retention_matrix":
@@ -862,6 +1033,20 @@ def evidence_chart_plotly(
         c in df.columns for c in ("d1_retention_pct", "d7_retention_pct")
     ):
         fig = _plotly_survival_curves(df)
+        if fig is not None:
+            return fig
+
+    # Retention heatmap: cohort_week/month × breakdown dimension × retention_pct
+    if "retention_pct" in df.columns and any("cohort" in c.lower() for c in df.columns):
+        fig = _plotly_retention_heatmap(df)
+        if fig is not None:
+            return fig
+        # No breakdown — fall back to single-column cohort heatmap
+        _win = None
+        if qo_semantics is not None:
+            _ret = getattr(getattr(qo_semantics, "retention", None), "return_window_days", None)
+            _win = int(_ret) if _ret else None
+        fig = _plotly_cohort_retention_simple_heatmap(df, win=_win)
         if fig is not None:
             return fig
 

@@ -6,10 +6,29 @@ hydration so explicit user intent (e.g. "14 day retention") wins over metric def
 """
 from __future__ import annotations
 
+import logging
 from typing import Optional
 
 from core.semantic.query_semantics import attach_query_semantics
 from core.sql.query_object import QueryObject
+
+_log = logging.getLogger(__name__)
+
+# Fixups are allowed to change analysis_type only FROM these trivial states.
+_FIXUP_MAY_CHANGE_FROM = frozenset({"clarify", "out_of_scope", None})
+# Fields that should never be changed by fixups once the orchestrator set them.
+_PROTECTED_FIELDS = ("analysis_type", "breakdown")
+
+
+def _check_invariants(pre: dict, qo: QueryObject) -> None:
+    """Warn when a fixup changed a field the orchestrator had already set."""
+    for field in _PROTECTED_FIELDS:
+        before = pre.get(field)
+        after = getattr(qo, field, None)
+        if before not in _FIXUP_MAY_CHANGE_FROM and before != after:
+            _log.warning(
+                "QO_INVARIANT fixup changed %s: %r → %r", field, before, after
+            )
 
 
 def _snap_qo(qo: QueryObject) -> dict:
@@ -59,6 +78,7 @@ def normalize_query_object(
         _apply_same_query_followup,
         _apply_time_intent_overrides,
         _hydrate_primary_event_for_action_types,
+        _clear_unasked_retention_breakdown,
         _hydrate_retention_event_from_metric,
         _inherit_metric_status_and_filters,
         _materialize_metric_status_into_filters_for_equality_cohorts,
@@ -71,6 +91,7 @@ def normalize_query_object(
     if not qo or qo.analysis_type in ("clarify", "out_of_scope"):
         return qo
 
+    pre_fixup = _snap_qo(qo)
     deltas: list[dict] = []
 
     def _run(name: str, fn, *args, **kwargs) -> None:
@@ -83,6 +104,7 @@ def normalize_query_object(
 
     _run("time_intent_overrides",       _apply_time_intent_overrides,       qo, history)
     _run("hydrate_retention_event",     _hydrate_retention_event_from_metric, qo, catalog)
+    _run("clear_retention_breakdown",   _clear_unasked_retention_breakdown,   qo)
     _run("hydrate_action_event",        _hydrate_primary_event_for_action_types, qo, catalog)
     _run("metric_variant_overrides",    _apply_metric_variant_overrides,    qo, catalog)
     _run("sanitize_breakdown",          _sanitize_invalid_breakdown,         qo, sampled_values)
@@ -100,6 +122,7 @@ def normalize_query_object(
     _run("materialize_status_filters",  _materialize_metric_status_into_filters_for_equality_cohorts, qo)
     _run("strip_calendar_filter",       _strip_redundant_calendar_day_filter, qo)
 
+    _check_invariants(pre_fixup, qo)
     qo._fixup_deltas = deltas  # type: ignore[attr-defined]
     attach_query_semantics(qo)
     return qo

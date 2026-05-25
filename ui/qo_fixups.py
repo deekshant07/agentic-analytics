@@ -9,6 +9,7 @@ Typical call order in pipeline.get_sql():
     _maybe_resolve_clarify_as_followup(qo, history, catalog, prompt)
     _apply_time_intent_overrides(qo, history)
     _hydrate_retention_event_from_metric(qo, catalog)
+    _clear_unasked_retention_breakdown(qo)
     _hydrate_primary_event_for_action_types(qo, catalog)
     _apply_metric_variant_overrides(qo, catalog)
     _sanitize_invalid_breakdown(qo, sampled_values)
@@ -21,6 +22,7 @@ Typical call order in pipeline.get_sql():
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from typing import Optional
 
 from core.pipeline.activation_window import (
@@ -186,6 +188,24 @@ def _hydrate_retention_event_from_metric(
         chosen = retention_metrics[0]
 
     _apply_retention_metric_to_qo(qo, chosen)
+
+
+# ── 2b. Strip LLM-inferred default breakdown for retention ────────────────────
+
+def _clear_unasked_retention_breakdown(qo: QueryObject) -> None:
+    """
+    If the LLM set breakdown but marked it breakdown_source="default", the user
+    never asked for a dimension split — clear it so retention shows an aggregate
+    view rather than always defaulting to platform.
+
+    Explicit breakdowns (breakdown_source="explicit") are preserved.
+    """
+    if not qo or qo.analysis_type != "retention":
+        return
+    if getattr(qo, "breakdown_source", "default") != "default":
+        return
+    if getattr(qo, "breakdown", None) is not None:
+        qo.breakdown = None
 
 
 # ── 3. Stickiness / lifecycle primary-event hydration ────────────────────────
@@ -442,6 +462,12 @@ _MOM_TREND_RE = re.compile(
 
 def _empty_qo_slot(val) -> bool:
     return val is None or val == "" or val == [] or val == {}
+
+
+def _fill(qo: QueryObject, field: str, value) -> None:
+    """Set a QO field only if it is currently empty. Never overwrite orchestrator intent."""
+    if _empty_qo_slot(getattr(qo, field, None)):
+        setattr(qo, field, value)
 
 
 def _usable_history_turn(turn: dict) -> bool:
@@ -741,10 +767,13 @@ def _apply_display_modifier_followup(
     if ce_name:
         _bind_custom_event_on_qo(qo, ce_name)
     elif pq.get("metric_id"):
-        qo.metric_id = pq["metric_id"]
+        _fill(qo, "metric_id", pq["metric_id"])
 
     if has_mom or pq.get("time_granularity") == "month":
-        qo.analysis_type = "metric"
+        # Don't override analysis types that have their own cohort compilers —
+        # retention+month → MOM_NDAY template already generates proper cohort SQL.
+        if qo.analysis_type not in ("retention", "funnel", "behavioral_cohort"):
+            qo.analysis_type = "metric"
         qo.time_granularity = "month"
         qo.breakdown = None
         if _empty_qo_slot(getattr(qo, "time_range_days", None)):
@@ -811,7 +840,11 @@ def _apply_followup_context_repair(
     if not cur_ev and prev_event:
         qo.event = prev_event
     if not cur_mid and prev_metric_id:
-        qo.metric_id = prev_metric_id
+        # Don't inherit metric_id when the current query already has an event — the
+        # event defines the metric scope and a foreign metric_id from a prior turn
+        # (e.g. d7_retention after a retention query) would corrupt compiler dispatch.
+        if not cur_ev:
+            qo.metric_id = prev_metric_id
 
     if (
         catalog
@@ -903,7 +936,7 @@ def _apply_same_month_anchor_composite_metric(
     setattr(qo, "_same_month_activity_label", name_raw)
     ev_slot = _activity_event_for_same_month_validation(sq, getattr(qo, "event_b", None))
     if ev_slot:
-        qo.event = ev_slot
+        _fill(qo, "event", ev_slot)
 
 
 _SPEND_WORDS = frozenset({"spend", "amount", "value", "revenue", "cost", "price"})
@@ -1052,14 +1085,25 @@ def _extract_clarify_context(history: Optional[list[dict]]) -> Optional[str]:
     """
     If the last assistant turn was a clarification request, return its message
     so the orchestrator can inject it as follow-up context.
+
+    Handles two dict shapes:
+      - get_qo_history() format: analysis_type under turn["qo"], message under turn["memory"]["summary"]
+      - legacy load_turns() format: analysis_type and answer as top-level keys
     """
     if not history:
         return None
     for turn in reversed(history):
         if not isinstance(turn, dict):
             continue
-        if turn.get("analysis_type") == "clarify" and turn.get("answer"):
-            return str(turn["answer"])[:400]
+        # get_qo_history() format
+        qo_dict = turn.get("qo") if isinstance(turn.get("qo"), dict) else {}
+        at = qo_dict.get("analysis_type") or turn.get("analysis_type")
+        if at != "clarify":
+            continue
+        # prefer memory summary (get_qo_history), fall back to answer (load_turns)
+        msg = (turn.get("memory") or {}).get("summary") or turn.get("answer")
+        if msg:
+            return str(msg)[:400]
     return None
 
 
@@ -1106,3 +1150,93 @@ def validate_qo_postconditions(
         )
 
     return violations
+
+
+# ── Precondition validator (runs before fixup chain, catches LLM structural errors) ──
+
+
+@dataclass
+class _PreconditionViolation:
+    field: str
+    message: str
+    auto_fix: bool = False
+
+    def describe(self) -> str:
+        return self.message
+
+
+def validate_qo_preconditions(qo: QueryObject) -> list["_PreconditionViolation"]:
+    """
+    Run immediately after orchestrate() and before normalize_query_object().
+    Returns violations that can be auto-fixed or need a single LLM retry.
+    Never raises — violations are advisory for the retry logic in pipeline.py.
+    """
+    violations: list[_PreconditionViolation] = []
+    if not qo:
+        return violations
+
+    at = getattr(qo, "analysis_type", "") or ""
+    ev = getattr(qo, "event", None)
+    bd = str(getattr(qo, "breakdown", None) or "").strip()
+    bd_src = str(getattr(qo, "breakdown_source", None) or "default").strip()
+    steps = list(getattr(qo, "funnel_steps", None) or [])
+    mid = getattr(qo, "metric_id", None)
+
+    # Retention with no event AND no metric_id
+    if at == "retention" and not ev and not mid:
+        violations.append(_PreconditionViolation(
+            field="event",
+            message="retention requires an event or metric_id — neither was set",
+            auto_fix=False,
+        ))
+
+    # Funnel with fewer than 2 steps
+    if at == "funnel" and len(steps) < 2:
+        violations.append(_PreconditionViolation(
+            field="funnel_steps",
+            message=f"funnel requires at least 2 steps, got {len(steps)}",
+            auto_fix=False,
+        ))
+
+    # Segment with no breakdown
+    if at == "segment" and not bd:
+        violations.append(_PreconditionViolation(
+            field="breakdown",
+            message="segment analysis requires a breakdown dimension",
+            auto_fix=False,
+        ))
+
+    # breakdown set but breakdown_source still default — auto-fixable by deriving it
+    if bd and bd_src == "default":
+        violations.append(_PreconditionViolation(
+            field="breakdown_source",
+            message=f"breakdown '{bd}' is set but breakdown_source is 'default' — can be derived",
+            auto_fix=True,
+        ))
+
+    return violations
+
+
+def apply_auto_fix_preconditions(qo: QueryObject, violations: list) -> list:
+    """Apply auto-fixable violations to qo in-place. Returns the non-fixable ones."""
+    needs_retry = []
+    for v in violations:
+        if v.auto_fix and v.field == "breakdown_source":
+            bd = str(getattr(qo, "breakdown", None) or "").strip()
+            if bd:
+                # Derive breakdown_source from whether it looks like a user vs event property
+                user_hints = ("platform", "device_type", "city", "country", "state", "region",
+                              "age_bucket", "occupation", "income_bucket", "acquisition_cohort",
+                              "gender", "age_group")
+                src = "user" if any(h in bd.lower() for h in user_hints) else "event"
+                try:
+                    qo.breakdown_source = src
+                except AttributeError:
+                    setattr(qo, "breakdown_source", src)
+        else:
+            needs_retry.append(v)
+    return needs_retry
+
+
+def format_precondition_violations(violations: list) -> str:
+    return "; ".join(v.describe() for v in violations)

@@ -6,6 +6,20 @@ description: >
   downstream quality. Works for any product with acquisition source tracking
   (UTM, referral, channel, campaign).
 
+intent_class: segment
+intent_confidence: high
+intent_phrases:
+  - "which channel brings best users"
+  - "channel quality"
+  - "best acquisition channel"
+  - "which channel retains best"
+  - "acquisition channel performance"
+  - "channel comparison"
+orchestrator_hint:
+  preferred_analysis_type: segment
+  suggested_breakdown: acquisition_channel
+  suggested_time_range_days: 30
+
 match_signals:
   keywords:
     - acquisition

@@ -48,6 +48,7 @@ class AnalystReport:
     beats: list = field(default_factory=list)   # NarrativeBeat list: context/tension/resolution
     confidence_label: str = ""
     hypothesis_verdict: str = ""
+    data_quality_blocked: bool = False
 
 
 # ── SQL execution ─────────────────────────────────────────────────────────────
@@ -141,8 +142,32 @@ def _auto_insight(inv: Investigation, qo: QueryObject) -> str:
                 )
 
         if at == "retention" and "retention_pct" in df.columns:
+            from datetime import date, timedelta
+            import calendar as _cal
+            win = int(getattr(qo, "retention_window_days", None) or 7)
+            time_col = next((c for c in df.columns if "cohort" in c.lower()), None)
+            if time_col:
+                d = df.copy()
+                d["_cohort_dt"] = pd.to_datetime(d[time_col], errors="coerce")
+                today = date.today()
+                def _mature(x):
+                    if pd.isna(x):
+                        return True
+                    try:
+                        y, m = x.year, x.month
+                        last_day = date(y, m, _cal.monthrange(y, m)[1])
+                        return (last_day + timedelta(days=win)) <= today
+                    except Exception:
+                        return True
+                d["_mature"] = d["_cohort_dt"].apply(_mature)
+                mature_df = d[d["_mature"]]
+                n_immature = int((~d["_mature"]).sum())
+                if not mature_df.empty:
+                    avg_ret = mature_df["retention_pct"].mean()
+                    note = f"; {n_immature} cohort(s) pending — window not yet complete" if n_immature else ""
+                    return f"Average D{win} retention (mature cohorts): {avg_ret:.1f}%{note}."
             avg_ret = df["retention_pct"].mean()
-            return f"Average D{qo.retention_window_days} retention: {avg_ret:.1f}%."
+            return f"Average D{win} retention: {avg_ret:.1f}%."
 
         if at == "behavioral_cohort" and "never_did_b" in df.columns:
             if (
@@ -685,6 +710,21 @@ GROUP BY 1
 ORDER BY MIN(event_count)"""
 
 
+# ── Data quality helpers ──────────────────────────────────────────────────────
+
+def _format_data_quality_block(val) -> str:
+    reason = getattr(val, "sanity_reason", "") or ""
+    arith = getattr(val, "arithmetic_warnings", []) or []
+    details = "; ".join(w.detail for w in arith[:2]) if arith else reason
+    if not details:
+        details = "The result is outside a plausible range for this metric."
+    return (
+        "The data for this query looks unusual and may not be reliable. "
+        f"Reason: {details}. "
+        "Suggested action: check your data pipeline or narrow the time range before interpreting results."
+    )
+
+
 # ── Main entry point ──────────────────────────────────────────────────────────
 
 @track(name="investigate", tags=["analysis"], capture_input=False, capture_output=False)
@@ -738,6 +778,15 @@ def investigate(
             validation = validate_findings(qo, report.investigations, catalog, openai_key)
         except Exception:
             pass
+
+    # 4b. Data quality gate — block story arc for SUSPICIOUS / grade-D results
+    if validation and not skip_narrative and (
+        validation.grade == "D" or validation.sanity_flag == "SUSPICIOUS"
+    ):
+        report.narrative = _format_data_quality_block(validation)
+        report.executive_summary = report.narrative
+        report.data_quality_blocked = True
+        return report
 
     # 5. Build narrative (skipped for deep-analysis sub-investigations)
     if valid_invs and not skip_narrative:
